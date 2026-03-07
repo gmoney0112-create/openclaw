@@ -11,8 +11,7 @@
     "token": "${OPENCLAW_HOOKS_TOKEN}",
     "path": "/hooks",
     "defaultSessionKey": "hook:ingress",
-    "allowRequestSessionKey": false,
-    "allowedAgentIds": ["main"]
+    "allowRequestSessionKey": false
   },
   "agents": {
     "defaults": {

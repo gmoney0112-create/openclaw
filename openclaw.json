@@ -1,0 +1,24 @@
+{
+  "gateway": {
+    "controlUi": {
+      "enabled": true,
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "dangerouslyDisableDeviceAuth": true
+    }
+  },
+  "hooks": {
+    "enabled": true,
+    "token": "${OPENCLAW_HOOKS_TOKEN}",
+    "path": "/hooks",
+    "defaultSessionKey": "hook:ingress",
+    "allowRequestSessionKey": false,
+    "allowedAgentIds": ["main"]
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "deepseek/deepseek-chat"
+      }
+    }
+  }
+}

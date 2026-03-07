@@ -1,0 +1,19 @@
+{
+  "gateway": {
+    "port": 8080,
+    "bind": "lan",
+    "controlUi": {
+      "enabled": false
+    },
+    "http": {
+      "endpoints": {
+        "chatCompletions": {
+          "enabled": true
+        },
+        "responses": {
+          "enabled": true
+        }
+      }
+    }
+  }
+}

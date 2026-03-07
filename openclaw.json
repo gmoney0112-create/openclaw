@@ -1,5 +1,7 @@
 {
   "gateway": {
+    "bind": "lan",
+    "port": 8080,
     "controlUi": {
       "enabled": true,
       "dangerouslyAllowHostHeaderOriginFallback": true,

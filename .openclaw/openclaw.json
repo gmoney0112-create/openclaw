@@ -3,5 +3,11 @@
     "controlUi": {
       "dangerouslyAllowHostHeaderOriginFallback": true
     }
+  },
+  "agent": {
+    "model": "openai/deepseek-chat",
+    "env": {
+      "OPENAI_BASE_URL": "https://api.deepseek.com/v1"
+    }
   }
 }

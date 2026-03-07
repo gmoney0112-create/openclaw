@@ -8,11 +8,10 @@
   },
   "hooks": {
     "enabled": true,
-    "token": "${OPENCLAW_HOOKS_TOKEN}",
+    "token": "znguAYjJILLSF63ZtGdLRaLYJU4HAhjW",
     "path": "/hooks",
     "defaultSessionKey": "hook:ingress",
-    "allowRequestSessionKey": false,
-    "allowedAgentIds": ["main"]
+    "allowRequestSessionKey": false
   },
   "agents": {
     "defaults": {

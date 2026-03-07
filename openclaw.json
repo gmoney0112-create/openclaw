@@ -1,0 +1,16 @@
+{
+  "gateway": {
+    "controlUi": {
+      "enabled": true,
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "dangerouslyDisableDeviceAuth": true
+    },
+    "agents": {
+      "defaults": {
+        "model": {
+          "primary": "openai/deepseek-chat"
+        }
+      }
+    }
+  }
+}

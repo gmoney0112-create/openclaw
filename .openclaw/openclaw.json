@@ -4,10 +4,14 @@
       "dangerouslyAllowHostHeaderOriginFallback": true
     }
   },
-  "agent": {
-    "model": "openai/deepseek-chat",
-    "env": {
-      "OPENAI_BASE_URL": "https://api.deepseek.com/v1"
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai/deepseek-chat"
+      },
+      "env": {
+        "OPENAI_BASE_URL": "https://api.deepseek.com/v1"
+      }
     }
   }
 }

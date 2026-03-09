@@ -278,6 +278,14 @@ describe("message tool schema scoping", () => {
     }),
   });
 
+  const matrixPlugin = createChannelPlugin({
+    id: "matrix",
+    label: "Matrix",
+    docsPath: "/channels/matrix",
+    blurb: "Matrix test plugin.",
+    actions: ["send", "set-profile"],
+  });
+
   afterEach(() => {
     setActivePluginRegistry(createTestRegistry([]));
   });
@@ -326,6 +334,7 @@ describe("message tool schema scoping", () => {
           { pluginId: "telegram", source: "test", plugin: telegramPlugin },
           { pluginId: "discord", source: "test", plugin: discordPlugin },
           { pluginId: "slack", source: "test", plugin: slackPlugin },
+          { pluginId: "matrix", source: "test", plugin: matrixPlugin },
         ]),
       );
 
@@ -375,6 +384,8 @@ describe("message tool schema scoping", () => {
       expect(properties.pollId).toBeDefined();
       expect(properties.pollOptionIndex).toBeDefined();
       expect(properties.pollOptionId).toBeDefined();
+      expect(properties.avatarUrl).toBeDefined();
+      expect(properties.displayName).toBeDefined();
     },
   );
 

@@ -1,7 +1,5 @@
 {
   "gateway": {
-        "bind": "lan",
-    "port": 8080,
     "controlUi": {
       "enabled": true,
       "dangerouslyAllowHostHeaderOriginFallback": true,
@@ -10,7 +8,7 @@
   },
   "hooks": {
     "enabled": true,
-    "token": "${OPENCLAW_HOOKS_TOKEN}",
+    "token": "znguAYjJILLSF63ZtGdLRaLYJU4HAhjW",
     "path": "/hooks",
     "defaultSessionKey": "hook:ingress",
     "allowRequestSessionKey": false
@@ -18,7 +16,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "deepseek/deepseek-chat"
+        "primary": "${OPENCLAW_AGENT_MODEL}"
       }
     }
   }

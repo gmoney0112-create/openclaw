@@ -1,13 +1,14 @@
 {
   "gateway": {
     "controlUi": {
-      "dangerouslyAllowHostHeaderOriginFallback": true
+      "dangerouslyAllowHostHeaderOriginFallback": false,
+      "dangerouslyDisableDeviceAuth": false
     }
   },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openai/deepseek-chat"
+        "primary": "${OPENCLAW_AGENT_MODEL}"
       }
     }
   }

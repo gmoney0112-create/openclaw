@@ -26,9 +26,16 @@ describe("parseRevenueCommand", () => {
     expect(result.price).toBe(99);
   });
 
+  it("strips trailing punctuation from contact name", () => {
+    const result = parseRevenueCommand({
+      command: "sell coaching $47 for john smith.",
+    });
+    expect(result.contactName).toBe("John Smith");
+  });
+
   it("throws when price is missing", () => {
-    expect(() =>
-      parseRevenueCommand({ command: "sell coaching to john smith" }),
-    ).toThrow(/parse price/i);
+    expect(() => parseRevenueCommand({ command: "sell coaching to john smith" })).toThrow(
+      /parse price/i,
+    );
   });
 });

@@ -1,6 +1,7 @@
 import type { ParsedRevenueCommand, RevenueCommandInput } from "./types.js";
 
-const PRICE_REGEX = /(?:\$\s*|USD\s*)(\d+(?:\.\d{1,2})?)|\b(\d+(?:\.\d{1,2})?)\s*(?:USD|dollars?)\b/i;
+const PRICE_REGEX =
+  /(?:\$\s*|USD\s*)(\d+(?:\.\d{1,2})?)|\b(\d+(?:\.\d{1,2})?)\s*(?:USD|dollars?)\b/i;
 
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -30,6 +31,10 @@ function extractPrice(raw: string, fallback?: number): number {
   return Number(value.toFixed(2));
 }
 
+function stripTrailing(value: string): string {
+  return value.replace(/[^A-Za-z]+$/, "");
+}
+
 function extractContactName(command: string, explicit?: string): string {
   if (explicit?.trim()) {
     return normalizeWhitespace(explicit);
@@ -37,13 +42,13 @@ function extractContactName(command: string, explicit?: string): string {
 
   const tailMatch = command.match(/(?:for|to|lead|contact)\s+([A-Za-z][A-Za-z\s'.-]{1,80})$/i);
   if (tailMatch?.[1]) {
-    return titleCase(normalizeWhitespace(tailMatch[1]));
+    return titleCase(normalizeWhitespace(stripTrailing(tailMatch[1])));
   }
 
   const beforePrice = command.split(PRICE_REGEX)[0] ?? command;
   const match = beforePrice.match(/(?:for|to|lead|contact)\s+([A-Za-z][A-Za-z\s'.-]{1,80})$/i);
   if (match?.[1]) {
-    return titleCase(normalizeWhitespace(match[1]));
+    return titleCase(normalizeWhitespace(stripTrailing(match[1])));
   }
 
   const twoWordName = beforePrice.match(/\b([A-Za-z]{2,})\s+([A-Za-z]{2,})\b/);

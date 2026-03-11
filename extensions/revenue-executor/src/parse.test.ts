@@ -26,6 +26,17 @@ describe("parseRevenueCommand", () => {
     expect(result.price).toBe(99);
   });
 
+  it("extracts trailing email without polluting the contact name", () => {
+    const result = parseRevenueCommand({
+      command: "Create $97 AI automation course for John Smith john@test.com",
+    });
+
+    expect(result.contactName).toBe("John Smith");
+    expect(result.email).toBe("john@test.com");
+    expect(result.productType).toBe("Ai Automation Course");
+    expect(result.price).toBe(97);
+  });
+
   it("throws when price is missing", () => {
     expect(() =>
       parseRevenueCommand({ command: "sell coaching to john smith" }),

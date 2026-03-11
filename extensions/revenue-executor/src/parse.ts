@@ -1,6 +1,8 @@
 import type { ParsedRevenueCommand, RevenueCommandInput } from "./types.js";
 
 const PRICE_REGEX = /(?:\$\s*|USD\s*)(\d+(?:\.\d{1,2})?)|\b(\d+(?:\.\d{1,2})?)\s*(?:USD|dollars?)\b/i;
+const EMAIL_REGEX = /\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b/;
+const PHONE_REGEX = /(?:\+?\d[\d\s().-]{6,}\d)/;
 
 function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/g, " ").trim();
@@ -12,6 +14,15 @@ function titleCase(value: string): string {
     .filter(Boolean)
     .map((token) => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
     .join(" ");
+}
+
+function stripTrailingContactDetails(value: string): string {
+  return normalizeWhitespace(
+    value
+      .replace(EMAIL_REGEX, " ")
+      .replace(PHONE_REGEX, " ")
+      .replace(/\s+/g, " "),
+  );
 }
 
 function extractPrice(raw: string, fallback?: number): number {
@@ -35,15 +46,21 @@ function extractContactName(command: string, explicit?: string): string {
     return normalizeWhitespace(explicit);
   }
 
-  const tailMatch = command.match(/(?:for|to|lead|contact)\s+([A-Za-z][A-Za-z\s'.-]{1,80})$/i);
+  const tailMatch = command.match(/(?:for|to|lead|contact)\s+(.+)$/i);
   if (tailMatch?.[1]) {
-    return titleCase(normalizeWhitespace(tailMatch[1]));
+    const cleaned = stripTrailingContactDetails(tailMatch[1]);
+    if (cleaned) {
+      return titleCase(cleaned);
+    }
   }
 
   const beforePrice = command.split(PRICE_REGEX)[0] ?? command;
-  const match = beforePrice.match(/(?:for|to|lead|contact)\s+([A-Za-z][A-Za-z\s'.-]{1,80})$/i);
+  const match = beforePrice.match(/(?:for|to|lead|contact)\s+(.+)$/i);
   if (match?.[1]) {
-    return titleCase(normalizeWhitespace(match[1]));
+    const cleaned = stripTrailingContactDetails(match[1]);
+    if (cleaned) {
+      return titleCase(cleaned);
+    }
   }
 
   const twoWordName = beforePrice.match(/\b([A-Za-z]{2,})\s+([A-Za-z]{2,})\b/);
@@ -61,7 +78,7 @@ function extractProductType(command: string, explicit?: string): string {
 
   const withoutPrice = command.replace(PRICE_REGEX, "");
   const cleaned = withoutPrice
-    .replace(/(?:for|to|lead|contact)\s+[A-Za-z][A-Za-z\s'.-]{1,80}$/i, "")
+    .replace(/(?:for|to|lead|contact)\s+.+$/i, "")
     .replace(/(?:create|sell|charge|book|offer)\s*/gi, "")
     .replace(/[,:-]+/g, " ")
     .trim();
@@ -88,7 +105,7 @@ export function parseRevenueCommand(input: RevenueCommandInput): ParsedRevenueCo
     productType,
     price,
     opportunityName,
-    email: input.email?.trim() || undefined,
-    phone: input.phone?.trim() || undefined,
+    email: input.email?.trim() || command.match(EMAIL_REGEX)?.[0],
+    phone: input.phone?.trim() || command.match(PHONE_REGEX)?.[0]?.trim(),
   };
 }

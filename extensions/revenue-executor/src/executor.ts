@@ -92,6 +92,11 @@ export async function executeRevenueCommand(
   return {
     ok: Boolean(opportunityId) && (parsed.price <= 0 || Boolean(paymentUrl)),
     runId,
+    price: parsed.price,
+    productType: parsed.productType,
+    opportunityName: parsed.opportunityName,
+    contactName: parsed.contactName,
+    paymentUrl,
     result: {
       price: parsed.price,
       productType: parsed.productType,

@@ -36,6 +36,11 @@ export type RevenuePaymentResult = {
 export type RevenueExecutionResult = {
   ok: boolean;
   runId: string;
+  price: number;
+  productType: string;
+  opportunityName: string;
+  contactName: string;
+  paymentUrl?: string;
   result: {
     price: number;
     productType: string;

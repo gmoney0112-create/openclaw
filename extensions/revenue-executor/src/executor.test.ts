@@ -40,6 +40,8 @@ describe("executeRevenueCommand", () => {
 
     expect(result.ok).toBe(true);
     expect(result.runId).toBe("run-1");
+    expect(result.contactName).toBe("John Smith");
+    expect(result.paymentUrl).toContain("stripe.com");
     expect(result.result.contact.exists).toBe(false);
     expect(result.result.contact.contactId).toBe("contact-new");
     expect(result.result.payment.url).toContain("stripe.com");
@@ -68,5 +70,28 @@ describe("executeRevenueCommand", () => {
     expect(result.result.payment.success).toBe(true);
     expect(result.result.payment.url).toBeUndefined();
     expect((stripe.createPaymentLink as ReturnType<typeof vi.fn>).mock.calls.length).toBe(0);
+  });
+
+  it("preserves parsed contact email and top-level fields", async () => {
+    const ghl = mockGhl();
+    const stripe = mockStripe();
+
+    const result = await executeRevenueCommand(
+      { command: "Create $97 AI automation course for John Smith john@test.com" },
+      {
+        ghl,
+        stripe,
+        env,
+        runId: "run-3",
+      },
+    );
+
+    expect(result.contactName).toBe("John Smith");
+    expect(result.opportunityName).toBe("Ai Automation Course - $97");
+    expect(result.paymentUrl).toContain("stripe.com");
+    expect((ghl.createContact as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]).toMatchObject({
+      name: "John Smith",
+      email: "john@test.com",
+    });
   });
 });

@@ -6,6 +6,7 @@ import {
   mergeAllowFromEntries,
   normalizeAccountId,
   promptAccountId,
+  requiresExplicitMatrixDefaultAccount,
   type RuntimeEnv,
   type WizardPrompter,
 } from "openclaw/plugin-sdk/matrix";
@@ -494,12 +495,21 @@ async function runMatrixConfigure(params: {
 export const matrixOnboardingAdapter: ChannelSetupWizardAdapter = {
   channel,
   getStatus: async ({ cfg, accountOverrides }) => {
+    const resolvedCfg = cfg as CoreConfig;
+    const sdkReady = isMatrixSdkAvailable();
+    if (!accountOverrides[channel] && requiresExplicitMatrixDefaultAccount(resolvedCfg)) {
+      return {
+        channel,
+        configured: false,
+        statusLines: ['Matrix: set "channels.matrix.defaultAccount" to select a named account'],
+        selectionHint: !sdkReady ? "install matrix-js-sdk" : "set defaultAccount",
+      };
+    }
     const account = resolveMatrixAccount({
-      cfg: cfg as CoreConfig,
-      accountId: resolveMatrixOnboardingAccountId(cfg as CoreConfig, accountOverrides[channel]),
+      cfg: resolvedCfg,
+      accountId: resolveMatrixOnboardingAccountId(resolvedCfg, accountOverrides[channel]),
     });
     const configured = account.configured;
-    const sdkReady = isMatrixSdkAvailable();
     return {
       channel,
       configured,

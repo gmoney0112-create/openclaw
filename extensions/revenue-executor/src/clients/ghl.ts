@@ -57,25 +57,25 @@ export function createGhlClient(env: Env = process.env): GhlClient {
   );
   const apiKey = requireEnv(env, "OPENCLAW_REVENUE_GHL_API_KEY");
 
-  const searchPath = env.OPENCLAW_REVENUE_GHL_CONTACT_SEARCH_PATH?.trim() || "/contacts/search";
+  const searchPath = env.OPENCLAW_REVENUE_GHL_CONTACT_SEARCH_PATH?.trim() || "/contacts/";
+  const locationId = requireEnv(env, "OPENCLAW_REVENUE_GHL_LOCATION_ID");
   const createContactPath =
     env.OPENCLAW_REVENUE_GHL_CONTACT_CREATE_PATH?.trim() || "/contacts";
   const createOpportunityPath =
     env.OPENCLAW_REVENUE_GHL_OPPORTUNITY_CREATE_PATH?.trim() || "/opportunities";
 
   return {
-    async checkContact({ name, email, phone }) {
+    async checkContact({ email }) {
+      const lookupEmail = (email || "").trim();
+      if (!lookupEmail) {
+        return null;
+      }
+
       const payload = await requestJson({
         baseUrl,
         apiKey,
-        path: searchPath,
-        method: "POST",
-        body: {
-          name,
-          email,
-          phone,
-          query: email || phone || name,
-        },
+        path: `${searchPath}?locationId=${locationId}&email=${encodeURIComponent(lookupEmail)}&limit=1`,
+        method: "GET",
       });
 
       const contacts =

@@ -43,7 +43,9 @@ async function requestJson(params: {
   const payload = await parseJsonSafe(response);
   if (!response.ok) {
     const details = typeof payload === "object" && payload ? JSON.stringify(payload) : "";
-    throw new Error(`GHL request failed (${response.status}) ${details}`.trim());
+    const method = params.method ?? "GET";
+    const url = `${params.baseUrl}${params.path}`;
+    throw new Error(`GHL request failed (${response.status}) ${method} ${url} ${details}`.trim());
   }
 
   return payload;

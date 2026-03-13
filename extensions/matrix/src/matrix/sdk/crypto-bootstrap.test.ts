@@ -1,4 +1,3 @@
-import { VerificationPhase } from "matrix-js-sdk/lib/crypto-api/verification.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MatrixCryptoBootstrapper, type MatrixCryptoBootstrapperDeps } from "./crypto-bootstrap.js";
 import type { MatrixCryptoBootstrapApi, MatrixRawEvent } from "./types.js";
@@ -418,7 +417,7 @@ describe("MatrixCryptoBootstrapper", () => {
     expect(getDeviceVerificationStatus).toHaveBeenCalledTimes(2);
   });
 
-  it("auto-accepts incoming verification requests from other users", async () => {
+  it("tracks incoming verification requests from other users", async () => {
     const deps = createBootstrapperDeps();
     const listeners = new Map<string, (...args: unknown[]) => void>();
     const crypto = createCryptoApi({
@@ -450,10 +449,10 @@ describe("MatrixCryptoBootstrapper", () => {
     expect(deps.verificationManager.trackVerificationRequest).toHaveBeenCalledWith(
       verificationRequest,
     );
-    expect(verificationRequest.accept).toHaveBeenCalledTimes(1);
+    expect(verificationRequest.accept).not.toHaveBeenCalled();
   });
 
-  it("still auto-accepts verification when tracking summary throws", async () => {
+  it("does not touch request state when tracking summary throws", async () => {
     const deps = createBootstrapperDeps();
     deps.verificationManager.trackVerificationRequest = vi.fn(() => {
       throw new Error("summary failure");
@@ -477,41 +476,6 @@ describe("MatrixCryptoBootstrapper", () => {
       otherUserId: "@alice:example.org",
       isSelfVerification: false,
       initiatedByMe: false,
-      accept: vi.fn(async () => {}),
-    };
-    const listener = Array.from(listeners.entries()).find(([eventName]) =>
-      eventName.toLowerCase().includes("verificationrequest"),
-    )?.[1];
-    expect(listener).toBeTypeOf("function");
-    await listener?.(verificationRequest);
-
-    expect(verificationRequest.accept).toHaveBeenCalledTimes(1);
-  });
-
-  it("skips auto-accept for requests that are no longer requested", async () => {
-    const deps = createBootstrapperDeps();
-    const listeners = new Map<string, (...args: unknown[]) => void>();
-    const crypto = createCryptoApi({
-      getDeviceVerificationStatus: vi.fn(async () => ({
-        isVerified: () => true,
-      })),
-      on: vi.fn((eventName: string, listener: (...args: unknown[]) => void) => {
-        listeners.set(eventName, listener);
-      }),
-    });
-    const bootstrapper = new MatrixCryptoBootstrapper(
-      deps as unknown as MatrixCryptoBootstrapperDeps<MatrixRawEvent>,
-    );
-
-    await bootstrapper.bootstrap(crypto);
-
-    const verificationRequest = {
-      otherUserId: "@alice:example.org",
-      isSelfVerification: false,
-      initiatedByMe: false,
-      phase: VerificationPhase.Cancelled,
-      accepting: false,
-      declining: false,
       accept: vi.fn(async () => {}),
     };
     const listener = Array.from(listeners.entries()).find(([eventName]) =>

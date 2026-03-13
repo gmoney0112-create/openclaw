@@ -291,6 +291,61 @@ describe("registerMatrixMonitorEvents verification routing", () => {
     expect(body).toContain("SAS decimal: 6158 1986 3513");
   });
 
+  it("posts SAS notices from summary updates using the room mapped by earlier flow events", async () => {
+    const { sendMessage, roomEventListener, verificationSummaryListener } = createHarness({
+      joinedMembersByRoom: {
+        "!dm:example.org": ["@alice:example.org", "@bot:example.org"],
+      },
+    });
+    if (!verificationSummaryListener) {
+      throw new Error("verification.summary listener was not registered");
+    }
+
+    roomEventListener("!dm:example.org", {
+      event_id: "$start-mapped",
+      sender: "@alice:example.org",
+      type: "m.key.verification.start",
+      origin_server_ts: Date.now(),
+      content: {
+        transaction_id: "txn-mapped-room",
+        "m.relates_to": { event_id: "$req-mapped" },
+      },
+    });
+
+    verificationSummaryListener({
+      id: "verification-mapped",
+      transactionId: "txn-mapped-room",
+      otherUserId: "@alice:example.org",
+      isSelfVerification: false,
+      initiatedByMe: false,
+      phase: 3,
+      phaseName: "started",
+      pending: true,
+      methods: ["m.sas.v1"],
+      canAccept: false,
+      hasSas: true,
+      sas: {
+        decimal: [1111, 2222, 3333],
+        emoji: [
+          ["🚀", "Rocket"],
+          ["🦋", "Butterfly"],
+          ["📕", "Book"],
+        ],
+      },
+      hasReciprocateQr: false,
+      completed: false,
+      createdAt: new Date("2026-02-25T21:42:54.000Z").toISOString(),
+      updatedAt: new Date("2026-02-25T21:42:55.000Z").toISOString(),
+    });
+
+    await vi.waitFor(() => {
+      const bodies = (sendMessage.mock.calls as unknown[][]).map((call) =>
+        String((call[1] as { body?: string } | undefined)?.body ?? ""),
+      );
+      expect(bodies.some((body) => body.includes("SAS decimal: 1111 2222 3333"))).toBe(true);
+    });
+  });
+
   it("retries SAS notice lookup when start arrives before SAS payload is available", async () => {
     vi.useFakeTimers();
     const verifications: Array<{

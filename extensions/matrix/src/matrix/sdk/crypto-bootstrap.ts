@@ -1,5 +1,4 @@
 import { CryptoEvent } from "matrix-js-sdk/lib/crypto-api/CryptoEvent.js";
-import { VerificationPhase } from "matrix-js-sdk/lib/crypto-api/verification.js";
 import type { MatrixDecryptBridge } from "./decrypt-bridge.js";
 import { LogService } from "./logger.js";
 import type { MatrixRecoveryKeyStore } from "./recovery-key-store.js";
@@ -273,7 +272,8 @@ export class MatrixCryptoBootstrapper<TRawEvent extends MatrixRawEvent> {
     }
     this.verificationHandlerRegistered = true;
 
-    // Auto-accept incoming verification requests from other users/devices.
+    // Track incoming requests; verification lifecycle decisions live in the
+    // verification manager so acceptance/start/dedupe share one code path.
     crypto.on(CryptoEvent.VerificationRequestReceived, async (request) => {
       const verificationRequest = request as MatrixVerificationRequestLike;
       try {
@@ -282,48 +282,6 @@ export class MatrixCryptoBootstrapper<TRawEvent extends MatrixRawEvent> {
         LogService.warn(
           "MatrixClientLite",
           `Failed to track verification request from ${verificationRequest.otherUserId}:`,
-          err,
-        );
-      }
-      const otherUserId = verificationRequest.otherUserId;
-      const isSelfVerification = verificationRequest.isSelfVerification;
-      const initiatedByMe = verificationRequest.initiatedByMe;
-      const phase =
-        typeof verificationRequest.phase === "number"
-          ? verificationRequest.phase
-          : VerificationPhase.Requested;
-      const accepting = verificationRequest.accepting === true;
-      const declining = verificationRequest.declining === true;
-
-      if (isSelfVerification || initiatedByMe) {
-        LogService.debug(
-          "MatrixClientLite",
-          `Ignoring ${isSelfVerification ? "self" : "initiated"} verification request from ${otherUserId}`,
-        );
-        return;
-      }
-      if (phase !== VerificationPhase.Requested || accepting || declining) {
-        LogService.debug(
-          "MatrixClientLite",
-          `Skipping auto-accept for ${otherUserId} in phase=${phase} accepting=${accepting} declining=${declining}`,
-        );
-        return;
-      }
-
-      try {
-        LogService.info(
-          "MatrixClientLite",
-          `Auto-accepting verification request from ${otherUserId}`,
-        );
-        await verificationRequest.accept();
-        LogService.info(
-          "MatrixClientLite",
-          `Verification request from ${otherUserId} accepted, waiting for SAS...`,
-        );
-      } catch (err) {
-        LogService.warn(
-          "MatrixClientLite",
-          `Failed to auto-accept verification from ${otherUserId}:`,
           err,
         );
       }

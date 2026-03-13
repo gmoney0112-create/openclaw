@@ -92,6 +92,7 @@ describe("MatrixVerificationManager", () => {
     const request = new MockVerificationRequest({
       transactionId: "txn-rust-methods",
       phase: VerificationPhase.Requested,
+      initiatedByMe: true,
     });
     Object.defineProperty(request, "methods", {
       get() {
@@ -103,7 +104,7 @@ describe("MatrixVerificationManager", () => {
 
     expect(summary.id).toBeTruthy();
     expect(summary.methods).toEqual([]);
-    expect(summary.phase).toBe(VerificationPhase.Requested);
+    expect(summary.phaseName).toBe("requested");
   });
 
   it("reuses the same tracked id for repeated transaction IDs", () => {
@@ -300,6 +301,26 @@ describe("MatrixVerificationManager", () => {
     expect(summary?.hasSas).toBe(true);
     expect(summary?.sas?.decimal).toEqual([1234, 5678, 9012]);
     expect(manager.getVerificationSas(tracked.id).decimal).toEqual([1234, 5678, 9012]);
+  });
+
+  it("auto-accepts incoming verification requests only once per transaction", async () => {
+    const request = new MockVerificationRequest({
+      transactionId: "txn-auto-accept-once",
+      initiatedByMe: false,
+      isSelfVerification: false,
+      phase: VerificationPhase.Requested,
+      accepting: false,
+      declining: false,
+    });
+    const manager = new MatrixVerificationManager();
+
+    manager.trackVerificationRequest(request);
+    request.emit(VerificationRequestEvent.Change);
+    manager.trackVerificationRequest(request);
+
+    await vi.waitFor(() => {
+      expect(request.accept).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("auto-confirms inbound SAS after a human-safe delay", async () => {

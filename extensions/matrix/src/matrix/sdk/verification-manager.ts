@@ -103,6 +103,7 @@ type MatrixVerificationSession = {
   verifyPromise?: Promise<void>;
   verifyStarted: boolean;
   startRequested: boolean;
+  acceptRequested: boolean;
   sasAutoConfirmStarted: boolean;
   sasAutoConfirmTimer?: ReturnType<typeof setTimeout>;
   sasCallbacks?: MatrixShowSasCallbacks;
@@ -262,12 +263,47 @@ export class MatrixVerificationManager {
     this.trackedVerificationRequests.add(requestObj);
     session.request.on(VerificationRequestEvent.Change, () => {
       this.touchVerificationSession(session);
+      this.maybeAutoAcceptInboundRequest(session);
       const verifier = this.readRequestValue(session.request, () => session.request.verifier, null);
       if (verifier) {
         this.attachVerifierToVerificationSession(session, verifier);
       }
       this.maybeAutoStartInboundSas(session);
     });
+  }
+
+  private maybeAutoAcceptInboundRequest(session: MatrixVerificationSession): void {
+    if (session.acceptRequested) {
+      return;
+    }
+    const request = session.request;
+    const isSelfVerification = this.readRequestValue(
+      request,
+      () => request.isSelfVerification,
+      false,
+    );
+    const initiatedByMe = this.readRequestValue(request, () => request.initiatedByMe, false);
+    const phase = this.readRequestValue(request, () => request.phase, VerificationPhase.Requested);
+    const accepting = this.readRequestValue(request, () => request.accepting, false);
+    const declining = this.readRequestValue(request, () => request.declining, false);
+    if (isSelfVerification || initiatedByMe) {
+      return;
+    }
+    if (phase !== VerificationPhase.Requested || accepting || declining) {
+      return;
+    }
+
+    session.acceptRequested = true;
+    void request
+      .accept()
+      .then(() => {
+        this.touchVerificationSession(session);
+      })
+      .catch((err) => {
+        session.acceptRequested = false;
+        session.error = err instanceof Error ? err.message : String(err);
+        this.touchVerificationSession(session);
+      });
   }
 
   private maybeAutoStartInboundSas(session: MatrixVerificationSession): void {
@@ -450,10 +486,12 @@ export class MatrixVerificationManager {
       updatedAtMs: now,
       verifyStarted: false,
       startRequested: false,
+      acceptRequested: false,
       sasAutoConfirmStarted: false,
     };
     this.verificationSessions.set(session.id, session);
     this.ensureVerificationRequestTracked(session);
+    this.maybeAutoAcceptInboundRequest(session);
     const verifier = this.readRequestValue(request, () => request.verifier, null);
     if (verifier) {
       this.attachVerifierToVerificationSession(session, verifier);

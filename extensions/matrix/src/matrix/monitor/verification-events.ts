@@ -307,9 +307,33 @@ export function createMatrixVerificationEventRouter(params: {
 }) {
   const routedVerificationEvents = new Set<string>();
   const routedVerificationSasFingerprints = new Set<string>();
+  const routedVerificationStageNotices = new Set<string>();
+  const verificationFlowRooms = new Map<string, string>();
+
+  function rememberVerificationRoom(roomId: string, event: MatrixRawEvent, flowId: string | null) {
+    for (const candidate of resolveVerificationFlowCandidates({ event, flowId })) {
+      verificationFlowRooms.set(candidate, roomId);
+      if (verificationFlowRooms.size > MAX_TRACKED_VERIFICATION_EVENTS) {
+        const oldest = verificationFlowRooms.keys().next().value;
+        if (typeof oldest === "string") {
+          verificationFlowRooms.delete(oldest);
+        }
+      }
+    }
+  }
+
+  function resolveSummaryRoomId(summary: MatrixVerificationSummaryLike): string | null {
+    return (
+      trimMaybeString(summary.roomId) ??
+      trimMaybeString(
+        summary.transactionId ? verificationFlowRooms.get(summary.transactionId) : null,
+      ) ??
+      trimMaybeString(verificationFlowRooms.get(summary.id))
+    );
+  }
 
   async function routeVerificationSummary(summary: MatrixVerificationSummaryLike): Promise<void> {
-    const roomId = trimMaybeString(summary.roomId);
+    const roomId = resolveSummaryRoomId(summary);
     if (!roomId || !isActiveVerificationSummary(summary)) {
       return;
     }
@@ -350,6 +374,7 @@ export function createMatrixVerificationEventRouter(params: {
     if (!signal) {
       return false;
     }
+    rememberVerificationRoom(roomId, event, signal.flowId);
 
     void (async () => {
       const flowId = signal.flowId;
@@ -381,7 +406,10 @@ export function createMatrixVerificationEventRouter(params: {
 
       const notices: string[] = [];
       if (stageNotice) {
-        notices.push(stageNotice);
+        const stageKey = `${roomId}:${senderId}:${flowId ?? sourceFingerprint}:${signal.stage}`;
+        if (trackBounded(routedVerificationStageNotices, stageKey)) {
+          notices.push(stageNotice);
+        }
       }
       if (summary && sasNotice) {
         const sasFingerprint = `${summary.id}:${JSON.stringify(summary.sas)}`;

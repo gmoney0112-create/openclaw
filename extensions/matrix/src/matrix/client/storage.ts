@@ -143,6 +143,7 @@ function isCompatibleStorageRoot(params: {
   userId: string;
   accountKey: string;
   deviceId?: string | null;
+  requireExplicitDeviceMatch?: boolean;
 }): boolean {
   const metadata = readStoredRootMetadata(params.candidateRootDir);
   if (metadata.homeserver && metadata.homeserver !== params.homeserver) {
@@ -162,6 +163,13 @@ function isCompatibleStorageRoot(params: {
     metadata.deviceId &&
     metadata.deviceId.trim() &&
     metadata.deviceId.trim() !== params.deviceId.trim()
+  ) {
+    return false;
+  }
+  if (
+    params.requireExplicitDeviceMatch &&
+    params.deviceId &&
+    (!metadata.deviceId || metadata.deviceId.trim() !== params.deviceId.trim())
   ) {
     return false;
   }
@@ -213,6 +221,9 @@ function resolvePreferredMatrixStorageRoot(params: {
         userId: params.userId,
         accountKey: params.accountKey,
         deviceId: params.deviceId,
+        // Once auth resolves a concrete device, only sibling roots that explicitly
+        // declare that same device are safe to reuse across token rotations.
+        requireExplicitDeviceMatch: Boolean(params.deviceId),
       })
     ) {
       continue;

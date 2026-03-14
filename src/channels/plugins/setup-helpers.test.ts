@@ -5,6 +5,7 @@ import {
   applySetupAccountConfigPatch,
   createEnvPatchedAccountSetupAdapter,
   createPatchedAccountSetupAdapter,
+  moveSingleAccountChannelSectionToDefaultAccount,
   prepareScopedSetupConfig,
 } from "./setup-helpers.js";
 
@@ -160,6 +161,43 @@ describe("createPatchedAccountSetupAdapter", () => {
     });
     expect(next.channels?.whatsapp).not.toHaveProperty("enabled");
     expect(next.channels?.whatsapp).not.toHaveProperty("authDir");
+  });
+});
+
+describe("moveSingleAccountChannelSectionToDefaultAccount", () => {
+  it("promotes legacy Matrix keys into the sole named account when defaultAccount is unset", () => {
+    const next = moveSingleAccountChannelSectionToDefaultAccount({
+      cfg: asConfig({
+        channels: {
+          matrix: {
+            homeserver: "https://matrix.example.org",
+            userId: "@bot:example.org",
+            accessToken: "token",
+            accounts: {
+              main: {
+                enabled: true,
+              },
+            },
+          },
+        },
+      }),
+      channelKey: "matrix",
+    });
+
+    expect(next.channels?.matrix).toMatchObject({
+      accounts: {
+        main: {
+          enabled: true,
+          homeserver: "https://matrix.example.org",
+          userId: "@bot:example.org",
+          accessToken: "token",
+        },
+      },
+    });
+    expect(next.channels?.matrix?.accounts?.default).toBeUndefined();
+    expect(next.channels?.matrix?.homeserver).toBeUndefined();
+    expect(next.channels?.matrix?.userId).toBeUndefined();
+    expect(next.channels?.matrix?.accessToken).toBeUndefined();
   });
 });
 

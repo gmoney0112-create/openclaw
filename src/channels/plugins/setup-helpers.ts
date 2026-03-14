@@ -447,16 +447,33 @@ export function resolveSingleAccountPromotionTarget(params: {
   if (params.channelKey !== "matrix") {
     return DEFAULT_ACCOUNT_ID;
   }
-  const normalizedDefaultAccount = normalizeAccountId(params.channel.defaultAccount);
-  if (normalizedDefaultAccount === DEFAULT_ACCOUNT_ID) {
+  const accounts = params.channel.accounts ?? {};
+  const normalizedDefaultAccount =
+    typeof params.channel.defaultAccount === "string" && params.channel.defaultAccount.trim()
+      ? normalizeAccountId(params.channel.defaultAccount)
+      : undefined;
+  if (normalizedDefaultAccount) {
+    if (
+      normalizedDefaultAccount !== DEFAULT_ACCOUNT_ID &&
+      accounts[normalizedDefaultAccount] &&
+      typeof accounts[normalizedDefaultAccount] === "object"
+    ) {
+      return normalizedDefaultAccount;
+    }
     return DEFAULT_ACCOUNT_ID;
   }
-  const accounts = params.channel.accounts ?? {};
+  const namedAccounts = Object.entries(accounts).filter(
+    ([accountId, value]) => accountId && typeof value === "object" && value,
+  );
+  if (namedAccounts.length === 1) {
+    return namedAccounts[0][0];
+  }
   if (
-    accounts[normalizedDefaultAccount] &&
-    typeof accounts[normalizedDefaultAccount] === "object"
+    namedAccounts.length > 1 &&
+    accounts[DEFAULT_ACCOUNT_ID] &&
+    typeof accounts[DEFAULT_ACCOUNT_ID] === "object"
   ) {
-    return normalizedDefaultAccount;
+    return DEFAULT_ACCOUNT_ID;
   }
   return DEFAULT_ACCOUNT_ID;
 }

@@ -12,6 +12,7 @@ type SharedMatrixClientState = {
   started: boolean;
   cryptoReady: boolean;
   startPromise: Promise<void> | null;
+  leases: number;
 };
 
 const sharedClientStates = new Map<string, SharedMatrixClientState>();
@@ -48,7 +49,22 @@ async function createSharedMatrixClient(params: {
     started: false,
     cryptoReady: false,
     startPromise: null,
+    leases: 0,
   };
+}
+
+function findSharedClientStateByInstance(client: MatrixClient): SharedMatrixClientState | null {
+  for (const state of sharedClientStates.values()) {
+    if (state.client === client) {
+      return state;
+    }
+  }
+  return null;
+}
+
+function deleteSharedClientState(state: SharedMatrixClientState): void {
+  sharedClientStates.delete(state.key);
+  sharedClientPromises.delete(state.key);
 }
 
 async function ensureSharedClientStarted(params: {
@@ -92,7 +108,7 @@ async function ensureSharedClientStarted(params: {
   }
 }
 
-export async function resolveSharedMatrixClient(
+async function resolveSharedMatrixClientState(
   params: {
     cfg?: CoreConfig;
     env?: NodeJS.ProcessEnv;
@@ -101,7 +117,7 @@ export async function resolveSharedMatrixClient(
     startClient?: boolean;
     accountId?: string | null;
   } = {},
-): Promise<MatrixClient> {
+): Promise<SharedMatrixClientState> {
   const requestedAccountId = normalizeOptionalAccountId(params.accountId);
   if (params.auth && requestedAccountId && requestedAccountId !== params.auth.accountId) {
     throw new Error(
@@ -135,7 +151,7 @@ export async function resolveSharedMatrixClient(
         encryption: auth.encryption,
       });
     }
-    return existingState.client;
+    return existingState;
   }
 
   const existingPromise = sharedClientPromises.get(key);
@@ -149,7 +165,7 @@ export async function resolveSharedMatrixClient(
         encryption: auth.encryption,
       });
     }
-    return pending.client;
+    return pending;
   }
 
   const creationPromise = createSharedMatrixClient({
@@ -169,10 +185,39 @@ export async function resolveSharedMatrixClient(
         encryption: auth.encryption,
       });
     }
-    return created.client;
+    return created;
   } finally {
     sharedClientPromises.delete(key);
   }
+}
+
+export async function resolveSharedMatrixClient(
+  params: {
+    cfg?: CoreConfig;
+    env?: NodeJS.ProcessEnv;
+    timeoutMs?: number;
+    auth?: MatrixAuth;
+    startClient?: boolean;
+    accountId?: string | null;
+  } = {},
+): Promise<MatrixClient> {
+  const state = await resolveSharedMatrixClientState(params);
+  return state.client;
+}
+
+export async function acquireSharedMatrixClient(
+  params: {
+    cfg?: CoreConfig;
+    env?: NodeJS.ProcessEnv;
+    timeoutMs?: number;
+    auth?: MatrixAuth;
+    startClient?: boolean;
+    accountId?: string | null;
+  } = {},
+): Promise<MatrixClient> {
+  const state = await resolveSharedMatrixClientState(params);
+  state.leases += 1;
+  return state.client;
 }
 
 export function stopSharedClient(): void {
@@ -190,20 +235,16 @@ export function stopSharedClientForAccount(auth: MatrixAuth): void {
     return;
   }
   state.client.stop();
-  sharedClientStates.delete(key);
-  sharedClientPromises.delete(key);
+  deleteSharedClientState(state);
 }
 
 export function removeSharedClientInstance(client: MatrixClient): boolean {
-  for (const [key, state] of sharedClientStates.entries()) {
-    if (state.client !== client) {
-      continue;
-    }
-    sharedClientStates.delete(key);
-    sharedClientPromises.delete(key);
-    return true;
+  const state = findSharedClientStateByInstance(client);
+  if (!state) {
+    return false;
   }
-  return false;
+  deleteSharedClientState(state);
+  return true;
 }
 
 export function stopSharedClientInstance(client: MatrixClient): void {
@@ -211,4 +252,25 @@ export function stopSharedClientInstance(client: MatrixClient): void {
     return;
   }
   client.stop();
+}
+
+export async function releaseSharedClientInstance(
+  client: MatrixClient,
+  mode: "stop" | "persist" = "stop",
+): Promise<boolean> {
+  const state = findSharedClientStateByInstance(client);
+  if (!state) {
+    return false;
+  }
+  state.leases = Math.max(0, state.leases - 1);
+  if (state.leases > 0) {
+    return false;
+  }
+  deleteSharedClientState(state);
+  if (mode === "persist") {
+    await client.stopAndPersist();
+  } else {
+    client.stop();
+  }
+  return true;
 }

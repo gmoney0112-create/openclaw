@@ -207,6 +207,29 @@ describe("handleMatrixAction pollVote", () => {
     });
   });
 
+  it("accepts media-only message sends", async () => {
+    const cfg = { channels: { matrix: { actions: { messages: true } } } } as CoreConfig;
+    await handleMatrixAction(
+      {
+        action: "sendMessage",
+        accountId: "ops",
+        to: "room:!room:example",
+        mediaUrl: "file:///tmp/photo.png",
+      },
+      cfg,
+      { mediaLocalRoots: ["/tmp/openclaw-matrix-test"] },
+    );
+
+    expect(mocks.sendMatrixMessage).toHaveBeenCalledWith("room:!room:example", undefined, {
+      cfg,
+      accountId: "ops",
+      mediaUrl: "file:///tmp/photo.png",
+      mediaLocalRoots: ["/tmp/openclaw-matrix-test"],
+      replyToId: undefined,
+      threadId: undefined,
+    });
+  });
+
   it("passes mediaLocalRoots to profile updates", async () => {
     const cfg = { channels: { matrix: { actions: { profile: true } } } } as CoreConfig;
     await handleMatrixAction(

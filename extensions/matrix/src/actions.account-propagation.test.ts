@@ -155,4 +155,28 @@ describe("matrixMessageActions account propagation", () => {
       { mediaLocalRoots: ["/tmp/openclaw-matrix-test"] },
     );
   });
+
+  it("allows media-only sends without requiring a message body", async () => {
+    await matrixMessageActions.handleAction?.(
+      createContext({
+        action: "send",
+        accountId: "ops",
+        params: {
+          to: "room:!room:example",
+          media: "file:///tmp/photo.png",
+        },
+      }),
+    );
+
+    expect(mocks.handleMatrixAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "sendMessage",
+        accountId: "ops",
+        content: undefined,
+        mediaUrl: "file:///tmp/photo.png",
+      }),
+      expect.any(Object),
+      { mediaLocalRoots: undefined },
+    );
+  });
 });

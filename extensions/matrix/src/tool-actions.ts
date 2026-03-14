@@ -195,11 +195,11 @@ export async function handleMatrixAction(
     switch (action) {
       case "sendMessage": {
         const to = readStringParam(params, "to", { required: true });
+        const mediaUrl = readStringParam(params, "mediaUrl");
         const content = readStringParam(params, "content", {
-          required: true,
+          required: !mediaUrl,
           allowEmpty: true,
         });
-        const mediaUrl = readStringParam(params, "mediaUrl");
         const replyToId =
           readStringParam(params, "replyToId") ?? readStringParam(params, "replyTo");
         const threadId = readStringParam(params, "threadId");

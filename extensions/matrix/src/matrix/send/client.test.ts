@@ -8,8 +8,8 @@ import {
 const {
   getMatrixRuntimeMock,
   getActiveMatrixClientMock,
-  resolveSharedMatrixClientMock,
-  removeSharedClientInstanceMock,
+  acquireSharedMatrixClientMock,
+  releaseSharedClientInstanceMock,
   isBunRuntimeMock,
   resolveMatrixAuthContextMock,
 } = matrixClientResolverMocks;
@@ -19,13 +19,13 @@ vi.mock("../active-client.js", () => ({
 }));
 
 vi.mock("../client.js", () => ({
-  resolveSharedMatrixClient: (...args: unknown[]) => resolveSharedMatrixClientMock(...args),
+  acquireSharedMatrixClient: (...args: unknown[]) => acquireSharedMatrixClientMock(...args),
   isBunRuntime: () => isBunRuntimeMock(),
   resolveMatrixAuthContext: resolveMatrixAuthContextMock,
 }));
 
 vi.mock("../client/shared.js", () => ({
-  removeSharedClientInstance: (...args: unknown[]) => removeSharedClientInstanceMock(...args),
+  releaseSharedClientInstance: (...args: unknown[]) => releaseSharedClientInstanceMock(...args),
 }));
 
 vi.mock("../../runtime.js", () => ({
@@ -54,16 +54,16 @@ describe("withResolvedMatrixClient", () => {
     const result = await withResolvedMatrixClient({ accountId: "default" }, async () => "ok");
 
     expect(getActiveMatrixClientMock).toHaveBeenCalledWith("default");
-    expect(resolveSharedMatrixClientMock).toHaveBeenCalledTimes(1);
-    expect(resolveSharedMatrixClientMock).toHaveBeenCalledWith({
+    expect(acquireSharedMatrixClientMock).toHaveBeenCalledTimes(1);
+    expect(acquireSharedMatrixClientMock).toHaveBeenCalledWith({
       cfg: {},
       timeoutMs: undefined,
       accountId: "default",
+      startClient: false,
     });
-    const sharedClient = await resolveSharedMatrixClientMock.mock.results[0]?.value;
+    const sharedClient = await acquireSharedMatrixClientMock.mock.results[0]?.value;
     expect(sharedClient.prepareForOneOff).toHaveBeenCalledTimes(1);
-    expect(sharedClient.stop).toHaveBeenCalledTimes(1);
-    expect(removeSharedClientInstanceMock).toHaveBeenCalledWith(sharedClient);
+    expect(releaseSharedClientInstanceMock).toHaveBeenCalledWith(sharedClient, "stop");
     expect(result).toBe("ok");
   });
 
@@ -77,7 +77,7 @@ describe("withResolvedMatrixClient", () => {
     });
 
     expect(result).toBe("ok");
-    expect(resolveSharedMatrixClientMock).not.toHaveBeenCalled();
+    expect(acquireSharedMatrixClientMock).not.toHaveBeenCalled();
     expect(activeClient.stop).not.toHaveBeenCalled();
   });
 
@@ -91,10 +91,11 @@ describe("withResolvedMatrixClient", () => {
     await withResolvedMatrixClient({}, async () => {});
 
     expect(getActiveMatrixClientMock).toHaveBeenCalledWith("ops");
-    expect(resolveSharedMatrixClientMock).toHaveBeenCalledWith({
+    expect(acquireSharedMatrixClientMock).toHaveBeenCalledWith({
       cfg: {},
       timeoutMs: undefined,
       accountId: "ops",
+      startClient: false,
     });
   });
 
@@ -114,16 +115,17 @@ describe("withResolvedMatrixClient", () => {
       cfg: explicitCfg,
       accountId: "ops",
     });
-    expect(resolveSharedMatrixClientMock).toHaveBeenCalledWith({
+    expect(acquireSharedMatrixClientMock).toHaveBeenCalledWith({
       cfg: explicitCfg,
       timeoutMs: undefined,
       accountId: "ops",
+      startClient: false,
     });
   });
 
   it("stops shared matrix clients when wrapped sends fail", async () => {
     const sharedClient = createMockMatrixClient();
-    resolveSharedMatrixClientMock.mockResolvedValue(sharedClient);
+    acquireSharedMatrixClientMock.mockResolvedValue(sharedClient);
 
     await expect(
       withResolvedMatrixClient({ accountId: "default" }, async () => {
@@ -131,7 +133,6 @@ describe("withResolvedMatrixClient", () => {
       }),
     ).rejects.toThrow("boom");
 
-    expect(sharedClient.stop).toHaveBeenCalledTimes(1);
-    expect(removeSharedClientInstanceMock).toHaveBeenCalledWith(sharedClient);
+    expect(releaseSharedClientInstanceMock).toHaveBeenCalledWith(sharedClient, "stop");
   });
 });

@@ -16,7 +16,7 @@ import {
 
 export async function sendMatrixMessage(
   to: string,
-  content: string,
+  content: string | undefined,
   opts: MatrixActionClientOpts & {
     mediaUrl?: string;
     replyToId?: string;

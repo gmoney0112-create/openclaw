@@ -114,11 +114,11 @@ export const matrixMessageActions: ChannelMessageActionAdapter = {
 
     if (action === "send") {
       const to = readStringParam(params, "to", { required: true });
+      const mediaUrl = readStringParam(params, "media", { trim: false });
       const content = readStringParam(params, "message", {
-        required: true,
+        required: !mediaUrl,
         allowEmpty: true,
       });
-      const mediaUrl = readStringParam(params, "media", { trim: false });
       const replyTo = readStringParam(params, "replyTo");
       const threadId = readStringParam(params, "threadId");
       return await dispatch({

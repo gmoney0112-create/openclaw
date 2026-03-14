@@ -63,7 +63,7 @@ function normalizeMatrixClientResolveOpts(
 
 export async function sendMessageMatrix(
   to: string,
-  message: string,
+  message: string | undefined,
   opts: MatrixSendOpts = {},
 ): Promise<MatrixSendResult> {
   const trimmedMessage = message?.trim() ?? "";

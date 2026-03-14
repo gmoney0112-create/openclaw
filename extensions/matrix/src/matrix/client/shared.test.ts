@@ -15,6 +15,8 @@ vi.mock("./create-client.js", () => ({
 }));
 
 import {
+  acquireSharedMatrixClient,
+  releaseSharedClientInstance,
   resolveSharedMatrixClient,
   stopSharedClient,
   stopSharedClientForAccount,
@@ -172,6 +174,46 @@ describe("resolveSharedMatrixClient", () => {
         accountId: "ops",
       }),
     );
+  });
+
+  it("honors startClient false even when the caller acquires a shared lease", async () => {
+    const mainAuth = authFor("main");
+    const mainClient = createMockClient("main");
+
+    resolveMatrixAuthMock.mockResolvedValue(mainAuth);
+    createMatrixClientMock.mockResolvedValue(mainClient);
+
+    const client = await acquireSharedMatrixClient({ accountId: "main", startClient: false });
+
+    expect(client).toBe(mainClient);
+    expect(mainClient.start).not.toHaveBeenCalled();
+  });
+
+  it("keeps shared clients alive until the last one-off lease releases", async () => {
+    const mainAuth = authFor("main");
+    const mainClient = {
+      ...createMockClient("main"),
+      stopAndPersist: vi.fn(async () => undefined),
+    };
+
+    resolveMatrixAuthMock.mockResolvedValue(mainAuth);
+    createMatrixClientMock.mockResolvedValue(mainClient);
+
+    const first = await acquireSharedMatrixClient({ accountId: "main", startClient: false });
+    const second = await acquireSharedMatrixClient({ accountId: "main", startClient: false });
+
+    expect(first).toBe(mainClient);
+    expect(second).toBe(mainClient);
+
+    expect(
+      await releaseSharedClientInstance(mainClient as unknown as import("../sdk.js").MatrixClient),
+    ).toBe(false);
+    expect(mainClient.stop).not.toHaveBeenCalled();
+
+    expect(
+      await releaseSharedClientInstance(mainClient as unknown as import("../sdk.js").MatrixClient),
+    ).toBe(true);
+    expect(mainClient.stop).toHaveBeenCalledTimes(1);
   });
 
   it("rejects mismatched explicit account ids when auth is already resolved", async () => {

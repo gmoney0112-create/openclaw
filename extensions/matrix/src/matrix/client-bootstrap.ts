@@ -1,8 +1,8 @@
 import { getMatrixRuntime } from "../runtime.js";
 import type { CoreConfig } from "../types.js";
 import { getActiveMatrixClient } from "./active-client.js";
-import { isBunRuntime, resolveMatrixAuthContext, resolveSharedMatrixClient } from "./client.js";
-import { removeSharedClientInstance } from "./client/shared.js";
+import { acquireSharedMatrixClient, isBunRuntime, resolveMatrixAuthContext } from "./client.js";
+import { releaseSharedClientInstance } from "./client/shared.js";
 import type { MatrixClient } from "./sdk.js";
 
 type ResolvedRuntimeMatrixClient = {
@@ -63,22 +63,18 @@ async function resolveRuntimeMatrixClient(opts: {
     return { client: active, stopOnDone: false };
   }
 
-  const client = await resolveSharedMatrixClient({
+  const client = await acquireSharedMatrixClient({
     cfg,
     timeoutMs: opts.timeoutMs,
     accountId: authContext.accountId,
+    startClient: false,
   });
   await opts.onResolved?.(client, { preparedByDefault: true });
   return {
     client,
     stopOnDone: true,
     cleanup: async (mode) => {
-      if (mode === "persist") {
-        await client.stopAndPersist();
-      } else {
-        client.stop();
-      }
-      removeSharedClientInstance(client);
+      await releaseSharedClientInstance(client, mode);
     },
   };
 }

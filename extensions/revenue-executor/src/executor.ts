@@ -49,7 +49,16 @@ export async function executeRevenueCommand(
 
   const contact =
     contactLookup ??
-    (await deps.ghl.createContact({
+    (console.log(
+      "[debug] createContact payload:",
+      JSON.stringify({
+        name: parsed.contactName,
+        email: parsed.email,
+        phone: parsed.phone,
+        locationId,
+      }),
+    ),
+    await deps.ghl.createContact({
       name: parsed.contactName,
       email: parsed.email,
       phone: parsed.phone,

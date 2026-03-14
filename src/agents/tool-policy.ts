@@ -53,6 +53,7 @@ export function applyOwnerOnlyToolPolicy(tools: AnyAgentTool[], senderIsOwner: b
 
 export type ToolPolicyLike = {
   allow?: string[];
+  alsoAllow?: string[];
   deny?: string[];
 };
 
@@ -70,10 +71,11 @@ export type AllowlistResolution = {
 export function collectExplicitAllowlist(policies: Array<ToolPolicyLike | undefined>): string[] {
   const entries: string[] = [];
   for (const policy of policies) {
-    if (!policy?.allow) {
+    const combined = [...(policy?.allow ?? []), ...(policy?.alsoAllow ?? [])];
+    if (combined.length === 0) {
       continue;
     }
-    for (const value of policy.allow) {
+    for (const value of combined) {
       if (typeof value !== "string") {
         continue;
       }

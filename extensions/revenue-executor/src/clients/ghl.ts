@@ -96,12 +96,22 @@ export function createGhlClient(env: Env = process.env): GhlClient {
     },
 
     async createContact({ name, email, phone, locationId }) {
+      const nameParts = (name || "AI Lead").trim().split(/\s+/);
+      const firstName = nameParts[0] ?? "AI";
+      const lastName = nameParts.slice(1).join(" ") || "Lead";
+
       const payload = await requestJson({
         baseUrl,
         apiKey,
         path: createContactPath,
         method: "POST",
-        body: { name, email, phone, locationId },
+        body: {
+          locationId,
+          firstName,
+          lastName,
+          email: email || undefined,
+          phone: phone || undefined,
+        },
       });
 
       const id = (payload as { contact?: { id?: string }; id?: string }).contact?.id ||

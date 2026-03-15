@@ -129,6 +129,7 @@ export function createGhlClient(env: Env = process.env): GhlClient {
         monetaryValue: amount,
         locationId,
         pipelineId: requireEnv(env, "OPENCLAW_REVENUE_GHL_PIPELINE_ID"),
+        status: "open",
         ...(env.OPENCLAW_REVENUE_GHL_PIPELINE_STAGE_ID
           ? { pipelineStageId: env.OPENCLAW_REVENUE_GHL_PIPELINE_STAGE_ID }
           : {}),

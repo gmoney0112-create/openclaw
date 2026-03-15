@@ -85,6 +85,7 @@ export async function executeRevenueCommand(
       opportunityId = opp.id;
     } catch (error) {
       opportunityError = error instanceof Error ? error.message : String(error);
+      deps.logger?.warn(`[debug] createOpportunity error: ${opportunityError}`);
     }
 
   let paymentUrl: string | undefined;

@@ -81,6 +81,10 @@ type ConnectedTarget = {
   targetInfo: TargetInfo;
 };
 
+function isPageTarget(targetInfo: TargetInfo | undefined): boolean {
+  return (targetInfo?.type ?? "page") === "page";
+}
+
 const RELAY_AUTH_HEADER = "x-openclaw-relay-token";
 const DEFAULT_EXTENSION_RECONNECT_GRACE_MS = 20_000;
 const DEFAULT_EXTENSION_COMMAND_RECONNECT_WAIT_MS = 3_000;
@@ -479,8 +483,20 @@ export async function ensureChromeExtensionRelayServer(opts: {
         case "Browser.setDownloadBehavior":
           return {};
         case "Target.setAutoAttach":
-        case "Target.setDiscoverTargets":
-          return {};
+        case "Target.setDiscoverTargets": {
+          // Do not swallow target discovery commands: extension-backed sessions need
+          // real auto-attach semantics so OOPIF/cross-origin iframe targets are surfaced.
+          const id = nextExtensionId++;
+          return await sendToExtension({
+            id,
+            method: "forwardCDPCommand",
+            params: {
+              method: cmd.method,
+              sessionId: cmd.sessionId,
+              params: cmd.params,
+            },
+          });
+        }
         case "Target.getTargets":
           return {
             targetInfos: Array.from(connectedTargets.values()).map((t) => ({
@@ -504,8 +520,11 @@ export async function ensureChromeExtensionRelayServer(opts: {
               return { targetInfo: t.targetInfo };
             }
           }
-          const first = Array.from(connectedTargets.values())[0];
-          return { targetInfo: first?.targetInfo };
+          const firstPage = Array.from(connectedTargets.values()).find((t) =>
+            isPageTarget(t.targetInfo),
+          );
+          const firstAny = Array.from(connectedTargets.values())[0];
+          return { targetInfo: firstPage?.targetInfo ?? firstAny?.targetInfo };
         }
         case "Target.attachToTarget": {
           const params = (cmd.params ?? {}) as { targetId?: string };
@@ -622,15 +641,17 @@ export async function ensureChromeExtensionRelayServer(opts: {
 
       const listPaths = new Set(["/json", "/json/", "/json/list", "/json/list/"]);
       if (listPaths.has(path) && (req.method === "GET" || req.method === "PUT")) {
-        const list = Array.from(connectedTargets.values()).map((t) => ({
-          id: t.targetId,
-          type: t.targetInfo.type ?? "page",
-          title: t.targetInfo.title ?? "",
-          description: t.targetInfo.title ?? "",
-          url: t.targetInfo.url ?? "",
-          webSocketDebuggerUrl: cdpWsUrl,
-          devtoolsFrontendUrl: `/devtools/inspector.html?ws=${cdpWsUrl.replace("ws://", "")}`,
-        }));
+        const list = Array.from(connectedTargets.values())
+          .filter((t) => isPageTarget(t.targetInfo))
+          .map((t) => ({
+            id: t.targetId,
+            type: t.targetInfo.type ?? "page",
+            title: t.targetInfo.title ?? "",
+            description: t.targetInfo.title ?? "",
+            url: t.targetInfo.url ?? "",
+            webSocketDebuggerUrl: cdpWsUrl,
+            devtoolsFrontendUrl: `/devtools/inspector.html?ws=${cdpWsUrl.replace("ws://", "")}`,
+          }));
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(list));
         return;
@@ -808,10 +829,6 @@ export async function ensureChromeExtensionRelayServer(opts: {
 
           if (method === "Target.attachedToTarget") {
             const attached = (params ?? {}) as AttachedToTargetEvent;
-            const targetType = attached?.targetInfo?.type ?? "page";
-            if (targetType !== "page") {
-              return;
-            }
             if (attached?.sessionId && attached?.targetInfo?.targetId) {
               const prev = connectedTargets.get(attached.sessionId);
               const nextTargetId = attached.targetInfo.targetId;
@@ -862,7 +879,7 @@ export async function ensureChromeExtensionRelayServer(opts: {
             const changed = (params ?? {}) as { targetInfo?: { targetId?: string; type?: string } };
             const targetInfo = changed?.targetInfo;
             const targetId = targetInfo?.targetId;
-            if (targetId && (targetInfo?.type ?? "page") === "page") {
+            if (targetId) {
               for (const [sid, target] of connectedTargets) {
                 if (target.targetId !== targetId) {
                   continue;

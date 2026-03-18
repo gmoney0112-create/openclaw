@@ -615,6 +615,225 @@ describe("chrome extension relay server", () => {
     ext.close();
   });
 
+  it("forwards Target.setAutoAttach to extension instead of swallowing it", async () => {
+    const { port, ext } = await startRelayWithExtension();
+    const extQueue = createMessageQueue(ext);
+
+    const cdp = new WebSocket(`ws://127.0.0.1:${port}/cdp`, {
+      headers: relayAuthHeaders(`ws://127.0.0.1:${port}/cdp`),
+    });
+    await waitForOpen(cdp);
+    const cdpQueue = createMessageQueue(cdp);
+
+    cdp.send(
+      JSON.stringify({
+        id: 91,
+        method: "Target.setAutoAttach",
+        params: { autoAttach: true, waitForDebuggerOnStart: false, flatten: true },
+      }),
+    );
+
+    let forwardedId: number | null = null;
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const msg = JSON.parse(await extQueue.next()) as {
+        id?: number;
+        method?: string;
+        params?: { method?: string };
+      };
+      if (msg.method === "ping") {
+        ext.send(JSON.stringify({ method: "pong" }));
+        continue;
+      }
+      if (
+        msg.method === "forwardCDPCommand" &&
+        typeof msg.id === "number" &&
+        msg.params?.method === "Target.setAutoAttach"
+      ) {
+        forwardedId = msg.id;
+        ext.send(JSON.stringify({ id: msg.id, result: {} }));
+        break;
+      }
+    }
+    expect(forwardedId).not.toBeNull();
+
+    const res = JSON.parse(await cdpQueue.next(4_000)) as {
+      id?: number;
+      result?: unknown;
+      error?: { message?: string };
+    };
+    expect(res.id).toBe(91);
+    expect(res.error).toBeUndefined();
+    expect(res.result).toEqual({});
+
+    cdp.close();
+    ext.close();
+  });
+
+  it("tracks iframe targets for CDP while keeping /json/list page-only", async () => {
+    const { port, ext } = await startRelayWithExtension();
+
+    const cdp = new WebSocket(`ws://127.0.0.1:${port}/cdp`, {
+      headers: relayAuthHeaders(`ws://127.0.0.1:${port}/cdp`),
+    });
+    await waitForOpen(cdp);
+    const cdpQueue = createMessageQueue(cdp);
+
+    ext.send(
+      JSON.stringify({
+        method: "forwardCDPEvent",
+        params: {
+          method: "Target.attachedToTarget",
+          params: {
+            sessionId: "cb-tab-main",
+            targetInfo: {
+              targetId: "t-main",
+              type: "page",
+              title: "Checkout",
+              url: "https://merchant.example/checkout",
+            },
+            waitingForDebugger: false,
+          },
+        },
+      }),
+    );
+
+    ext.send(
+      JSON.stringify({
+        method: "forwardCDPEvent",
+        params: {
+          method: "Target.attachedToTarget",
+          params: {
+            sessionId: "cb-iframe-1",
+            targetInfo: {
+              targetId: "iframe-stripe-1",
+              type: "iframe",
+              title: "Stripe card frame",
+              url: "https://js.stripe.com/v3/elements-inner-card-123.html",
+            },
+            waitingForDebugger: false,
+          },
+        },
+      }),
+    );
+
+    const received: Array<{ method?: string; params?: unknown }> = [];
+    for (let i = 0; i < 2; i += 1) {
+      received.push(JSON.parse(await cdpQueue.next(4_000)) as never);
+    }
+
+    expect(received.some((evt) => evt.method === "Target.attachedToTarget")).toBe(true);
+    expect(
+      received.some(
+        (evt) =>
+          (evt.params as { targetInfo?: { type?: string } } | undefined)?.targetInfo?.type ===
+          "iframe",
+      ),
+    ).toBe(true);
+
+    cdp.send(JSON.stringify({ id: 92, method: "Target.getTargets" }));
+    const targetsResponse = JSON.parse(await cdpQueue.next(4_000)) as {
+      id?: number;
+      result?: { targetInfos?: Array<{ targetId?: string; type?: string }> };
+    };
+    expect(targetsResponse.id).toBe(92);
+    expect(
+      (targetsResponse.result?.targetInfos ?? []).some(
+        (target) => target.targetId === "iframe-stripe-1" && target.type === "iframe",
+      ),
+    ).toBe(true);
+
+    const list = (await fetch(`${cdpUrl}/json/list`, {
+      headers: relayAuthHeaders(cdpUrl),
+    }).then((r) => r.json())) as Array<{ id?: string }>;
+    expect(list.some((entry) => entry.id === "t-main")).toBe(true);
+    expect(list.some((entry) => entry.id === "iframe-stripe-1")).toBe(false);
+
+    cdp.close();
+    ext.close();
+  });
+
+  it("updates tracked iframe target metadata on Target.targetInfoChanged", async () => {
+    const { port, ext } = await startRelayWithExtension();
+
+    const cdp = new WebSocket(`ws://127.0.0.1:${port}/cdp`, {
+      headers: relayAuthHeaders(`ws://127.0.0.1:${port}/cdp`),
+    });
+    await waitForOpen(cdp);
+    const cdpQueue = createMessageQueue(cdp);
+
+    ext.send(
+      JSON.stringify({
+        method: "forwardCDPEvent",
+        params: {
+          method: "Target.attachedToTarget",
+          params: {
+            sessionId: "cb-iframe-meta",
+            targetInfo: {
+              targetId: "iframe-meta-1",
+              type: "iframe",
+              title: "Stripe card frame",
+              url: "https://js.stripe.com/v3/elements-inner-card-old.html",
+            },
+            waitingForDebugger: false,
+          },
+        },
+      }),
+    );
+
+    const firstAttach = JSON.parse(await cdpQueue.next(4_000)) as {
+      method?: string;
+      params?: { targetInfo?: { targetId?: string; url?: string; type?: string } };
+    };
+    expect(firstAttach.method).toBe("Target.attachedToTarget");
+    expect(firstAttach.params?.targetInfo?.targetId).toBe("iframe-meta-1");
+    expect(firstAttach.params?.targetInfo?.type).toBe("iframe");
+
+    ext.send(
+      JSON.stringify({
+        method: "forwardCDPEvent",
+        params: {
+          method: "Target.targetInfoChanged",
+          params: {
+            targetInfo: {
+              targetId: "iframe-meta-1",
+              type: "iframe",
+              title: "Stripe card frame updated",
+              url: "https://js.stripe.com/v3/elements-inner-card-new.html",
+            },
+          },
+        },
+      }),
+    );
+
+    const changedEvent = JSON.parse(await cdpQueue.next(4_000)) as {
+      method?: string;
+      params?: { targetInfo?: { targetId?: string; url?: string; title?: string } };
+    };
+    expect(changedEvent.method).toBe("Target.targetInfoChanged");
+    expect(changedEvent.params?.targetInfo?.targetId).toBe("iframe-meta-1");
+
+    cdp.send(JSON.stringify({ id: 193, method: "Target.getTargets" }));
+    const targetsResponse = JSON.parse(await cdpQueue.next(4_000)) as {
+      id?: number;
+      result?: {
+        targetInfos?: Array<{ targetId?: string; type?: string; url?: string; title?: string }>;
+      };
+    };
+    expect(targetsResponse.id).toBe(193);
+    expect(
+      (targetsResponse.result?.targetInfos ?? []).some(
+        (target) =>
+          target.targetId === "iframe-meta-1" &&
+          target.type === "iframe" &&
+          target.url === "https://js.stripe.com/v3/elements-inner-card-new.html" &&
+          target.title === "Stripe card frame updated",
+      ),
+    ).toBe(true);
+
+    cdp.close();
+    ext.close();
+  });
+
   it(
     "tracks attached page targets and exposes them via CDP + /json/list",
     async () => {

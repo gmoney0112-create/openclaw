@@ -13,6 +13,7 @@ import { resolveAgentAvatar } from "../agents/identity-avatar.js";
 import { CANVAS_WS_PATH, handleA2uiHttpRequest } from "../canvas-host/a2ui.js";
 import type { CanvasHostHandler } from "../canvas-host/server.js";
 import { loadConfig } from "../config/config.js";
+import { getStateStoreHealth } from "../infra/state-store.js";
 import type { createSubsystemLogger } from "../logging/subsystem.js";
 import { safeEqualSecret } from "../security/secret-equal.js";
 import {
@@ -252,7 +253,12 @@ async function handleGatewayProbeRequest(
     }
   } else {
     statusCode = 200;
-    body = JSON.stringify({ ok: true, status });
+    body = JSON.stringify({
+      ok: true,
+      status,
+      uptimeMs: Math.round(process.uptime() * 1000),
+      redis: getStateStoreHealth().redis,
+    });
   }
   res.statusCode = statusCode;
   res.end(method === "HEAD" ? undefined : body);

@@ -11,6 +11,7 @@ import { buildGatewayConnectionDetails, callGateway } from "../gateway/call.js";
 import { info } from "../globals.js";
 import { isTruthyEnvValue } from "../infra/env.js";
 import { formatErrorMessage } from "../infra/errors.js";
+import { getStateStoreHealth } from "../infra/state-store.js";
 import {
   type HeartbeatSummary,
   resolveHeartbeatSummaryForAgent,
@@ -69,6 +70,11 @@ export type HealthSummary = {
       updatedAt: number | null;
       age: number | null;
     }>;
+  };
+  runtime: {
+    redis: "ok" | "error" | "disabled";
+    fallback: boolean;
+    detail?: string;
   };
 };
 
@@ -589,6 +595,7 @@ export async function getHealthSnapshot(params?: {
       count: sessions.count,
       recent: sessions.recent,
     },
+    runtime: getStateStoreHealth(),
   };
 
   return summary;

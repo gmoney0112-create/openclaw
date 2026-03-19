@@ -19,13 +19,17 @@ vi.mock("../config/config.js", async (importOriginal) => {
   };
 });
 
-vi.mock("../config/sessions.js", () => ({
-  resolveStorePath: () => "/tmp/sessions.json",
-  loadSessionStore: () => testStore,
-  readSessionUpdatedAt: vi.fn(() => undefined),
-  recordSessionMetaFromInbound: vi.fn().mockResolvedValue(undefined),
-  updateLastRoute: vi.fn().mockResolvedValue(undefined),
-}));
+vi.mock("../config/sessions.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../config/sessions.js")>();
+  return {
+    ...actual,
+    resolveStorePath: () => "/tmp/sessions.json",
+    loadSessionStore: () => testStore,
+    readSessionUpdatedAt: vi.fn(() => undefined),
+    recordSessionMetaFromInbound: vi.fn().mockResolvedValue(undefined),
+    updateLastRoute: vi.fn().mockResolvedValue(undefined),
+  };
+});
 
 vi.mock("../../extensions/whatsapp/src/auth-store.js", () => ({
   webAuthExists: vi.fn(async () => true),
@@ -140,6 +144,8 @@ describe("getHealthSnapshot", () => {
     };
     expect(telegram.configured).toBe(false);
     expect(telegram.probe).toBeUndefined();
+    expect(snap.runtime.redis).toBe("disabled");
+    expect(snap.runtime.fallback).toBe(true);
     expect(snap.sessions.count).toBe(2);
     expect(snap.sessions.recent[0]?.key).toBe("foo");
   });

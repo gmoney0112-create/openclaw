@@ -233,6 +233,28 @@ describe("runCronIsolatedAgentTurn", () => {
     });
   });
 
+  it("treats trailing warning payloads as non-fatal when a successful payload exists", async () => {
+    await withTempHome(async (home) => {
+      mockEmbeddedPayloads([
+        {
+          text: "Revenue record created successfully.",
+          isError: false,
+        },
+        {
+          text: "Warning: trailing tool warning",
+          isError: true,
+        },
+      ]);
+      const { res } = await runCronTurn(home, {
+        jobPayload: DEFAULT_AGENT_TURN_PAYLOAD,
+        mockTexts: null,
+      });
+
+      expect(res.status).toBe("ok");
+      expect(res.summary).toBe("Revenue record created successfully.");
+    });
+  });
+
   it("keeps error status when run-level error accompanies post-error text", async () => {
     await withTempHome(async (home) => {
       vi.mocked(runEmbeddedPiAgent).mockResolvedValue({

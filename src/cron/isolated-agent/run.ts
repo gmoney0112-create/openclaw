@@ -815,17 +815,13 @@ export async function runCronIsolatedAgentTurn(params: {
   const deliveryBestEffort = resolveCronDeliveryBestEffort(params.job);
   const hasErrorPayload = payloads.some((payload) => payload?.isError === true);
   const runLevelError = finalRunResult.meta?.error;
-  const lastErrorPayloadIndex = payloads.findLastIndex((payload) => payload?.isError === true);
-  const hasSuccessfulPayloadAfterLastError =
+  const hasSuccessfulPayload =
     !runLevelError &&
-    lastErrorPayloadIndex >= 0 &&
-    payloads
-      .slice(lastErrorPayloadIndex + 1)
-      .some((payload) => payload?.isError !== true && Boolean(payload?.text?.trim()));
-  // Tool wrappers can emit transient/false-positive error payloads before a valid final
-  // assistant payload.  Only treat payload errors as recoverable when (a) the run itself
-  // did not report a model/context-level error and (b) a non-error payload follows.
-  const hasFatalErrorPayload = hasErrorPayload && !hasSuccessfulPayloadAfterLastError;
+    payloads.some((payload) => payload?.isError !== true && Boolean(payload?.text?.trim()));
+  // Tool wrappers can emit transient/false-positive error payloads around an otherwise
+  // successful run. If the run itself did not report a model/context-level error and we
+  // have any real user-facing payload, keep the run status as ok.
+  const hasFatalErrorPayload = hasErrorPayload && !hasSuccessfulPayload;
   const lastErrorPayloadText = [...payloads]
     .toReversed()
     .find((payload) => payload?.isError === true && Boolean(payload?.text?.trim()))

@@ -72,6 +72,7 @@ import {
 import type { ReadinessChecker } from "./server/readiness.js";
 import type { GatewayWsClient } from "./server/ws-types.js";
 import { handleToolsInvokeHttpRequest } from "./tools-invoke-http.js";
+import { guardInput } from "../security/input-guard.js";
 
 type SubsystemLogger = ReturnType<typeof createSubsystemLogger>;
 
@@ -105,6 +106,8 @@ function sendJson(res: ServerResponse, status: number, body: unknown) {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.end(JSON.stringify(body));
 }
+
+const BLOCKED_COMMAND_ERROR = "Command blocked — please rephrase.";
 
 const GATEWAY_PROBE_STATUS_BY_PATH = new Map<string, "live" | "ready">([
   ["/health", "live"],
@@ -553,6 +556,12 @@ export function createHooksRequestHandler(
         sendJson(res, 400, { ok: false, error: normalized.error });
         return true;
       }
+      const guard = guardInput(normalized.value.message);
+      if (!guard.safe) {
+        logHooks.warn(`blocked hook agent input: reason=${guard.reason} path=${url.pathname}`);
+        sendJson(res, 400, { ok: false, error: BLOCKED_COMMAND_ERROR, reason: guard.reason });
+        return true;
+      }
       if (!isHookAgentAllowed(hooksConfig, normalized.value.agentId)) {
         sendJson(res, 400, { ok: false, error: getHookAgentPolicyError() });
         return true;
@@ -630,6 +639,12 @@ export function createHooksRequestHandler(
               mode: mapped.action.mode,
             });
             sendJson(res, 200, { ok: true, mode: mapped.action.mode });
+            return true;
+          }
+          const guard = guardInput(mapped.action.message);
+          if (!guard.safe) {
+            logHooks.warn(`blocked mapped hook input: reason=${guard.reason} path=${url.pathname}`);
+            sendJson(res, 400, { ok: false, error: BLOCKED_COMMAND_ERROR, reason: guard.reason });
             return true;
           }
           const channel = resolveHookChannel(mapped.action.channel);

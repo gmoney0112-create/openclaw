@@ -12,6 +12,7 @@ import type { ConsoleStyle } from "./console.js";
 import { resolveEnvLogLevelOverride } from "./env-log-level.js";
 import { type LogLevel, levelToMinLevel, normalizeLogLevel } from "./levels.js";
 import { resolveNodeRequireFromMeta } from "./node-require.js";
+import { scrubPiiValue } from "./pii-scrub.js";
 import { loggingState } from "./state.js";
 import { formatLocalIsoWithOffset } from "./timestamps.js";
 
@@ -77,7 +78,7 @@ function attachExternalTransport(logger: TsLogger<LogObj>, transport: LogTranspo
       return;
     }
     try {
-      transport(logObj as LogTransportRecord);
+      transport(scrubPiiValue(logObj as LogTransportRecord));
     } catch {
       // never block on logging failures
     }
@@ -180,7 +181,7 @@ function buildLogger(settings: ResolvedSettings): TsLogger<LogObj> {
   logger.attachTransport((logObj: LogObj) => {
     try {
       const time = formatLocalIsoWithOffset(logObj.date ?? new Date());
-      const line = JSON.stringify({ ...logObj, time });
+      const line = JSON.stringify(scrubPiiValue({ ...logObj, time }));
       const payload = `${line}\n`;
       const payloadBytes = Buffer.byteLength(payload, "utf8");
       const nextBytes = currentFileBytes + payloadBytes;

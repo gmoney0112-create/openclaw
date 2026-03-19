@@ -2,6 +2,7 @@ import type { ToolLoopDetectionConfig } from "../config/types.tools.js";
 import type { SessionState } from "../logging/diagnostic-session-state.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import { getGlobalHookRunner } from "../plugins/hook-runner-global.js";
+import { guardOutputToolCall } from "../security/output-guard.js";
 import { createLazyRuntimeSurface } from "../shared/lazy-runtime.js";
 import { isPlainObject } from "../utils.js";
 import { normalizeToolName } from "./tool-policy.js";
@@ -89,11 +90,24 @@ async function recordLoopOutcome(args: {
 export async function runBeforeToolCallHook(args: {
   toolName: string;
   params: unknown;
+  schema?: unknown;
   toolCallId?: string;
   ctx?: HookContext;
 }): Promise<HookOutcome> {
   const toolName = normalizeToolName(args.toolName || "tool");
   const params = args.params;
+  const outputGuard = guardOutputToolCall({
+    toolName,
+    args: params,
+    schema: args.schema,
+  });
+  if (!outputGuard.valid) {
+    log.warn(`blocking ${toolName} tool call: ${outputGuard.reason}`);
+    return {
+      blocked: true,
+      reason: `Tool call rejected: ${outputGuard.reason}`,
+    };
+  }
 
   if (args.ctx?.sessionKey) {
     const { getDiagnosticSessionState, logToolLoopAction, detectToolCallLoop, recordToolCall } =
@@ -206,6 +220,7 @@ export function wrapToolWithBeforeToolCallHook(
       const outcome = await runBeforeToolCallHook({
         toolName,
         params,
+        schema: tool.parameters,
         toolCallId,
         ctx,
       });

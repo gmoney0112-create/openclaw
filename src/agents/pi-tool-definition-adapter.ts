@@ -152,6 +152,7 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
             const hookOutcome = await runBeforeToolCallHook({
               toolName: name,
               params,
+              schema: tool.parameters,
               toolCallId,
             });
             if (hookOutcome.blocked) {
@@ -212,6 +213,7 @@ export function toClientToolDefinitions(
         const outcome = await runBeforeToolCallHook({
           toolName: func.name,
           params,
+          schema: func.parameters,
           toolCallId,
           ctx: hookContext,
         });

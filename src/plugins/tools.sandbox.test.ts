@@ -71,6 +71,7 @@ describe("resolvePluginTools sandbox wrapping", () => {
 
     const env = {
       GHL_API_KEY: "ghl-key",
+      GHL_READ_API_KEY: "ghl-read-key",
       GHL_LOCATION_ID: "loc-123",
       OPENAI_API_KEY: "openai-key",
       PATH: "/usr/bin",
@@ -109,6 +110,7 @@ describe("resolvePluginTools sandbox wrapping", () => {
             },
             secrets: {
               GHL_API_KEY: "ghl-key",
+              GHL_READ_API_KEY: "ghl-read-key",
               GHL_LOCATION_ID: "loc-123",
               OPENAI_API_KEY: "openai-key",
             },

@@ -41,6 +41,7 @@ const NON_SECRET_PLUGIN_ENV_KEYS = new Set([
 const PLUGIN_SECRET_ENV_KEYS: Record<string, string[]> = {
   "revenue-executor": [
     "GHL_API_KEY",
+    "GHL_READ_API_KEY",
     "GHL_LOCATION_ID",
     "OPENAI_API_KEY",
     "STRIPE_API_KEY",

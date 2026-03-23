@@ -1,3 +1,7 @@
+param(
+  [switch]$CheckBuildPrereqs
+)
+
 $ErrorActionPreference = "Stop"
 
 $repoRoot = "C:\Users\gmone\.openclaw\workspace\_fork_main_clone"
@@ -18,6 +22,42 @@ $services = @(
 $logDir = Join-Path $repoRoot "logs\super-upgrade"
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
+function Invoke-BuildPrereqCheck {
+  param(
+    [string]$ServiceName,
+    [string]$WorkingDir
+  )
+
+  $packageJsonPath = Join-Path $WorkingDir "package.json"
+  if (-not (Test-Path $packageJsonPath)) {
+    Write-Host "  [$ServiceName] No package.json found; skipping build check."
+    return
+  }
+
+  $packageJson = Get-Content -Path $packageJsonPath -Raw | ConvertFrom-Json
+  $mainEntry = if ($packageJson.main) { [string]$packageJson.main } else { "dist/main.js" }
+  $mainPath = Join-Path $WorkingDir $mainEntry
+
+  if (Test-Path $mainPath) {
+    Write-Host "  [$ServiceName] Build artifact present: $mainEntry"
+    return
+  }
+
+  $hasBuildScript = $packageJson.scripts -and ($packageJson.scripts.PSObject.Properties.Name -contains "build")
+  if (-not $hasBuildScript) {
+    Write-Host "  [$ServiceName] Missing artifact ($mainEntry) and no build script; continuing without build."
+    return
+  }
+
+  Write-Host "  [$ServiceName] Missing artifact ($mainEntry). Running npm run build..."
+  Push-Location $WorkingDir
+  try {
+    & npm.cmd run build
+  } finally {
+    Pop-Location
+  }
+}
+
 foreach ($service in $services) {
   $workingDir = Join-Path $repoRoot $service.Path
   $stdoutPath = Join-Path $logDir "$($service.Name).out.log"
@@ -26,6 +66,10 @@ foreach ($service in $services) {
 
   if (Test-Path $pidPath) {
     Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue
+  }
+
+  if ($CheckBuildPrereqs) {
+    Invoke-BuildPrereqCheck -ServiceName $service.Name -WorkingDir $workingDir
   }
 
   Write-Host "Starting $($service.Name) on port $($service.Port)..."

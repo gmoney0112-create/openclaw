@@ -49,10 +49,26 @@ function Invoke-BuildPrereqCheck {
     return
   }
 
+  $nodeModulesPath = Join-Path $WorkingDir "node_modules"
+  if (-not (Test-Path $nodeModulesPath)) {
+    Write-Host "  [$ServiceName] node_modules missing. Running npm install --ignore-scripts..."
+    Push-Location $WorkingDir
+    try {
+      & npm.cmd install --ignore-scripts
+    } catch {
+      Write-Warning "[$ServiceName] npm install failed: $($_.Exception.Message)"
+      return
+    } finally {
+      Pop-Location
+    }
+  }
+
   Write-Host "  [$ServiceName] Missing artifact ($mainEntry). Running npm run build..."
   Push-Location $WorkingDir
   try {
     & npm.cmd run build
+  } catch {
+    Write-Warning "[$ServiceName] npm run build failed: $($_.Exception.Message)"
   } finally {
     Pop-Location
   }

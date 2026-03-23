@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { FallbackChain } from "./src/fallback-chain.js";
 import { ModelSelector } from "./src/model-selector.js";
 import { ProviderAdapters, type ProviderClient } from "./src/provider-adapters.js";
@@ -172,7 +173,16 @@ export async function startServer(params?: {
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
+function isDirectExecution(): boolean {
+  const entry = process.argv[1];
+  if (!entry) {
+    return false;
+  }
+  const entryUrl = pathToFileURL(resolve(entry)).href;
+  return import.meta.url.toLowerCase() === entryUrl.toLowerCase();
+}
+
+if (isDirectExecution()) {
   const { port } = await startServer();
   console.log(`llm-router listening on :${port}`);
 }

@@ -24,18 +24,18 @@ if (-not (Test-Path $logDir)) {
 
 function Wait-ForExit {
   param(
-    [int]$Pid,
+    [int]$TargetProcessId,
     [int]$TimeoutMs = 5000
   )
 
   $sw = [System.Diagnostics.Stopwatch]::StartNew()
   while ($sw.ElapsedMilliseconds -lt $TimeoutMs) {
-    if (-not (Get-Process -Id $Pid -ErrorAction SilentlyContinue)) {
+    if (-not (Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue)) {
       return $true
     }
     Start-Sleep -Milliseconds 250
   }
-  return -not (Get-Process -Id $Pid -ErrorAction SilentlyContinue)
+  return -not (Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue)
 }
 
 $summary = @()
@@ -81,7 +81,7 @@ foreach ($service in $services) {
   Write-Host "Stopping $($service.Name) (PID $pidValue) gracefully..."
   & taskkill.exe /PID $pidValue /T | Out-Null
 
-  if (Wait-ForExit -Pid $pidValue -TimeoutMs 6000) {
+  if (Wait-ForExit -TargetProcessId $pidValue -TimeoutMs 6000) {
     Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue
     $summary += [PSCustomObject]@{
       service = $service.Name
@@ -95,7 +95,7 @@ foreach ($service in $services) {
   Write-Host "Force killing $($service.Name) (PID $pidValue)..."
   & taskkill.exe /PID $pidValue /T /F | Out-Null
 
-  if (Wait-ForExit -Pid $pidValue -TimeoutMs 4000) {
+  if (Wait-ForExit -TargetProcessId $pidValue -TimeoutMs 4000) {
     Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue
     $summary += [PSCustomObject]@{
       service = $service.Name

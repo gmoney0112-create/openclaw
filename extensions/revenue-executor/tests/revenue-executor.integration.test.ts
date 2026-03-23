@@ -63,8 +63,8 @@ async function run(): Promise<void> {
     }
     return { status: "ok" };
   });
-  const browser = await withStubServer(() => ({ status: "ok" }));
-  const workflow = await withStubServer(() => ({ status: "ok" }));
+  const browser = await withStubServer((_method, _path, body) => ({ status: "ok", request: body }));
+  const workflow = await withStubServer((_method, _path, body) => ({ status: "ok", request: body }));
   const agent = await withStubServer(() => ({ status: "ok" }));
   const skills = await withStubServer(() => ({ status: "ok" }));
   const research = await withStubServer(() => ({ status: "ok" }));
@@ -99,6 +99,42 @@ async function run(): Promise<void> {
   assert.equal(llm.calls[0]?.path, "/llm/complete");
   assert.equal(memory.calls[1]?.path, "/memory/store");
   assert.match(JSON.stringify(llm.calls[0]?.body), /Existing context/);
+
+  const workflowResult = await executor.execute({
+    action: "workflow_trigger",
+    session_id: "session-2",
+    payload: {
+      workflow_name: "create_ghl_contact",
+      payload: {
+        email: "jane@example.com",
+        name: "Jane Smith"
+      }
+    }
+  });
+  assert.equal(workflowResult.action, "workflow_trigger");
+  assert.equal(workflow.calls[0]?.path, "/workflow/trigger");
+  assert.equal(
+    (workflow.calls[0]?.body as { workflow_name?: string } | undefined)?.workflow_name,
+    "create_ghl_contact"
+  );
+
+  const browserResult = await executor.execute({
+    action: "browser_action",
+    session_id: "session-3",
+    payload: {
+      sessionId: "browser-session-1",
+      action: "scrape_data",
+      params: {
+        selector: "#price"
+      }
+    }
+  });
+  assert.equal(browserResult.action, "browser_action");
+  assert.equal(browser.calls[0]?.path, "/browser/action");
+  assert.equal(
+    (browser.calls[0]?.body as { sessionId?: string } | undefined)?.sessionId,
+    "browser-session-1"
+  );
 
   const health = await executor.health();
   assert.equal(health.status, "ok");

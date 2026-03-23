@@ -85,6 +85,7 @@ apps/ios/*.mobileprovision
 .local/
 docs/.local/
 tmp/
+logs/super-upgrade/
 IDENTITY.md
 USER.md
 .tgz

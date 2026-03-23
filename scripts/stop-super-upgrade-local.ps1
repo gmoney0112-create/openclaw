@@ -79,7 +79,7 @@ foreach ($service in $services) {
   }
 
   Write-Host "Stopping $($service.Name) (PID $pidValue) gracefully..."
-  & taskkill.exe /PID $pidValue /T | Out-Null
+  & taskkill.exe /PID $pidValue /T *> $null
 
   if (Wait-ForExit -TargetProcessId $pidValue -TimeoutMs 6000) {
     Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue
@@ -93,7 +93,7 @@ foreach ($service in $services) {
   }
 
   Write-Host "Force killing $($service.Name) (PID $pidValue)..."
-  & taskkill.exe /PID $pidValue /T /F | Out-Null
+  & taskkill.exe /PID $pidValue /T /F *> $null
 
   if (Wait-ForExit -TargetProcessId $pidValue -TimeoutMs 4000) {
     Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue

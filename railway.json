@@ -1,0 +1,6 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "deploy": {
+    "startCommand": "sh -lc 'mkdir -p /home/node/.openclaw && node openclaw.mjs config set gateway.controlUi.allowedOrigins \"[\\\"https://openclaw-production-56fa.up.railway.app\\\"]\" && node openclaw.mjs gateway --allow-unconfigured --bind lan --port 8080'"
+  }
+}

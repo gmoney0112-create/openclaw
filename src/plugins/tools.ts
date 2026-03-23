@@ -21,7 +21,9 @@ const PLUGIN_SANDBOX_ALLOWLISTS: Record<string, string[]> = {
     "services.leadconnectorhq.com",
     "api.stripe.com",
     "127.0.0.1",
+    "127.0.0.1:3103",
     "localhost",
+    "localhost:3103",
   ],
 };
 
@@ -39,6 +41,7 @@ const NON_SECRET_PLUGIN_ENV_KEYS = new Set([
   "TMP",
   "TEMP",
   "USERPROFILE",
+  "WORKFLOW_ENGINE_URL",
 ]);
 
 const PLUGIN_SECRET_ENV_KEYS: Record<string, string[]> = {

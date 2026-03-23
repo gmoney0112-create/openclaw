@@ -27,6 +27,7 @@ const PLUGIN_SANDBOX_ALLOWLISTS: Record<string, string[]> = {
     "127.0.0.1:3106",
     "127.0.0.1:3107",
     "127.0.0.1:3108",
+    "127.0.0.1:3109",
     "localhost",
     "localhost:3103",
     "localhost:3104",
@@ -34,6 +35,7 @@ const PLUGIN_SANDBOX_ALLOWLISTS: Record<string, string[]> = {
     "localhost:3106",
     "localhost:3107",
     "localhost:3108",
+    "localhost:3109",
   ],
 };
 
@@ -57,6 +59,7 @@ const NON_SECRET_PLUGIN_ENV_KEYS = new Set([
   "SKILL_LOADER_URL",
   "VOICE_OPERATOR_URL",
   "WORKFLOW_ENGINE_URL",
+  "AUTO_DEPLOY",
 ]);
 
 const PLUGIN_SECRET_ENV_KEYS: Record<string, string[]> = {

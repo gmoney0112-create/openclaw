@@ -22,15 +22,24 @@ foreach ($service in $services) {
   $workingDir = Join-Path $repoRoot $service.Path
   $stdoutPath = Join-Path $logDir "$($service.Name).out.log"
   $stderrPath = Join-Path $logDir "$($service.Name).err.log"
+  $pidPath = Join-Path $logDir "$($service.Name).pid"
+
+  if (Test-Path $pidPath) {
+    Remove-Item -Path $pidPath -Force -ErrorAction SilentlyContinue
+  }
 
   Write-Host "Starting $($service.Name) on port $($service.Port)..."
-  Start-Process `
+  $process = Start-Process `
     -FilePath "npm.cmd" `
     -ArgumentList "start" `
     -WorkingDirectory $workingDir `
     -RedirectStandardOutput $stdoutPath `
     -RedirectStandardError $stderrPath `
-    -WindowStyle Hidden | Out-Null
+    -WindowStyle Hidden `
+    -PassThru
+
+  $process.Id | Out-File -FilePath $pidPath -Encoding ascii -NoNewline
+  Write-Host "  PID $($process.Id) -> $pidPath"
 }
 
 Write-Host ""

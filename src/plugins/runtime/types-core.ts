@@ -73,6 +73,9 @@ export type PluginRuntimeCore = {
     createMemoryGetTool: typeof import("../../agents/tools/memory-tool.js").createMemoryGetTool;
     createMemorySearchTool: typeof import("../../agents/tools/memory-tool.js").createMemorySearchTool;
     registerMemoryCli: typeof import("../../cli/memory-cli.js").registerMemoryCli;
+    revenueExecutorExecute: typeof import("./runtime-revenue-executor.js").revenueExecutorExecute;
+    revenueExecutorActions: typeof import("./runtime-revenue-executor.js").revenueExecutorActions;
+    revenueExecutorHealth: typeof import("./runtime-revenue-executor.js").revenueExecutorHealth;
   };
   events: {
     onAgentEvent: typeof import("../../infra/agent-events.js").onAgentEvent;

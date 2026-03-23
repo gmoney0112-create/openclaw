@@ -1,5 +1,10 @@
 import { createMemoryGetTool, createMemorySearchTool } from "../../agents/tools/memory-tool.js";
 import { registerMemoryCli } from "../../cli/memory-cli.js";
+import {
+  revenueExecutorActions,
+  revenueExecutorExecute,
+  revenueExecutorHealth,
+} from "./runtime-revenue-executor.js";
 import type { PluginRuntime } from "./types.js";
 
 export function createRuntimeTools(): PluginRuntime["tools"] {
@@ -7,5 +12,8 @@ export function createRuntimeTools(): PluginRuntime["tools"] {
     createMemoryGetTool,
     createMemorySearchTool,
     registerMemoryCli,
+    revenueExecutorActions,
+    revenueExecutorExecute,
+    revenueExecutorHealth,
   };
 }

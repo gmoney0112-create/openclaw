@@ -22,8 +22,10 @@ const PLUGIN_SANDBOX_ALLOWLISTS: Record<string, string[]> = {
     "api.stripe.com",
     "127.0.0.1",
     "127.0.0.1:3103",
+    "127.0.0.1:3104",
     "localhost",
     "localhost:3103",
+    "localhost:3104",
   ],
 };
 
@@ -41,6 +43,7 @@ const NON_SECRET_PLUGIN_ENV_KEYS = new Set([
   "TMP",
   "TEMP",
   "USERPROFILE",
+  "MULTI_AGENT_URL",
   "WORKFLOW_ENGINE_URL",
 ]);
 

@@ -20,11 +20,14 @@ const PLUGIN_SANDBOX_ALLOWLISTS: Record<string, string[]> = {
     "api.gohighlevel.com",
     "services.leadconnectorhq.com",
     "api.stripe.com",
+    "127.0.0.1",
+    "localhost",
   ],
 };
 
 const NON_SECRET_PLUGIN_ENV_KEYS = new Set([
   "APPDATA",
+  "BROWSER_CLUSTER_URL",
   "HOME",
   "LOCALAPPDATA",
   "NODE_ENV",

@@ -27,9 +27,12 @@ Patch shape:
 
 Playwright upgrades / reinstalls may overwrite the bundled driver file. If the warning returns, re-run:
 
-- `workspace/infra/scripts/patch-playwright-url-api.ps1`
+- `infra/scripts/patch-playwright-url-api.ps1`
 
 Then verify:
 
-- `workspace/infra/scripts/check-playwright-dep0169.ps1`
+- `infra/scripts/check-playwright-dep0169.ps1`
 
+See also:
+
+- `infra/README.md`

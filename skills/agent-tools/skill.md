@@ -36,6 +36,14 @@ Complete suite of agent tools for content creation, publishing, and distribution
 - Marketing content
 - Emergency documentation videos
 
+### 4. OpenManus
+**Purpose:** Cloud task execution and offloaded multi-step analysis
+**Use Cases:**
+- Lead segmentation and labeling
+- Persistent analysis tasks
+- Async research or planning handoffs
+- Manus-backed AI COO workflows
+
 ## Quick Start
 
 ### Installation

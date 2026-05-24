@@ -1,0 +1,36 @@
+{
+  "id": "soul-prosperity",
+  "name": "Soul Prosperity",
+  "description": "AI-powered offer-ladder sales bot for the Soul Prosperity book series.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["anthropicApiKey"],
+    "properties": {
+      "anthropicApiKey": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Anthropic API key for the sales bot."
+      },
+      "allowedOrigins": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "CORS origins allowed to call the chat endpoint (e.g. your GitHub Pages domain)."
+      },
+      "offerUrls": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "freebie":     { "type": "string" },
+          "ebook":       { "type": "string" },
+          "audiobook":   { "type": "string" },
+          "paperback":   { "type": "string" },
+          "course":      { "type": "string" },
+          "skoolMonthly":{ "type": "string" },
+          "skoolAnnual": { "type": "string" },
+          "lifetime":    { "type": "string" }
+        }
+      }
+    }
+  }
+}

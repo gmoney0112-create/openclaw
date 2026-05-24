@@ -1,0 +1,21 @@
+{
+  "name": "@openclaw/soul-prosperity",
+  "version": "2026.5.24",
+  "private": true,
+  "description": "Soul Prosperity offer-ladder sales bot plugin",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.73.0"
+  },
+  "devDependencies": {
+    "@openclaw/plugin-sdk": "workspace:*"
+  },
+  "openclaw": {
+    "bundle": {
+      "stageRuntimeDependencies": true
+    },
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

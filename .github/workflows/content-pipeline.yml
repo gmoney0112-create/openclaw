@@ -1,0 +1,90 @@
+name: Content Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Content topic (e.g. "AI productivity tools 2026")'
+        required: true
+        type: string
+      format:
+        description: 'Video format'
+        required: true
+        type: choice
+        default: both
+        options:
+          - both
+          - short
+          - long
+      skip_assets:
+        description: 'Skip Higgsfield/Remotion (faster, no video generation)'
+        required: false
+        type: boolean
+        default: false
+      skip_distribute:
+        description: 'Skip Vercel/Resend/Notion distribution'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  run-pipeline:
+    name: 'Pipeline: ${{ inputs.topic }} (${{ inputs.format }})'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: content-stack/package.json
+
+      - name: Install system tools (ffmpeg + yt-dlp)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          pip3 install -q yt-dlp
+
+      - name: Install npm dependencies
+        run: npm install
+        working-directory: content-stack
+
+      - name: Run content pipeline
+        env:
+          # Required
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: claude-opus-4-8
+          # Optional — add these secrets in repo Settings → Secrets to enable each phase
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          APIFY_API_KEY: ${{ secrets.APIFY_API_KEY }}
+          HIGGSFIELD_API_KEY: ${{ secrets.HIGGSFIELD_API_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_CALENDAR_DATABASE_ID: ${{ secrets.NOTION_CALENDAR_DATABASE_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          OUTPUT_DIR: ./output
+        run: |
+          SKIP_FLAGS=""
+          [ "${{ inputs.skip_assets }}" = "true" ] && SKIP_FLAGS="$SKIP_FLAGS --skip-assets"
+          [ "${{ inputs.skip_distribute }}" = "true" ] && SKIP_FLAGS="$SKIP_FLAGS --skip-distribute"
+
+          npx tsx src/index.ts run "${{ inputs.topic }}" \
+            --format "${{ inputs.format }}" \
+            $SKIP_FLAGS
+        working-directory: content-stack
+
+      - name: Upload output artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: content-${{ github.run_number }}-${{ inputs.format }}
+          path: content-stack/output/
+          retention-days: 30
+          if-no-files-found: warn

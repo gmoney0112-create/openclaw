@@ -16,6 +16,7 @@ import type {
   PluginInteractiveTelegramHandlerContext,
 } from "../plugins/types.js";
 
+export { createDedupeCache, resolveGlobalDedupeCache } from "../infra/dedupe.js";
 export type {
   AnyAgentTool,
   MediaUnderstandingProviderPlugin,

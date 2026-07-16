@@ -1,7 +1,5 @@
-export {
-  buildChannelConfigSchema,
-  TelegramConfigSchema,
-} from "openclaw/plugin-sdk/channel-config-schema";
+export { buildChannelConfigSchema } from "openclaw/plugin-sdk/channel-config-schema";
+export { TelegramConfigSchema } from "openclaw/plugin-sdk/telegram-core";
 export {
   normalizeTelegramCommandDescription,
   normalizeTelegramCommandName,

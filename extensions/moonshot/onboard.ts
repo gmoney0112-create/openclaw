@@ -9,6 +9,7 @@ import {
   MOONSHOT_DEFAULT_MODEL_ID,
 } from "./provider-catalog.js";
 export const MOONSHOT_DEFAULT_MODEL_REF = `moonshot/${MOONSHOT_DEFAULT_MODEL_ID}`;
+export { MOONSHOT_BASE_URL, MOONSHOT_CN_BASE_URL };
 
 const moonshotPresetAppliers = createDefaultModelPresetAppliers<[string]>({
   primaryModelRef: MOONSHOT_DEFAULT_MODEL_REF,

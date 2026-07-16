@@ -64,3 +64,45 @@ export function listConfiguredAccountIds(params: {
   }
   return [...ids];
 }
+
+/** Combine configured account IDs with an implicit default account ID. */
+export function listCombinedAccountIds(params: {
+  configuredAccountIds: string[];
+  implicitAccountId?: string;
+}): string[] {
+  const ids = new Set(params.configuredAccountIds);
+  if (params.implicitAccountId && !ids.has(params.implicitAccountId)) {
+    ids.add(params.implicitAccountId);
+  }
+  return [...ids];
+}
+
+/** Resolve the default account ID from a list of account IDs. */
+export function resolveListedDefaultAccountId(params: {
+  accountIds: string[];
+  configuredDefaultAccountId?: string;
+}): string {
+  if (
+    params.configuredDefaultAccountId &&
+    params.accountIds.includes(params.configuredDefaultAccountId)
+  ) {
+    return params.configuredDefaultAccountId;
+  }
+  return params.accountIds[0] ?? DEFAULT_ACCOUNT_ID;
+}
+
+/** Merge channel-level config with account-specific overrides. */
+export function resolveMergedAccountConfig<TConfig>(params: {
+  channelConfig: TConfig | undefined;
+  accounts: Record<string, Partial<TConfig>> | undefined;
+  accountId: string;
+}): TConfig {
+  const base = params.channelConfig ?? ({} as TConfig);
+  const accountSpecific = params.accounts?.[params.accountId];
+
+  if (!accountSpecific) {
+    return base;
+  }
+
+  return { ...base, ...accountSpecific } as TConfig;
+}

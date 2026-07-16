@@ -27,15 +27,20 @@ import type { ProviderUsageSnapshot } from "../infra/provider-usage.types.js";
 import type { MediaUnderstandingProvider } from "../media-understanding/types.js";
 import type { AgentHarness } from "../plugin-sdk/agent-harness.js";
 import type { AutoCoderProvider } from "../plugin-sdk/auto-coder.js";
+import type { BusinessLoopProvider } from "../plugin-sdk/business-loop.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
+import type { ContentFactoryProvider } from "../plugin-sdk/content-factory.js";
 import type { DealSourcingProvider } from "../plugin-sdk/deal-sourcing.js";
+import type { DecisionEngineProvider } from "../plugin-sdk/decision-engine.js";
 import type { GrowthHackingProvider } from "../plugin-sdk/growth-hacking.js";
 import type { LeadGenerationProvider } from "../plugin-sdk/lead-generation.js";
 import type { MemoryEmbeddingProvider } from "../plugin-sdk/memory-core-host-engine-embeddings.js";
 import type { MusicGenerationProvider } from "../plugin-sdk/music-generation.js";
 import type { OSAutomationProvider } from "../plugin-sdk/os-control.js";
+import type { ProjectManagerProvider } from "../plugin-sdk/project-manager.js";
 import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
 import type { ResearchProvider } from "../plugin-sdk/research.js";
+import type { RevenueOptimizationProvider } from "../plugin-sdk/revenue-optimization.js";
 import type { SaaSBuilderProvider } from "../plugin-sdk/saas-builder.js";
 import type { SalesAutomationProvider } from "../plugin-sdk/sales-automation.js";
 import type { SkillProvider } from "../plugin-sdk/skills.js";
@@ -958,6 +963,12 @@ export type SalesAutomationProviderPlugin = SalesAutomationProvider;
 export type GrowthHackingProviderPlugin = GrowthHackingProvider;
 export type SaaSBuilderProviderPlugin = SaaSBuilderProvider;
 
+export type RevenueOptimizationProviderPlugin = RevenueOptimizationProvider;
+export type ContentFactoryProviderPlugin = ContentFactoryProvider;
+export type ProjectManagerProviderPlugin = ProjectManagerProvider;
+export type DecisionEngineProviderPlugin = DecisionEngineProvider;
+export type BusinessLoopProviderPlugin = BusinessLoopProvider;
+
 export type OpenClawPluginGatewayMethod = {
   method: string;
   handler: GatewayRequestHandler;
@@ -1384,6 +1395,16 @@ export type OpenClawPluginApi = {
   registerGrowthHackingProvider: (provider: GrowthHackingProviderPlugin) => void;
   /** Register a SaaS-builder provider (autonomous product creation capability). */
   registerSaaSBuilderProvider: (provider: SaaSBuilderProviderPlugin) => void;
+  /** Register a revenue-optimization provider (business financial optimization capability). */
+  registerRevenueOptimizationProvider: (provider: RevenueOptimizationProviderPlugin) => void;
+  /** Register a content-factory provider (autonomous marketing content generation capability). */
+  registerContentFactoryProvider: (provider: ContentFactoryProviderPlugin) => void;
+  /** Register a project-manager provider (autonomous project management capability). */
+  registerProjectManagerProvider: (provider: ProjectManagerProviderPlugin) => void;
+  /** Register a decision-engine provider (autonomous decision making capability). */
+  registerDecisionEngineProvider: (provider: DecisionEngineProviderPlugin) => void;
+  /** Register a business-loop provider (autonomous business operations capability). */
+  registerBusinessLoopProvider: (provider: BusinessLoopProviderPlugin) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

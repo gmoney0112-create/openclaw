@@ -69,6 +69,11 @@ import type {
   SalesAutomationProviderPlugin,
   GrowthHackingProviderPlugin,
   SaaSBuilderProviderPlugin,
+  RevenueOptimizationProviderPlugin,
+  ContentFactoryProviderPlugin,
+  ProjectManagerProviderPlugin,
+  DecisionEngineProviderPlugin,
+  BusinessLoopProviderPlugin,
 } from "./types.js";
 
 export type PluginToolRegistration = {
@@ -170,6 +175,16 @@ export type PluginGrowthHackingProviderRegistration =
   PluginOwnedProviderRegistration<GrowthHackingProviderPlugin>;
 export type PluginSaaSBuilderProviderRegistration =
   PluginOwnedProviderRegistration<SaaSBuilderProviderPlugin>;
+export type PluginRevenueOptimizationProviderRegistration =
+  PluginOwnedProviderRegistration<RevenueOptimizationProviderPlugin>;
+export type PluginContentFactoryProviderRegistration =
+  PluginOwnedProviderRegistration<ContentFactoryProviderPlugin>;
+export type PluginProjectManagerProviderRegistration =
+  PluginOwnedProviderRegistration<ProjectManagerProviderPlugin>;
+export type PluginDecisionEngineProviderRegistration =
+  PluginOwnedProviderRegistration<DecisionEngineProviderPlugin>;
+export type PluginBusinessLoopProviderRegistration =
+  PluginOwnedProviderRegistration<BusinessLoopProviderPlugin>;
 
 export type PluginHookRegistration = {
   pluginId: string;
@@ -244,6 +259,11 @@ export type PluginRecord = {
   salesAutomationProviderIds: string[];
   growthHackingProviderIds: string[];
   saasBuilderProviderIds: string[];
+  revenueOptimizationProviderIds: string[];
+  contentFactoryProviderIds: string[];
+  projectManagerProviderIds: string[];
+  decisionEngineProviderIds: string[];
+  businessLoopProviderIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
   services: string[];
@@ -283,6 +303,11 @@ export type PluginRegistry = {
   salesAutomationProviders: PluginSalesAutomationProviderRegistration[];
   growthHackingProviders: PluginGrowthHackingProviderRegistration[];
   saasBuilderProviders: PluginSaaSBuilderProviderRegistration[];
+  revenueOptimizationProviders: PluginRevenueOptimizationProviderRegistration[];
+  contentFactoryProviders: PluginContentFactoryProviderRegistration[];
+  projectManagerProviders: PluginProjectManagerProviderRegistration[];
+  decisionEngineProviders: PluginDecisionEngineProviderRegistration[];
+  businessLoopProviders: PluginBusinessLoopProviderRegistration[];
   gatewayHandlers: GatewayRequestHandlers;
   httpRoutes: PluginHttpRouteRegistration[];
   cliRegistrars: PluginCliRegistration[];
@@ -924,6 +949,71 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerRevenueOptimizationProvider = (
+    record: PluginRecord,
+    provider: RevenueOptimizationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "revenue-optimization provider",
+      registrations: registry.revenueOptimizationProviders,
+      ownedIds: record.revenueOptimizationProviderIds,
+    });
+  };
+
+  const registerContentFactoryProvider = (
+    record: PluginRecord,
+    provider: ContentFactoryProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "content-factory provider",
+      registrations: registry.contentFactoryProviders,
+      ownedIds: record.contentFactoryProviderIds,
+    });
+  };
+
+  const registerProjectManagerProvider = (
+    record: PluginRecord,
+    provider: ProjectManagerProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "project-manager provider",
+      registrations: registry.projectManagerProviders,
+      ownedIds: record.projectManagerProviderIds,
+    });
+  };
+
+  const registerDecisionEngineProvider = (
+    record: PluginRecord,
+    provider: DecisionEngineProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "decision-engine provider",
+      registrations: registry.decisionEngineProviders,
+      ownedIds: record.decisionEngineProviderIds,
+    });
+  };
+
+  const registerBusinessLoopProvider = (
+    record: PluginRecord,
+    provider: BusinessLoopProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "business-loop provider",
+      registrations: registry.businessLoopProviders,
+      ownedIds: record.businessLoopProviderIds,
+    });
+  };
+
   const registerCli = (
     record: PluginRecord,
     registrar: OpenClawPluginCliRegistrar,
@@ -1254,6 +1344,26 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerSaaSBuilderProvider(record, provider)
           : () => {},
+      registerRevenueOptimizationProvider:
+        registrationMode === "full"
+          ? (provider) => registerRevenueOptimizationProvider(record, provider)
+          : () => {},
+      registerContentFactoryProvider:
+        registrationMode === "full"
+          ? (provider) => registerContentFactoryProvider(record, provider)
+          : () => {},
+      registerProjectManagerProvider:
+        registrationMode === "full"
+          ? (provider) => registerProjectManagerProvider(record, provider)
+          : () => {},
+      registerDecisionEngineProvider:
+        registrationMode === "full"
+          ? (provider) => registerDecisionEngineProvider(record, provider)
+          : () => {},
+      registerBusinessLoopProvider:
+        registrationMode === "full"
+          ? (provider) => registerBusinessLoopProvider(record, provider)
+          : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -1347,6 +1457,11 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerSalesAutomationProvider,
     registerGrowthHackingProvider,
     registerSaaSBuilderProvider,
+    registerRevenueOptimizationProvider,
+    registerContentFactoryProvider,
+    registerProjectManagerProvider,
+    registerDecisionEngineProvider,
+    registerBusinessLoopProvider,
     registerGatewayMethod,
     registerCli,
     registerService,

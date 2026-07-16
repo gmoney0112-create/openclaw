@@ -63,6 +63,12 @@ COPY patches ./patches
 
 COPY --from=ext-deps /out/ ./extensions/
 
+# Some transitive git-protocol dependencies (e.g. baileys' libsignal) are
+# recorded in pnpm-lock.yaml as git@github.com:... (SSH form). This build
+# container has no SSH keys configured, so rewrite SSH-form GitHub URLs to
+# HTTPS for anonymous, unauthenticated cloning of public repos.
+RUN git config --global url."https://github.com/".insteadOf "git@github.com:"
+
 # Reduce OOM risk on low-memory hosts during dependency installation.
 # Docker builds on small VMs may otherwise fail with "Killed" (exit 137).
 RUN NODE_OPTIONS=--max-old-space-size=2048 pnpm install --frozen-lockfile

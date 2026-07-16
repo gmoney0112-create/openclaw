@@ -1228,8 +1228,8 @@
     "grammy": "^1.41.1",
     "hono": "4.12.8",
     "https-proxy-agent": "^8.0.0",
-    "ipaddr.js": "^2.3.0",
     "ioredis": "^5.10.1",
+    "ipaddr.js": "^2.3.0",
     "jiti": "^2.6.1",
     "json5": "^2.2.3",
     "jszip": "^3.10.1",
@@ -1325,6 +1325,11 @@
       "@mariozechner/pi-coding-agent": {
         "dependencies": {
           "strip-ansi": "^7.2.0"
+        }
+      },
+      "@whiskeysockets/baileys": {
+        "dependencies": {
+          "libsignal": "git+https://github.com/whiskeysockets/libsignal-node.git#bcea72df9ec34d9d9140ab30619cf479c7c144c7"
         }
       }
     }

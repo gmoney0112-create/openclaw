@@ -60,6 +60,12 @@ export * from "../pairing/pairing-challenge.js";
 export * from "../pairing/pairing-messages.js";
 export * from "../pairing/pairing-store.js";
 export {
+  formatThreadBindingDurationLabel,
+  resolveThreadBindingFarewellText,
+  resolveThreadBindingIntroText,
+  resolveThreadBindingThreadName,
+} from "../channels/thread-bindings-messages.js";
+export {
   buildPluginBindingApprovalCustomId,
   buildPluginBindingDeclinedText,
   buildPluginBindingErrorText,

@@ -16,7 +16,9 @@ export function matchesApprovalRequestFilters(params: {
   const request = params.request ?? {};
   const agentId =
     normalizeOptionalString(request.agentId) ??
-    (params.fallbackAgentIdFromSessionKey ? normalizeOptionalString(request.sessionKey) : undefined);
+    (params.fallbackAgentIdFromSessionKey
+      ? normalizeOptionalString(request.sessionKey)
+      : undefined);
   const sessionKey = normalizeOptionalString(request.sessionKey);
 
   const agentOk =
@@ -37,8 +39,7 @@ export function isChannelExecApprovalTargetRecipient(params: {
 }): boolean {
   const normalize =
     params.normalizeSenderId ?? ((value: string | number) => String(value).trim() || undefined);
-  const normalizedSenderId =
-    params.senderId == null ? undefined : normalize(params.senderId);
+  const normalizedSenderId = params.senderId == null ? undefined : normalize(params.senderId);
   if (!normalizedSenderId) {
     return false;
   }
@@ -46,21 +47,35 @@ export function isChannelExecApprovalTargetRecipient(params: {
 }
 
 export function createChannelExecApprovalProfile(params: {
-  resolveConfig: (params: { cfg: unknown; accountId?: string | null }) => {
-    enabled?: boolean;
-    approvers?: unknown[];
-    agentFilter?: string[];
-    sessionFilter?: string[];
-    target?: "dm" | "channel" | "both";
-  } | undefined;
+  resolveConfig: (params: { cfg: unknown; accountId?: string | null }) =>
+    | {
+        enabled?: boolean;
+        approvers?: unknown[];
+        agentFilter?: string[];
+        sessionFilter?: string[];
+        target?: "dm" | "channel" | "both";
+      }
+    | undefined;
   resolveApprovers: (params: { cfg: unknown; accountId?: string | null }) => string[];
   normalizeSenderId?: (value: string | number) => string | undefined;
-  isTargetRecipient?: (params: { cfg: unknown; senderId?: string | null; accountId?: string | null }) => boolean;
-  matchesRequestAccount?: (params: { cfg: unknown; accountId?: string | null; request: unknown }) => boolean;
+  isTargetRecipient?: (params: {
+    cfg: unknown;
+    senderId?: string | null;
+    accountId?: string | null;
+  }) => boolean;
+  matchesRequestAccount?: (params: {
+    cfg: unknown;
+    accountId?: string | null;
+    request: unknown;
+  }) => boolean;
   fallbackAgentIdFromSessionKey?: boolean;
   requireClientEnabledForLocalPromptSuppression?: boolean;
 }) {
-  const isApprover = (args: { cfg: unknown; senderId?: string | null; accountId?: string | null }) => {
+  const isApprover = (args: {
+    cfg: unknown;
+    senderId?: string | null;
+    accountId?: string | null;
+  }) => {
     const normalize =
       params.normalizeSenderId ?? ((value: string | number) => String(value).trim() || undefined);
     const senderId = args.senderId == null ? undefined : normalize(args.senderId);
@@ -84,7 +99,11 @@ export function createChannelExecApprovalProfile(params: {
     isAuthorizedSender: isApprover,
     resolveTarget: (args: { cfg: unknown; accountId?: string | null }) =>
       params.resolveConfig(args)?.target ?? "dm",
-    shouldHandleRequest: (args: { cfg: unknown; accountId?: string | null; request: { request?: { agentId?: string | null; sessionKey?: string | null } } }) => {
+    shouldHandleRequest: (args: {
+      cfg: unknown;
+      accountId?: string | null;
+      request: { request?: { agentId?: string | null; sessionKey?: string | null } };
+    }) => {
       const config = params.resolveConfig(args);
       if (!isClientEnabled(args)) {
         return false;
@@ -99,7 +118,13 @@ export function createChannelExecApprovalProfile(params: {
         fallbackAgentIdFromSessionKey: params.fallbackAgentIdFromSessionKey,
       });
     },
-    shouldSuppressLocalPrompt: (args: { cfg: unknown; accountId?: string | null; payload?: unknown }) =>
-      params.requireClientEnabledForLocalPromptSuppression === false ? false : isClientEnabled(args),
+    shouldSuppressLocalPrompt: (args: {
+      cfg: unknown;
+      accountId?: string | null;
+      payload?: unknown;
+    }) =>
+      params.requireClientEnabledForLocalPromptSuppression === false
+        ? false
+        : isClientEnabled(args),
   };
 }

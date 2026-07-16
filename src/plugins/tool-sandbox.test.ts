@@ -26,10 +26,7 @@ describe("runInSandbox", () => {
 
   it("blocks outbound hosts outside the allowlist", async () => {
     await expect(
-      runInSandbox<
-        { allowedHosts?: string[]; payload: { mode: "http-block" } },
-        unknown
-      >({
+      runInSandbox<{ allowedHosts?: string[]; payload: { mode: "http-block" } }, unknown>({
         workerPath,
         payload: {
           allowedHosts: ["api.stripe.com"],
@@ -41,10 +38,7 @@ describe("runInSandbox", () => {
 
   it("times out hung workers without crashing the parent", async () => {
     await expect(
-      runInSandbox<
-        { allowedHosts?: string[]; payload: { mode: "timeout" } },
-        unknown
-      >({
+      runInSandbox<{ allowedHosts?: string[]; payload: { mode: "timeout" } }, unknown>({
         workerPath,
         timeoutMs: 100,
         payload: { payload: { mode: "timeout" } },

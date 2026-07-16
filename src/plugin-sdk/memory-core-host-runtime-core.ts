@@ -1,6 +1,6 @@
-import type { OpenClawConfig } from "../config/config.js";
 import { resolveDefaultAgentId, resolveSessionAgentId } from "../agents/agent-scope.js";
 import type { ResolvedMemorySearchConfig } from "../agents/memory-search.js";
+import type { OpenClawConfig } from "../config/config.js";
 
 export type { OpenClawConfig, ResolvedMemorySearchConfig };
 export type { AnyAgentTool } from "../agents/tools/common.js";
@@ -101,9 +101,6 @@ export type MemoryPluginRuntime = {
     agentId: string;
     purpose?: "default" | "status";
   }) => Promise<{ manager: unknown | null; error?: string }>;
-  resolveMemoryBackendConfig?: (params: {
-    cfg: OpenClawConfig;
-    agentId: string;
-  }) => unknown;
+  resolveMemoryBackendConfig?: (params: { cfg: OpenClawConfig; agentId: string }) => unknown;
   closeAllMemorySearchManagers?: () => Promise<void>;
 };

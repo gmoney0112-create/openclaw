@@ -15,6 +15,7 @@ import type { CanvasHostHandler } from "../canvas-host/server.js";
 import { loadConfig } from "../config/config.js";
 import { getStateStoreHealth } from "../infra/state-store.js";
 import type { createSubsystemLogger } from "../logging/subsystem.js";
+import { guardInput } from "../security/input-guard.js";
 import { safeEqualSecret } from "../security/secret-equal.js";
 import {
   AUTH_RATE_LIMIT_SCOPE_HOOK_AUTH,
@@ -73,7 +74,6 @@ import {
 import type { ReadinessChecker } from "./server/readiness.js";
 import type { GatewayWsClient } from "./server/ws-types.js";
 import { handleToolsInvokeHttpRequest } from "./tools-invoke-http.js";
-import { guardInput } from "../security/input-guard.js";
 
 type SubsystemLogger = ReturnType<typeof createSubsystemLogger>;
 

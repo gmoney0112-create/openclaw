@@ -31,5 +31,7 @@ export type VideoGenerationProvider = {
   models?: string[];
   isConfigured?: (params: { agentDir?: string }) => boolean;
   capabilities?: Record<string, unknown>;
-  generateVideo: (req: VideoGenerationRequest) => Promise<GeneratedVideoAsset | { assets?: GeneratedVideoAsset[] } | unknown>;
+  generateVideo: (
+    req: VideoGenerationRequest,
+  ) => Promise<GeneratedVideoAsset | { assets?: GeneratedVideoAsset[] } | unknown>;
 };

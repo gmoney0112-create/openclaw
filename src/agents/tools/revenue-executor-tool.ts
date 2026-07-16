@@ -1,6 +1,12 @@
 import { Type } from "@sinclair/typebox";
 import { stringEnum } from "../schema/typebox.js";
-import { jsonResult, readNumberParam, readStringParam, ToolInputError, type AnyAgentTool } from "./common.js";
+import {
+  jsonResult,
+  readNumberParam,
+  readStringParam,
+  ToolInputError,
+  type AnyAgentTool,
+} from "./common.js";
 
 const REVENUE_TOOL_ACTIONS = ["execute", "health", "actions"] as const;
 
@@ -21,7 +27,9 @@ function resolveBaseUrl(): string {
 async function callRevenue(path: string, init: RequestInit, timeoutMs?: number): Promise<unknown> {
   const controller = new AbortController();
   const timeout =
-    typeof timeoutMs === "number" && Number.isFinite(timeoutMs) && timeoutMs > 0 ? Math.floor(timeoutMs) : 15_000;
+    typeof timeoutMs === "number" && Number.isFinite(timeoutMs) && timeoutMs > 0
+      ? Math.floor(timeoutMs)
+      : 15_000;
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
     const response = await fetch(`${resolveBaseUrl()}${path}`, {

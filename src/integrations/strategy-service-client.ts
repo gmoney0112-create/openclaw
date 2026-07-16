@@ -10,7 +10,9 @@ export type PdfSummaryResult = {
 const DEFAULT_STRATEGY_SERVICE_URL = "http://127.0.0.1:8011";
 
 function resolveBaseUrl(): string {
-  return (process.env.STRATEGY_SERVICE_URL ?? DEFAULT_STRATEGY_SERVICE_URL).trim().replace(/\/$/, "");
+  return (process.env.STRATEGY_SERVICE_URL ?? DEFAULT_STRATEGY_SERVICE_URL)
+    .trim()
+    .replace(/\/$/, "");
 }
 
 async function parseJson(response: Response): Promise<unknown> {
@@ -30,7 +32,11 @@ export async function summarizePdfViaStrategyService(params: {
   const form = new FormData();
   const blob = new Blob([params.bytes], { type: params.mimeType });
   form.append("file", blob, params.filename);
-  form.append("prompt", params.prompt ?? "Summarize this PDF for the agent, keeping important facts and user-relevant details.");
+  form.append(
+    "prompt",
+    params.prompt ??
+      "Summarize this PDF for the agent, keeping important facts and user-relevant details.",
+  );
 
   const response = await fetch(`${resolveBaseUrl()}/pdf/summarize`, {
     method: "POST",

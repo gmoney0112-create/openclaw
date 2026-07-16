@@ -42,7 +42,10 @@ export async function browserClusterHealth(): Promise<BrowserClusterHealth> {
 }
 
 export function shouldUseBrowserCluster(): boolean {
-  return (process.env.OPENCLAW_BROWSER_TRANSPORT ?? "internal").trim().toLowerCase() === "browser-cluster";
+  return (
+    (process.env.OPENCLAW_BROWSER_TRANSPORT ?? "internal").trim().toLowerCase() ===
+    "browser-cluster"
+  );
 }
 
 export function resolveBrowserClusterSessionId(profile?: string): string {
@@ -63,7 +66,9 @@ export async function openBrowserClusterSession(params: { sessionId: string; url
   };
 }
 
-function selectorOnlyActionFromAct(body: Record<string, unknown>):
+function selectorOnlyActionFromAct(
+  body: Record<string, unknown>,
+):
   | { action: "click"; params: Record<string, unknown> }
   | { action: "fill_form"; params: Record<string, unknown> }
   | { action: "screenshot"; params: Record<string, unknown> }
@@ -91,9 +96,10 @@ function selectorOnlyActionFromAct(body: Record<string, unknown>):
     case "fill": {
       const fields = act.fields
         .map((field) => {
-          const selector = typeof (field as { selector?: unknown }).selector === "string"
-            ? ((field as { selector?: string }).selector ?? "").trim()
-            : "";
+          const selector =
+            typeof (field as { selector?: unknown }).selector === "string"
+              ? ((field as { selector?: string }).selector ?? "").trim()
+              : "";
           if (!selector) {
             return null;
           }
@@ -120,7 +126,11 @@ export function canProxyBrowserClusterPath(path: string, method: string, body: u
     return true;
   }
   if (normalizedMethod === "POST" && path === "/act") {
-    return Boolean(body && typeof body === "object" && selectorOnlyActionFromAct(body as Record<string, unknown>));
+    return Boolean(
+      body &&
+      typeof body === "object" &&
+      selectorOnlyActionFromAct(body as Record<string, unknown>),
+    );
   }
   return false;
 }
@@ -134,7 +144,10 @@ export async function proxyBrowserCluster(params: {
   const sessionId = resolveBrowserClusterSessionId(params.profile);
 
   if (params.method.toUpperCase() === "POST" && params.path === "/tabs/open") {
-    const body = params.body && typeof params.body === "object" ? (params.body as Record<string, unknown>) : {};
+    const body =
+      params.body && typeof params.body === "object"
+        ? (params.body as Record<string, unknown>)
+        : {};
     const url = typeof body.url === "string" ? body.url : undefined;
     const opened = await openBrowserClusterSession({ sessionId, url });
     return {

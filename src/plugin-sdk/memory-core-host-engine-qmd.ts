@@ -10,15 +10,9 @@ export {
 
 export { extractKeywords } from "../memory/query-expansion.js";
 
-export {
-  resolveCliSpawnInvocation,
-  runCliCommand,
-} from "../memory/qmd-process.js";
+export { resolveCliSpawnInvocation, runCliCommand } from "../memory/qmd-process.js";
 
-export {
-  parseQmdQueryJson,
-  type QmdQueryResult,
-} from "../memory/qmd-query-parser.js";
+export { parseQmdQueryJson, type QmdQueryResult } from "../memory/qmd-query-parser.js";
 
 export {
   deriveQmdScopeChannel,
@@ -36,9 +30,8 @@ export function parseUsageCountedSessionIdFromFileName(fileName: string): string
 /** Check whether the qmd binary is available on PATH.
  *  Returns true if `qmd --version` exits cleanly, false otherwise. */
 export async function checkQmdBinaryAvailability(): Promise<boolean> {
-  const { resolveCliSpawnInvocation: resolve, runCliCommand: run } = await import(
-    "../memory/qmd-process.js"
-  );
+  const { resolveCliSpawnInvocation: resolve, runCliCommand: run } =
+    await import("../memory/qmd-process.js");
   try {
     const inv = resolve({ args: ["--version"] });
     const result = await run({ ...inv, args: ["--version"] });

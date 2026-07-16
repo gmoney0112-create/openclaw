@@ -1,4 +1,8 @@
-import { assertOkOrThrowHttpError, normalizeBaseUrl, postJsonRequest } from "../media-understanding/providers/shared.js";
+import {
+  assertOkOrThrowHttpError,
+  normalizeBaseUrl,
+  postJsonRequest,
+} from "../media-understanding/providers/shared.js";
 
 export { assertOkOrThrowHttpError, normalizeBaseUrl, postJsonRequest };
 
@@ -23,10 +27,7 @@ export function resolveProviderEndpoint(baseUrl?: string): {
   return { baseUrl: normalized, endpointClass };
 }
 
-export function resolveProviderRequestCapabilities(params: {
-  baseUrl?: string;
-  api?: string;
-}): {
+export function resolveProviderRequestCapabilities(params: { baseUrl?: string; api?: string }): {
   endpointClass: string;
   api?: string;
 } {

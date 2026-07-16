@@ -34,7 +34,10 @@ export type {
 
 // MemorySearchRuntimeDebug and readMemoryFile are already in the runtime-files subpath barrel.
 // Re-export them here too so callers that import from engine-storage get them.
-export { readAgentMemoryFile as readMemoryFile, type MemorySearchRuntimeDebug } from "./memory-core-host-runtime-files.js";
+export {
+  readAgentMemoryFile as readMemoryFile,
+  type MemorySearchRuntimeDebug,
+} from "./memory-core-host-runtime-files.js";
 
 // normalizeLowercaseStringOrEmpty is re-exported for convenience (consumers may import it from here).
 export { normalizeOptionalString as normalizeLowercaseStringOrEmpty } from "./text-runtime.js";

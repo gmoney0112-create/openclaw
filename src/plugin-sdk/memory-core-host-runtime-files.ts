@@ -1,8 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { resolveAgentWorkspaceDir, type OpenClawConfig } from "./memory-core-host-engine-foundation.js";
-import { listMemoryFiles, normalizeExtraMemoryPaths } from "../memory/internal.js";
 import { resolveMemoryBackendConfig } from "../memory/backend-config.js";
+import { listMemoryFiles, normalizeExtraMemoryPaths } from "../memory/internal.js";
+import {
+  resolveAgentWorkspaceDir,
+  type OpenClawConfig,
+} from "./memory-core-host-engine-foundation.js";
 
 export { listMemoryFiles, normalizeExtraMemoryPaths, resolveMemoryBackendConfig };
 

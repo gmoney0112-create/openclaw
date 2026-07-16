@@ -1,6 +1,6 @@
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { buildBaseChannelStatusSummary, buildProbeChannelStatusSummary } from "./status-helpers.js";
 import { formatErrorMessage } from "./error-runtime.js";
+import { buildBaseChannelStatusSummary, buildProbeChannelStatusSummary } from "./status-helpers.js";
 
 export function createDeferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;
@@ -12,7 +12,10 @@ export function createDeferred<T>() {
   return { promise, resolve, reject };
 }
 
-export function safeParseWithSchema<T>(schema: { safeParse: (value: unknown) => { success: boolean; data?: T } }, value: unknown): T | null {
+export function safeParseWithSchema<T>(
+  schema: { safeParse: (value: unknown) => { success: boolean; data?: T } },
+  value: unknown,
+): T | null {
   const parsed = schema.safeParse(value);
   return parsed.success ? (parsed.data as T) : null;
 }
@@ -119,9 +122,8 @@ export async function runStoppablePassiveMonitor(params: {
       await params.onError(error);
       return;
     }
-    throw new Error(
-      `${params.label ?? "passive monitor"} failed: ${formatErrorMessage(error)}`,
-      { cause: error },
-    );
+    throw new Error(`${params.label ?? "passive monitor"} failed: ${formatErrorMessage(error)}`, {
+      cause: error,
+    });
   }
 }

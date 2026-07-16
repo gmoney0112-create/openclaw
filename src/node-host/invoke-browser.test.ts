@@ -155,7 +155,10 @@ describe("runBrowserProxyCommand", () => {
     browserClusterMocks.shouldUseBrowserCluster.mockReturnValue(true);
     browserClusterMocks.canProxyBrowserClusterPath.mockReturnValue(true);
     browserClusterMocks.browserClusterHealth.mockResolvedValue({ ok: true });
-    browserClusterMocks.proxyBrowserCluster.mockResolvedValue({ ok: true, targetId: "profile:openclaw" });
+    browserClusterMocks.proxyBrowserCluster.mockResolvedValue({
+      ok: true,
+      targetId: "profile:openclaw",
+    });
 
     const raw = await runBrowserProxyCommand(
       JSON.stringify({

@@ -1,7 +1,10 @@
-import { formatThreadBindingDurationLabel } from "../channels/thread-bindings-messages.js";
 import { resolveThreadBindingConversationIdFromBindingId } from "../channels/thread-binding-id.js";
+import { formatThreadBindingDurationLabel } from "../channels/thread-bindings-messages.js";
 
-export type { BindingTargetKind, SessionBindingRecord } from "../infra/outbound/session-binding-service.js";
+export type {
+  BindingTargetKind,
+  SessionBindingRecord,
+} from "../infra/outbound/session-binding-service.js";
 
 export { formatThreadBindingDurationLabel, resolveThreadBindingConversationIdFromBindingId };
 
@@ -57,23 +60,22 @@ type GenericBindingTargetKind = "subagent" | "session";
 
 export type AccountScopedConversationBindingManager<TTargetKind extends string> = {
   accountId: string;
-  getByConversation: (params: {
-    conversationId: string;
-    parentConversationId?: string;
-  }) => {
-    accountId: string;
-    conversationId: string;
-    parentConversationId?: string;
-    targetKind: TTargetKind;
-    targetSessionKey: string;
-    boundAt: number;
-    lastActivityAt: number;
-    idleTimeoutMs?: number;
-    maxAgeMs?: number;
-    agentId?: string;
-    label?: string;
-    boundBy?: string;
-  } | undefined;
+  getByConversation: (params: { conversationId: string; parentConversationId?: string }) =>
+    | {
+        accountId: string;
+        conversationId: string;
+        parentConversationId?: string;
+        targetKind: TTargetKind;
+        targetSessionKey: string;
+        boundAt: number;
+        lastActivityAt: number;
+        idleTimeoutMs?: number;
+        maxAgeMs?: number;
+        agentId?: string;
+        label?: string;
+        boundBy?: string;
+      }
+    | undefined;
   listBySessionKey: (targetSessionKey: string) => Array<{
     accountId: string;
     conversationId: string;
@@ -103,7 +105,10 @@ export type AccountScopedConversationBindingManager<TTargetKind extends string> 
     boundBy?: string;
   }>;
   touchBinding: (bindingId: string, at?: number) => unknown | null;
-  setIdleTimeoutBySessionKey: (params: { targetSessionKey: string; idleTimeoutMs: number }) => unknown[];
+  setIdleTimeoutBySessionKey: (params: {
+    targetSessionKey: string;
+    idleTimeoutMs: number;
+  }) => unknown[];
   setMaxAgeBySessionKey: (params: { targetSessionKey: string; maxAgeMs: number }) => unknown[];
   stop: () => void;
 };
@@ -123,7 +128,9 @@ type BindingEntry<TTargetKind extends string> = {
   boundBy?: string;
 };
 
-function getScopedStore<TTargetKind extends string>(stateKey: symbol): Map<string, BindingEntry<TTargetKind>> {
+function getScopedStore<TTargetKind extends string>(
+  stateKey: symbol,
+): Map<string, BindingEntry<TTargetKind>> {
   const root = globalThis as Record<PropertyKey, unknown>;
   const existing = root[stateKey];
   if (existing instanceof Map) {

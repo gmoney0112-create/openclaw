@@ -54,7 +54,10 @@ export async function prepareSimpleCompletionModelForAgent(params: {
   allowMissingApiKeyModes?: string[];
 }): Promise<SimpleCompletionModelPreparationResult> {
   void params;
-  return { error: "simple-completion-runtime: not implemented in this build", selection: undefined };
+  return {
+    error: "simple-completion-runtime: not implemented in this build",
+    selection: undefined,
+  };
 }
 
 /**
@@ -75,9 +78,7 @@ export async function completeWithPreparedSimpleCompletionModel(params: {
 /**
  * Extracts the text content from an assistant message.
  */
-export function extractAssistantText(
-  message: SimpleCompletionMessage | null | undefined,
-): string {
+export function extractAssistantText(message: SimpleCompletionMessage | null | undefined): string {
   if (!message) {
     return "";
   }

@@ -1,6 +1,6 @@
+import path from "node:path";
 ﻿import { type Api, type Model } from "@mariozechner/pi-ai";
 import type { OpenClawConfig } from "../../config/config.js";
-import path from "node:path";
 import { getDefaultLocalRoots } from "../../media/web-media.js";
 import type { ImageModelConfig } from "./image-tool.helpers.js";
 import type { ToolModelConfig } from "./model-config.helpers.js";
@@ -64,9 +64,7 @@ export function resolveMediaToolLocalRoots(
     // trusted uploads (for example Telegram PDFs under .openclaw\\media\\inbound)
     // remain readable without opening general host filesystem access.
     const inboundRoots = roots.filter((root) => path.basename(root) === "media");
-    return workspaceDir
-      ? Array.from(new Set([workspaceDir, ...inboundRoots]))
-      : [...inboundRoots];
+    return workspaceDir ? Array.from(new Set([workspaceDir, ...inboundRoots])) : [...inboundRoots];
   }
   if (!workspaceDir) {
     return [...roots];
@@ -134,4 +132,3 @@ export async function resolveModelRuntimeApiKey(params: {
   params.authStorage.setRuntimeApiKey(params.model.provider, apiKey);
   return apiKey;
 }
-

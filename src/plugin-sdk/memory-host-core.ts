@@ -1,5 +1,9 @@
-import { resolveDefaultAgentId, resolveSessionAgentId, type MemoryPromptSectionBuilder } from "./memory-core-host-runtime-core.js";
 import type { OpenClawConfig } from "./memory-core-host-engine-foundation.js";
+import {
+  resolveDefaultAgentId,
+  resolveSessionAgentId,
+  type MemoryPromptSectionBuilder,
+} from "./memory-core-host-runtime-core.js";
 
 export { resolveDefaultAgentId, resolveSessionAgentId, type MemoryPromptSectionBuilder };
 
@@ -21,17 +25,23 @@ type MemoryCapabilityRegistry = {
   [Symbol.iterator]?: () => Iterator<MemoryCapabilityArtifactProvider>;
 };
 
-const MEMORY_PUBLIC_ARTIFACT_REGISTRY_SYMBOL = Symbol.for("openclaw.memoryPluginCapabilityRegistry");
+const MEMORY_PUBLIC_ARTIFACT_REGISTRY_SYMBOL = Symbol.for(
+  "openclaw.memoryPluginCapabilityRegistry",
+);
 
 function readMemoryCapabilityRegistry(): MemoryCapabilityRegistry | null {
-  const value = (globalThis as Record<PropertyKey, unknown>)[MEMORY_PUBLIC_ARTIFACT_REGISTRY_SYMBOL];
+  const value = (globalThis as Record<PropertyKey, unknown>)[
+    MEMORY_PUBLIC_ARTIFACT_REGISTRY_SYMBOL
+  ];
   if (!value || typeof value !== "object") {
     return null;
   }
   return value as MemoryCapabilityRegistry;
 }
 
-function listRegistryValues(registry: MemoryCapabilityRegistry): MemoryCapabilityArtifactProvider[] {
+function listRegistryValues(
+  registry: MemoryCapabilityRegistry,
+): MemoryCapabilityArtifactProvider[] {
   if (typeof registry.values === "function") {
     return [...registry.values()];
   }

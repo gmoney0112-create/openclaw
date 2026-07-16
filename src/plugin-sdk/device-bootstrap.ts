@@ -1,4 +1,6 @@
 import path from "node:path";
+import { issueDeviceBootstrapToken as issueCoreDeviceBootstrapToken } from "../infra/device-bootstrap.js";
+import { approveDevicePairing, listDevicePairing } from "../infra/device-pairing.js";
 import {
   createAsyncLock,
   pruneExpiredPending,
@@ -7,8 +9,6 @@ import {
   writeJsonAtomic,
 } from "../infra/pairing-files.js";
 import { verifyPairingToken } from "../infra/pairing-token.js";
-import { issueDeviceBootstrapToken as issueCoreDeviceBootstrapToken } from "../infra/device-bootstrap.js";
-import { approveDevicePairing, listDevicePairing } from "../infra/device-pairing.js";
 
 type DeviceBootstrapTokenRecord = {
   token: string;
@@ -51,9 +51,18 @@ async function loadBootstrapState(baseDir?: string): Promise<DeviceBootstrapStat
     }
     state[tokenKey] = {
       token: typeof entry.token === "string" && entry.token.trim() ? entry.token : tokenKey,
-      ts: typeof entry.ts === "number" ? entry.ts : typeof entry.issuedAtMs === "number" ? entry.issuedAtMs : 0,
-      roles: Array.isArray(entry.roles) ? entry.roles.filter((value) => typeof value === "string") : undefined,
-      scopes: Array.isArray(entry.scopes) ? entry.scopes.filter((value) => typeof value === "string") : undefined,
+      ts:
+        typeof entry.ts === "number"
+          ? entry.ts
+          : typeof entry.issuedAtMs === "number"
+            ? entry.issuedAtMs
+            : 0,
+      roles: Array.isArray(entry.roles)
+        ? entry.roles.filter((value) => typeof value === "string")
+        : undefined,
+      scopes: Array.isArray(entry.scopes)
+        ? entry.scopes.filter((value) => typeof value === "string")
+        : undefined,
       issuedAtMs: typeof entry.issuedAtMs === "number" ? entry.issuedAtMs : 0,
       lastUsedAtMs: typeof entry.lastUsedAtMs === "number" ? entry.lastUsedAtMs : undefined,
     };
@@ -62,16 +71,21 @@ async function loadBootstrapState(baseDir?: string): Promise<DeviceBootstrapStat
   return state;
 }
 
-async function persistBootstrapState(state: DeviceBootstrapStateFile, baseDir?: string): Promise<void> {
+async function persistBootstrapState(
+  state: DeviceBootstrapStateFile,
+  baseDir?: string,
+): Promise<void> {
   await writeJsonAtomic(resolveBootstrapPath(baseDir), state);
 }
 
 export { approveDevicePairing, listDevicePairing };
 
-export async function issueDeviceBootstrapToken(params: {
-  profile?: DeviceBootstrapProfile;
-  baseDir?: string;
-} = {}): Promise<{ token: string; expiresAtMs: number }> {
+export async function issueDeviceBootstrapToken(
+  params: {
+    profile?: DeviceBootstrapProfile;
+    baseDir?: string;
+  } = {},
+): Promise<{ token: string; expiresAtMs: number }> {
   const issued = await issueCoreDeviceBootstrapToken({ baseDir: params.baseDir });
   if (!params.profile) {
     return issued;
@@ -92,7 +106,9 @@ export async function issueDeviceBootstrapToken(params: {
   });
 }
 
-export async function clearDeviceBootstrapTokens(params: { baseDir?: string } = {}): Promise<{ removed: number }> {
+export async function clearDeviceBootstrapTokens(
+  params: { baseDir?: string } = {},
+): Promise<{ removed: number }> {
   return await withLock(async () => {
     const state = await loadBootstrapState(params.baseDir);
     const removed = Object.keys(state).length;

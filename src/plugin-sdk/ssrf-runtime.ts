@@ -1,6 +1,8 @@
 import type { LookupAddress } from "node:dns";
 import { lookup as dnsLookup } from "node:dns/promises";
+import { isPrivateOrLoopbackHost } from "../gateway/net.js";
 import { formatErrorMessage } from "../infra/errors.js";
+import * as fetchGuard from "../infra/net/fetch-guard.js";
 import {
   closeDispatcher,
   createPinnedDispatcher,
@@ -14,8 +16,6 @@ import {
   SsrFBlockedError,
   type SsrFPolicy,
 } from "../infra/net/ssrf.js";
-import * as fetchGuard from "../infra/net/fetch-guard.js";
-import { isPrivateOrLoopbackHost } from "../gateway/net.js";
 
 export * from "../infra/net/ssrf.js";
 export * from "../infra/net/fetch-guard.js";
@@ -59,9 +59,7 @@ export function ssrfPolicyFromDangerouslyAllowPrivateNetwork(
 }
 
 export function ssrfPolicyFromPrivateNetworkOptIn(value: unknown): SsrFPolicy | undefined {
-  return isPrivateNetworkOptInEnabled(value)
-    ? { dangerouslyAllowPrivateNetwork: true }
-    : undefined;
+  return isPrivateNetworkOptInEnabled(value) ? { dangerouslyAllowPrivateNetwork: true } : undefined;
 }
 
 async function resolvesToPrivateNetworkHost(
@@ -154,9 +152,6 @@ export function createLegacyPrivateNetworkDoctorContract(params: { channelKey: s
 
 export const GUARDED_FETCH_MODE = fetchGuard.GUARDED_FETCH_MODE;
 
-export async function assertPublicHostname(
-  hostname: string,
-  lookupFn?: LookupFn,
-): Promise<void> {
+export async function assertPublicHostname(hostname: string, lookupFn?: LookupFn): Promise<void> {
   await resolvePinnedHostname(hostname, lookupFn);
 }

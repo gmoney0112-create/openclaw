@@ -48,9 +48,7 @@ export function asBoolean(value: unknown): boolean | undefined {
   return typeof value === "boolean" ? value : undefined;
 }
 
-export function normalizeApplyTextNormalization(
-  value: unknown,
-): "auto" | "on" | "off" | undefined {
+export function normalizeApplyTextNormalization(value: unknown): "auto" | "on" | "off" | undefined {
   const normalized = trimToUndefined(value)?.toLowerCase();
   return normalized === "auto" || normalized === "on" || normalized === "off"
     ? normalized

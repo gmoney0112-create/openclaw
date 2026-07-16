@@ -8,19 +8,20 @@ type ResolveApprovalApproversParams = {
 };
 
 export function resolveApprovalApprovers(params: ResolveApprovalApproversParams): string[] {
-  const values =
-    params.explicit ??
-    [
-      ...(Array.isArray(params.allowFrom) ? params.allowFrom : []),
-      ...(Array.isArray(params.extraAllowFrom) ? params.extraAllowFrom : []),
-      ...(params.defaultTo != null ? [params.defaultTo] : []),
-    ];
-  const normalize = params.normalizeApprover ?? ((value: string | number) => String(value).trim() || undefined);
+  const values = params.explicit ?? [
+    ...(Array.isArray(params.allowFrom) ? params.allowFrom : []),
+    ...(Array.isArray(params.extraAllowFrom) ? params.extraAllowFrom : []),
+    ...(params.defaultTo != null ? [params.defaultTo] : []),
+  ];
+  const normalize =
+    params.normalizeApprover ?? ((value: string | number) => String(value).trim() || undefined);
   const normalizeDefault = params.normalizeDefaultTo ?? normalize;
   const out = new Set<string>();
   for (const value of values) {
     const normalized =
-      params.defaultTo != null && value === params.defaultTo ? normalizeDefault(value) : normalize(value);
+      params.defaultTo != null && value === params.defaultTo
+        ? normalizeDefault(value)
+        : normalize(value);
     if (normalized) {
       out.add(normalized);
     }
@@ -42,8 +43,7 @@ export function createResolvedApproverActionAuthAdapter(params: {
     }) {
       const normalize =
         params.normalizeSenderId ?? ((value: string | number) => String(value).trim() || undefined);
-      const senderId =
-        args.senderId == null ? undefined : normalize(args.senderId);
+      const senderId = args.senderId == null ? undefined : normalize(args.senderId);
       const approvers = params.resolveApprovers({
         cfg: args.cfg,
         accountId: args.accountId,

@@ -4,11 +4,7 @@ import { createSubsystemLogger } from "../logging/subsystem.js";
 import { applyTestPluginDefaults, normalizePluginsConfig } from "./config-state.js";
 import { loadOpenClawPlugins } from "./loader.js";
 import { createPluginLoaderLogger } from "./logger.js";
-import {
-  resolveSiblingWorkerPath,
-  runInSandbox,
-  type SandboxWirePayload,
-} from "./tool-sandbox.js";
+import { resolveSiblingWorkerPath, runInSandbox, type SandboxWirePayload } from "./tool-sandbox.js";
 import type { OpenClawPluginToolContext } from "./types.js";
 
 const log = createSubsystemLogger("plugins");
@@ -112,7 +108,10 @@ function pickPluginLoaderEnv(env?: NodeJS.ProcessEnv): NodeJS.ProcessEnv | undef
   return Object.keys(picked).length > 0 ? picked : undefined;
 }
 
-function pickPluginSecrets(pluginId: string, env?: NodeJS.ProcessEnv): Record<string, string> | undefined {
+function pickPluginSecrets(
+  pluginId: string,
+  env?: NodeJS.ProcessEnv,
+): Record<string, string> | undefined {
   if (!env) {
     return undefined;
   }
@@ -196,7 +195,9 @@ function wrapPluginToolWithSandbox(params: {
           : null;
 
       try {
-        return (await (abortPromise ? Promise.race([runPromise, abortPromise]) : runPromise)) as never;
+        return (await (abortPromise
+          ? Promise.race([runPromise, abortPromise])
+          : runPromise)) as never;
       } finally {
         if (signal && abortHandler) {
           signal.removeEventListener("abort", abortHandler);

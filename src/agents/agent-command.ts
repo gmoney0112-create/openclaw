@@ -4,8 +4,12 @@ import { getAcpSessionManager } from "../acp/control-plane/manager.js";
 import { resolveAcpAgentPolicyError, resolveAcpDispatchPolicyError } from "../acp/policy.js";
 import { toAcpRuntimeError } from "../acp/runtime/errors.js";
 import { resolveAcpSessionCwd } from "../acp/runtime/session-identifiers.js";
+import {
+  llmRouterHealth,
+  llmRouterSelect,
+  shouldUseLlmRouter,
+} from "../integrations/llm-router-client.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
-import { llmRouterHealth, llmRouterSelect, shouldUseLlmRouter } from "../integrations/llm-router-client.js";
 
 const log = createSubsystemLogger("agents/agent-command");
 import { normalizeReplyPayload } from "../auto-reply/reply/normalize-reply.js";
@@ -1176,7 +1180,10 @@ async function agentCommandInternal(
           const health = await llmRouterHealth();
           if (health.status === "ok") {
             const selected = await llmRouterSelect({ prompt: body });
-            const allowedSet = buildConfiguredAllowlistKeys({ cfg, defaultProvider: DEFAULT_PROVIDER });
+            const allowedSet = buildConfiguredAllowlistKeys({
+              cfg,
+              defaultProvider: DEFAULT_PROVIDER,
+            });
             const candidateKey = modelKey(selected.selected_provider, selected.selected_model);
             if (!allowedSet || allowedSet.has(candidateKey)) {
               provider = selected.selected_provider;
@@ -1184,7 +1191,9 @@ async function agentCommandInternal(
             }
           }
         } catch (error) {
-          log.warn(`llm-router unavailable, falling back to internal selection: ${sanitizeForLog(String(error))}`);
+          log.warn(
+            `llm-router unavailable, falling back to internal selection: ${sanitizeForLog(String(error))}`,
+          );
         }
       }
 

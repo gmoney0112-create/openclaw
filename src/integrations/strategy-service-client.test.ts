@@ -9,17 +9,18 @@ describe("summarizePdfViaStrategyService", () => {
 
   it("posts multipart data to the configured service and returns the summary payload", async () => {
     vi.stubEnv("STRATEGY_SERVICE_URL", "http://127.0.0.1:8011");
-    const fetchMock = vi.fn(async () =>
-      new Response(
-        JSON.stringify({
-          doc_id: "doc-123",
-          model: "deepseek/deepseek-v3.2",
-          engine: "cloudflare-ai",
-          summary: "PDF summary",
-          annotations_cached: true,
-        }),
-        { status: 200, headers: { "Content-Type": "application/json" } },
-      ),
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            doc_id: "doc-123",
+            model: "deepseek/deepseek-v3.2",
+            engine: "cloudflare-ai",
+            summary: "PDF summary",
+            annotations_cached: true,
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
     );
     vi.stubGlobal("fetch", fetchMock);
 

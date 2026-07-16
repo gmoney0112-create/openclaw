@@ -25,9 +25,7 @@ export function isDebugProxyGlobalFetchPatchInstalled(): boolean {
   return false;
 }
 
-export async function captureHttpExchange<T>(params: {
-  request: () => Promise<T>;
-}): Promise<T> {
+export async function captureHttpExchange<T>(params: { request: () => Promise<T> }): Promise<T> {
   return await params.request();
 }
 

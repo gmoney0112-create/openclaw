@@ -1,13 +1,13 @@
 import type { AgentToolResult, AgentToolUpdateCallback } from "@mariozechner/pi-agent-core";
 import { createSubsystemLogger } from "../logging/subsystem.js";
-import { createPluginLoaderLogger } from "./logger.js";
 import { loadOpenClawPlugins } from "./loader.js";
-import type { OpenClawPluginToolContext } from "./types.js";
+import { createPluginLoaderLogger } from "./logger.js";
 import {
   installSandboxNetworkGuards,
   serializeSandboxError,
   type SandboxWirePayload,
 } from "./tool-sandbox.js";
+import type { OpenClawPluginToolContext } from "./types.js";
 
 type PluginToolSandboxPayload = SandboxWirePayload<{
   pluginId: string;
@@ -32,7 +32,9 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-async function runToolFromPayload(payload: PluginToolSandboxPayload): Promise<AgentToolResult<unknown>> {
+async function runToolFromPayload(
+  payload: PluginToolSandboxPayload,
+): Promise<AgentToolResult<unknown>> {
   installSandboxNetworkGuards(payload.allowedHosts);
   if (isPlainObject(payload.payload.secrets)) {
     (globalThis as Record<string, unknown>).__OPENCLAW_SANDBOX_SECRETS__ = payload.payload.secrets;

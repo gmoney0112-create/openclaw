@@ -138,9 +138,7 @@ type AdapterConfig<TDelivery, TTarget, TPending, TResolved> = {
     shouldHandle: (params: AdapterAvailabilityParams) => boolean;
   };
   presentation: {
-    buildPendingPayload: (
-      params: AdapterPresentationParams<TDelivery>,
-    ) => TDelivery;
+    buildPendingPayload: (params: AdapterPresentationParams<TDelivery>) => TDelivery;
     buildResolvedResult: (
       params: Omit<AdapterPresentationParams<TDelivery>, "view"> & {
         view: ResolvedApprovalView;
@@ -153,9 +151,10 @@ type AdapterConfig<TDelivery, TTarget, TPending, TResolved> = {
     ) => unknown;
   };
   transport: {
-    prepareTarget?: (params: {
-      plannedTarget: { target: unknown; dedupeKey?: string };
-    }) => { target: TTarget; dedupeKey?: string };
+    prepareTarget?: (params: { plannedTarget: { target: unknown; dedupeKey?: string } }) => {
+      target: TTarget;
+      dedupeKey?: string;
+    };
     deliverPending?: (
       params: AdapterTransportParams<TDelivery, TTarget, TPending>,
     ) => Promise<TPending | null>;
@@ -164,9 +163,11 @@ type AdapterConfig<TDelivery, TTarget, TPending, TResolved> = {
         pendingDelivery: TPending;
       },
     ) => Promise<void>;
-    deletePending?: (
-      params: { cfg: OpenClawConfig; accountId: string; pendingDelivery: TPending },
-    ) => Promise<void>;
+    deletePending?: (params: {
+      cfg: OpenClawConfig;
+      accountId: string;
+      pendingDelivery: TPending;
+    }) => Promise<void>;
   };
 };
 
@@ -174,12 +175,7 @@ type AdapterConfig<TDelivery, TTarget, TPending, TResolved> = {
  * Factory for channel-native approval runtime adapters.
  * Returns an opaque adapter object that is registered with the approval system.
  */
-export function createChannelApprovalNativeRuntimeAdapter<
-  TDelivery,
-  TTarget,
-  TPending,
-  TResolved,
->(
+export function createChannelApprovalNativeRuntimeAdapter<TDelivery, TTarget, TPending, TResolved>(
   _config: AdapterConfig<TDelivery, TTarget, TPending, TResolved>,
 ): ChannelApprovalNativeRuntimeAdapter {
   return _config as unknown as ChannelApprovalNativeRuntimeAdapter;

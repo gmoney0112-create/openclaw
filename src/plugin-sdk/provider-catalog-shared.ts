@@ -1,5 +1,5 @@
-import type { OpenClawConfig } from "../config/config.js";
 import type { ModelCatalogEntry } from "../agents/model-catalog.js";
+import type { OpenClawConfig } from "../config/config.js";
 import type { ModelProviderConfig } from "../config/types.models.js";
 
 export * from "./provider-catalog.js";

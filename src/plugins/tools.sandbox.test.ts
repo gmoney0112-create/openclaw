@@ -94,11 +94,7 @@ describe("resolvePluginTools sandbox wrapping", () => {
         workerPath: "/tmp/plugin-tool-sandbox-worker.js",
         timeoutMs: 5_000,
         payload: {
-          allowedHosts: [
-            "api.gohighlevel.com",
-            "services.leadconnectorhq.com",
-            "api.stripe.com",
-          ],
+          allowedHosts: ["api.gohighlevel.com", "services.leadconnectorhq.com", "api.stripe.com"],
           payload: expect.objectContaining({
             pluginId: "revenue-executor",
             toolName: "create_payment_link",

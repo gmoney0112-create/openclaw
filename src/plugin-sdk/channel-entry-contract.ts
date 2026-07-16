@@ -36,11 +36,7 @@ function resolveBundledModulePath(importMetaUrl: string, specifier: string): str
   return path.resolve(path.dirname(importerPath), specifier);
 }
 
-function resolveLoadedExport<T>(
-  moduleValue: unknown,
-  exportName: string,
-  specifier: string,
-): T {
+function resolveLoadedExport<T>(moduleValue: unknown, exportName: string, specifier: string): T {
   const namespace =
     moduleValue && typeof moduleValue === "object" && "default" in (moduleValue as object)
       ? (moduleValue as { default: unknown })

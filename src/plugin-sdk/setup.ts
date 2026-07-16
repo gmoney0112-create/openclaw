@@ -107,7 +107,10 @@ function hasPresentSetupValue(value: unknown): boolean {
 export function createSetupInputPresenceValidator(params: {
   defaultAccountOnlyEnvError?: string;
   whenNotUseEnv?: Array<{ someOf: string[]; message: string }>;
-  validate?: (params: { accountId: string; input: Record<string, unknown> }) => string | null | undefined;
+  validate?: (params: {
+    accountId: string;
+    input: Record<string, unknown>;
+  }) => string | null | undefined;
 }) {
   return (validationParams: { accountId: string; input: Record<string, unknown> }) => {
     const accountId = validationParams.accountId;
@@ -153,7 +156,11 @@ export function createStandardChannelSetupStatus(params: {
     configuredScore: params.configuredScore,
     unconfiguredScore: params.unconfiguredScore,
     resolveConfigured: params.resolveConfigured,
-    resolveStatusLines: async (statusParams: { cfg: OpenClawConfig; accountId?: string; configured: boolean }) =>
+    resolveStatusLines: async (statusParams: {
+      cfg: OpenClawConfig;
+      accountId?: string;
+      configured: boolean;
+    }) =>
       params.includeStatusLine === false
         ? []
         : [
@@ -162,7 +169,9 @@ export function createStandardChannelSetupStatus(params: {
             }`,
           ],
     resolveSelectionHint: async (hintParams: { cfg: OpenClawConfig; accountId?: string }) =>
-      (await params.resolveConfigured(hintParams)) ? params.configuredHint : params.unconfiguredHint,
+      (await params.resolveConfigured(hintParams))
+        ? params.configuredHint
+        : params.unconfiguredHint,
     resolveQuickstartScore: async (scoreParams: { cfg: OpenClawConfig; accountId?: string }) =>
       (await params.resolveConfigured(scoreParams))
         ? params.configuredScore

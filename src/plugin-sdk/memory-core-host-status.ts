@@ -1,5 +1,5 @@
-import type { OpenClawConfig } from "../config/config.js";
 import { resolveDefaultAgentId, resolveAgentWorkspaceDir } from "../agents/agent-scope.js";
+import type { OpenClawConfig } from "../config/config.js";
 import {
   resolveMemoryCacheSummary,
   resolveMemoryFtsState,
@@ -149,7 +149,7 @@ function resolvePhaseConfig(dreaming: RecordLike, phase: "light" | "deep" | "rem
 }
 
 export function resolveMemoryCorePluginConfig(cfg: OpenClawConfig): RecordLike {
-  return asRecord(asRecord(cfg.plugins?.entries)?.["memory-core"])?.config as RecordLike ?? {};
+  return (asRecord(asRecord(cfg.plugins?.entries)?.["memory-core"])?.config as RecordLike) ?? {};
 }
 
 export function resolveMemoryDreamingConfig(params: {

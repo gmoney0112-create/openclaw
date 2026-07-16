@@ -1,4 +1,1 @@
-export {
-  resolveGlobalMap,
-  resolveGlobalSingleton,
-} from "../shared/global-singleton.js";
+export { resolveGlobalMap, resolveGlobalSingleton } from "../shared/global-singleton.js";

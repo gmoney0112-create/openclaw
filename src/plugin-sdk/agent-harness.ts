@@ -1,5 +1,5 @@
-import { getChildLogger } from "../logging/logger.js";
 import type { RunEmbeddedPiAgentParams } from "../agents/pi-embedded-runner/run/params.js";
+import { getChildLogger } from "../logging/logger.js";
 
 export { resolveUserPath } from "../utils.js";
 export { resolveSandboxContext } from "../agents/sandbox/context.js";
@@ -22,10 +22,7 @@ export {
 } from "../agents/session-write-lock.js";
 export { emitSessionTranscriptUpdate } from "../sessions/transcript-events.js";
 export { callGatewayTool, type GatewayCallOptions } from "../agents/tools/gateway.js";
-export {
-  type NormalizedUsage,
-  normalizeUsage,
-} from "../agents/usage.js";
+export { type NormalizedUsage, normalizeUsage } from "../agents/usage.js";
 export {
   type MessagingToolSend,
   isMessagingTool,

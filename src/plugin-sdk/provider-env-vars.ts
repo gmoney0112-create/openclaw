@@ -29,6 +29,7 @@ export function getProviderEnvVars(providerId?: string | null): string[] {
     return [];
   }
   const envVars =
-    PROVIDER_ENV_VARS[normalizedProviderId] ?? PROVIDER_AUTH_ENV_VAR_CANDIDATES[normalizedProviderId];
+    PROVIDER_ENV_VARS[normalizedProviderId] ??
+    PROVIDER_AUTH_ENV_VAR_CANDIDATES[normalizedProviderId];
   return envVars ? [...envVars] : [];
 }

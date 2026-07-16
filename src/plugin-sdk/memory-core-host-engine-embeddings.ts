@@ -3,19 +3,13 @@ import type { OpenClawConfig } from "../config/config.js";
 export type { EmbeddingInput } from "../memory/embedding-inputs.js";
 export { hasNonTextEmbeddingParts } from "../memory/embedding-inputs.js";
 export { enforceEmbeddingMaxInputTokens } from "../memory/embedding-chunk-limits.js";
-export {
-  runGeminiEmbeddingBatches,
-  type GeminiBatchRequest,
-} from "../memory/batch-gemini.js";
+export { runGeminiEmbeddingBatches, type GeminiBatchRequest } from "../memory/batch-gemini.js";
 export {
   runOpenAiEmbeddingBatches,
   OPENAI_BATCH_ENDPOINT,
   type OpenAiBatchRequest,
 } from "../memory/batch-openai.js";
-export {
-  runVoyageEmbeddingBatches,
-  type VoyageBatchRequest,
-} from "../memory/batch-voyage.js";
+export { runVoyageEmbeddingBatches, type VoyageBatchRequest } from "../memory/batch-voyage.js";
 export {
   buildGeminiEmbeddingRequest,
   createGeminiEmbeddingProvider,

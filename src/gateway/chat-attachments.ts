@@ -1,6 +1,6 @@
+import { summarizePdfViaStrategyService } from "../integrations/strategy-service-client.js";
 import { estimateBase64DecodedBytes } from "../media/base64.js";
 import { sniffMimeFromBase64 } from "../media/sniff-mime-from-base64.js";
-import { summarizePdfViaStrategyService } from "../integrations/strategy-service-client.js";
 
 export type ChatAttachment = {
   type?: string;
@@ -108,7 +108,8 @@ function buildPdfSummaryBlock(params: {
   summary: string;
 }): string {
   const trimmedSummary = params.summary.trim();
-  const body = trimmedSummary.length > 0 ? trimmedSummary : "PDF attached, but no summary text was returned.";
+  const body =
+    trimmedSummary.length > 0 ? trimmedSummary : "PDF attached, but no summary text was returned.";
   return [
     `PDF attachment parsed automatically: ${params.fileName}`,
     `Document ID: ${params.docId}`,

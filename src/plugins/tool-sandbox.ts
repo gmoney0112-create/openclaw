@@ -144,11 +144,7 @@ export async function runInSandbox<TPayload, TResult>(
         return;
       }
       const suffix =
-        signal != null
-          ? `signal=${signal}`
-          : code != null
-            ? `code=${code}`
-            : "unknown exit";
+        signal != null ? `signal=${signal}` : code != null ? `code=${code}` : "unknown exit";
       finish(() => reject(createSandboxError(`Sandbox exited before replying (${suffix})`)));
     });
 
@@ -188,10 +184,7 @@ function coerceUrl(input: string | URL): URL {
   return input instanceof URL ? input : new URL(input);
 }
 
-function resolveHttpRequestUrl(
-  defaultProtocol: "http:" | "https:",
-  args: unknown[],
-): URL | null {
+function resolveHttpRequestUrl(defaultProtocol: "http:" | "https:", args: unknown[]): URL | null {
   const [first, second] = args;
   if (first instanceof URL) {
     return first;
@@ -266,8 +259,7 @@ export function installSandboxNetworkGuards(allowedHosts?: readonly string[]): v
   const originalFetch = globalThis.fetch?.bind(globalThis);
   if (originalFetch) {
     globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
-      const target =
-        typeof input === "string" || input instanceof URL ? input : new URL(input.url);
+      const target = typeof input === "string" || input instanceof URL ? input : new URL(input.url);
       assertUrlAllowed(coerceUrl(target), allowedHosts);
       return await originalFetch(input as never, init);
     }) as typeof globalThis.fetch;

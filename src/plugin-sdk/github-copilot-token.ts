@@ -4,8 +4,7 @@
 
 export const DEFAULT_COPILOT_API_BASE_URL = "https://api.individual.githubcopilot.com";
 
-const COPILOT_TOKEN_ENDPOINT =
-  "https://api.github.com/copilot_internal/v2/token";
+const COPILOT_TOKEN_ENDPOINT = "https://api.github.com/copilot_internal/v2/token";
 
 /**
  * Derives the Copilot API base URL from a raw Copilot API token by parsing
@@ -81,9 +80,7 @@ export async function resolveCopilotApiToken(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Copilot token fetch failed: ${response.status} ${response.statusText}`,
-    );
+    throw new Error(`Copilot token fetch failed: ${response.status} ${response.statusText}`);
   }
 
   const body = (await response.json()) as { token: string; expires_at: number };

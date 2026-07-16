@@ -1,8 +1,8 @@
-import type { CliBackendConfig } from "../config/types.js";
 import {
   CLI_FRESH_WATCHDOG_DEFAULTS,
   CLI_RESUME_WATCHDOG_DEFAULTS,
 } from "../agents/cli-watchdog-defaults.js";
+import type { CliBackendConfig } from "../config/types.js";
 
 export { CLI_FRESH_WATCHDOG_DEFAULTS, CLI_RESUME_WATCHDOG_DEFAULTS };
 export type { CliBackendConfig };

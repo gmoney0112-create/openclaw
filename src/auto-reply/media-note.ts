@@ -65,7 +65,10 @@ async function summarizePdfAttachment(params: {
   path: string;
   type?: string;
 }): Promise<string | undefined> {
-  const serviceBase = (process.env.STRATEGY_SERVICE_URL || "http://127.0.0.1:8011").replace(/\/+$/, "");
+  const serviceBase = (process.env.STRATEGY_SERVICE_URL || "http://127.0.0.1:8011").replace(
+    /\/+$/,
+    "",
+  );
   try {
     const fs = await import("node:fs/promises");
     const data = await fs.readFile(params.path);

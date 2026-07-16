@@ -1,6 +1,6 @@
-import type { OpenClawConfig } from "./memory-core-host-engine-foundation.js";
 import type { MemorySearchManagerResult } from "../memory/search-manager.js";
 import { getMemorySearchManager } from "../memory/search-manager.js";
+import type { OpenClawConfig } from "./memory-core-host-engine-foundation.js";
 
 export type { MemorySearchManagerResult };
 

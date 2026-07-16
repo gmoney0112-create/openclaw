@@ -7,6 +7,7 @@ export {
   normalizeOptionalAccountId,
 } from "./account-id.js";
 export {
+  createAccountListHelpers,
   listCombinedAccountIds,
   listConfiguredAccountIds,
   resolveMergedAccountConfig,

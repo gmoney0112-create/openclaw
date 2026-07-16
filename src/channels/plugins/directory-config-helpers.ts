@@ -242,3 +242,26 @@ export function listResolvedDirectoryGroupEntriesFromMapKeys<ResolvedAccount>(
     normalizeId: params.normalizeId,
   });
 }
+
+/** Curry a channel's `inspectAccount`/`resolveSources` pair into a directory lister for read-only inspected accounts. */
+export function createInspectedDirectoryEntriesLister<InspectedAccount>(config: {
+  kind: "user" | "group";
+  inspectAccount: (
+    cfg: OpenClawConfig,
+    accountId?: string | null,
+  ) => InspectedAccount | null | undefined;
+  resolveSources: (account: InspectedAccount) => Iterable<unknown>[];
+  normalizeId: (entry: string) => string | null | undefined;
+}): (params: DirectoryConfigParams) => ChannelDirectoryEntry[] {
+  return (params) => listInspectedDirectoryEntriesFromSources({ ...params, ...config });
+}
+
+/** Curry a channel's `resolveAccount`/`resolveSources` pair into a directory lister for live-resolved accounts. */
+export function createResolvedDirectoryEntriesLister<ResolvedAccount>(config: {
+  kind: "user" | "group";
+  resolveAccount: (cfg: OpenClawConfig, accountId?: string | null) => ResolvedAccount;
+  resolveSources: (account: ResolvedAccount) => Iterable<unknown>[];
+  normalizeId: (entry: string) => string | null | undefined;
+}): (params: DirectoryConfigParams) => ChannelDirectoryEntry[] {
+  return (params) => listResolvedDirectoryEntriesFromSources({ ...params, ...config });
+}

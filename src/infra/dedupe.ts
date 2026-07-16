@@ -13,6 +13,22 @@ type DedupeCacheOptions = {
   maxSize: number;
 };
 
+/**
+ * Resolve a process-wide singleton DedupeCache keyed by a `Symbol.for(...)` key.
+ * Stored on `globalThis` (rather than module scope) so the cache stays shared
+ * even if the bundler duplicates this module across separate chunks.
+ */
+export function resolveGlobalDedupeCache(key: symbol, options: DedupeCacheOptions): DedupeCache {
+  const registry = globalThis as unknown as Record<symbol, DedupeCache>;
+  const existing = registry[key];
+  if (existing) {
+    return existing;
+  }
+  const cache = createDedupeCache(options);
+  registry[key] = cache;
+  return cache;
+}
+
 export function createDedupeCache(options: DedupeCacheOptions): DedupeCache {
   const ttlMs = Math.max(0, options.ttlMs);
   const maxSize = Math.max(0, Math.floor(options.maxSize));

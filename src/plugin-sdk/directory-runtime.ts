@@ -19,3 +19,4 @@ export {
   toDirectoryEntries,
 } from "../channels/plugins/directory-config-helpers.js";
 export { inspectReadOnlyChannelAccount } from "../channels/read-only-account-inspect.js";
+export { createRuntimeDirectoryLiveAdapter } from "../channels/plugins/runtime-forwarders.js";

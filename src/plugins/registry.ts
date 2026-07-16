@@ -9,6 +9,7 @@ import type {
 import { registerInternalHook } from "../hooks/internal-hooks.js";
 import type { HookEntry } from "../hooks/types.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
+import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
 import { resolveUserPath } from "../utils.js";
 import { registerPluginCommand, validatePluginCommandDefinition } from "./commands.js";
 import { normalizePluginHttpPath } from "./http-path.js";
@@ -54,6 +55,10 @@ import type {
   PluginHookRegistration as TypedPluginHookRegistration,
   SpeechProviderPlugin,
   WebSearchProviderPlugin,
+  VideoGenerationProviderPlugin,
+  MusicGenerationProviderPlugin,
+  MemoryEmbeddingProviderPlugin,
+  AgentHarnessProviderPlugin,
 } from "./types.js";
 
 export type PluginToolRegistration = {
@@ -123,9 +128,19 @@ export type PluginMediaUnderstandingProviderRegistration =
   PluginOwnedProviderRegistration<MediaUnderstandingProviderPlugin>;
 export type PluginImageGenerationProviderRegistration =
   PluginOwnedProviderRegistration<ImageGenerationProviderPlugin>;
+export type PluginVideoGenerationProviderRegistration =
+  PluginOwnedProviderRegistration<VideoGenerationProviderPlugin>;
+export type PluginMusicGenerationProviderRegistration =
+  PluginOwnedProviderRegistration<MusicGenerationProviderPlugin>;
+export type PluginMemoryEmbeddingProviderRegistration =
+  PluginOwnedProviderRegistration<MemoryEmbeddingProviderPlugin>;
+export type PluginRealtimeTranscriptionProviderRegistration =
+  PluginOwnedProviderRegistration<RealtimeTranscriptionProviderPlugin>;
 export type PluginWebSearchProviderRegistration =
   PluginOwnedProviderRegistration<WebSearchProviderPlugin>;
 export type PluginCliBackendRegistration = PluginOwnedProviderRegistration<CliBackendPlugin>;
+export type PluginAgentHarnessRegistration =
+  PluginOwnedProviderRegistration<AgentHarnessProviderPlugin>;
 
 export type PluginHookRegistration = {
   pluginId: string;
@@ -183,8 +198,13 @@ export type PluginRecord = {
   speechProviderIds: string[];
   mediaUnderstandingProviderIds: string[];
   imageGenerationProviderIds: string[];
+  videoGenerationProviderIds: string[];
+  musicGenerationProviderIds: string[];
+  memoryEmbeddingProviderIds: string[];
+  realtimeTranscriptionProviderIds: string[];
   webSearchProviderIds: string[];
   cliBackendIds: string[];
+  agentHarnessIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
   services: string[];
@@ -207,8 +227,13 @@ export type PluginRegistry = {
   speechProviders: PluginSpeechProviderRegistration[];
   mediaUnderstandingProviders: PluginMediaUnderstandingProviderRegistration[];
   imageGenerationProviders: PluginImageGenerationProviderRegistration[];
+  videoGenerationProviders: PluginVideoGenerationProviderRegistration[];
+  musicGenerationProviders: PluginMusicGenerationProviderRegistration[];
+  memoryEmbeddingProviders: PluginMemoryEmbeddingProviderRegistration[];
+  realtimeTranscriptionProviders: PluginRealtimeTranscriptionProviderRegistration[];
   webSearchProviders: PluginWebSearchProviderRegistration[];
   cliBackends: PluginCliBackendRegistration[];
+  agentHarnesses: PluginAgentHarnessRegistration[];
   gatewayHandlers: GatewayRequestHandlers;
   httpRoutes: PluginHttpRouteRegistration[];
   cliRegistrars: PluginCliRegistration[];
@@ -667,6 +692,68 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerVideoGenerationProvider = (
+    record: PluginRecord,
+    provider: VideoGenerationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "video-generation provider",
+      registrations: registry.videoGenerationProviders,
+      ownedIds: record.videoGenerationProviderIds,
+    });
+  };
+
+  const registerMusicGenerationProvider = (
+    record: PluginRecord,
+    provider: MusicGenerationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "music-generation provider",
+      registrations: registry.musicGenerationProviders,
+      ownedIds: record.musicGenerationProviderIds,
+    });
+  };
+
+  const registerMemoryEmbeddingProvider = (
+    record: PluginRecord,
+    provider: MemoryEmbeddingProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "memory-embedding provider",
+      registrations: registry.memoryEmbeddingProviders,
+      ownedIds: record.memoryEmbeddingProviderIds,
+    });
+  };
+
+  const registerRealtimeTranscriptionProvider = (
+    record: PluginRecord,
+    provider: RealtimeTranscriptionProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "realtime-transcription provider",
+      registrations: registry.realtimeTranscriptionProviders,
+      ownedIds: record.realtimeTranscriptionProviderIds,
+    });
+  };
+
+  const registerAgentHarness = (record: PluginRecord, provider: AgentHarnessProviderPlugin) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "agent-harness",
+      registrations: registry.agentHarnesses,
+      ownedIds: record.agentHarnessIds,
+    });
+  };
+
   const registerCli = (
     record: PluginRecord,
     registrar: OpenClawPluginCliRegistrar,
@@ -937,6 +1024,26 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
           : () => {},
       registerCliBackend:
         registrationMode === "full" ? (provider) => registerCliBackend(record, provider) : () => {},
+      registerVideoGenerationProvider:
+        registrationMode === "full"
+          ? (provider) => registerVideoGenerationProvider(record, provider)
+          : () => {},
+      registerMusicGenerationProvider:
+        registrationMode === "full"
+          ? (provider) => registerMusicGenerationProvider(record, provider)
+          : () => {},
+      registerMemoryEmbeddingProvider:
+        registrationMode === "full"
+          ? (provider) => registerMemoryEmbeddingProvider(record, provider)
+          : () => {},
+      registerRealtimeTranscriptionProvider:
+        registrationMode === "full"
+          ? (provider) => registerRealtimeTranscriptionProvider(record, provider)
+          : () => {},
+      registerAgentHarness:
+        registrationMode === "full"
+          ? (provider) => registerAgentHarness(record, provider)
+          : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -1013,8 +1120,13 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerSpeechProvider,
     registerMediaUnderstandingProvider,
     registerImageGenerationProvider,
+    registerVideoGenerationProvider,
+    registerMusicGenerationProvider,
+    registerMemoryEmbeddingProvider,
+    registerRealtimeTranscriptionProvider,
     registerWebSearchProvider,
     registerCliBackend,
+    registerAgentHarness,
     registerGatewayMethod,
     registerCli,
     registerService,

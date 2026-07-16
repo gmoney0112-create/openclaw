@@ -25,7 +25,12 @@ import type { HookEntry } from "../hooks/types.js";
 import type { ImageGenerationProvider } from "../image-generation/types.js";
 import type { ProviderUsageSnapshot } from "../infra/provider-usage.types.js";
 import type { MediaUnderstandingProvider } from "../media-understanding/types.js";
+import type { AgentHarness } from "../plugin-sdk/agent-harness.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
+import type { MemoryEmbeddingProvider } from "../plugin-sdk/memory-core-host-engine-embeddings.js";
+import type { MusicGenerationProvider } from "../plugin-sdk/music-generation.js";
+import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
+import type { VideoGenerationProvider } from "../plugin-sdk/video-generation.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { RuntimeWebSearchMetadata } from "../secrets/runtime-web-tools.types.js";
 import type {
@@ -926,6 +931,10 @@ export type PluginSpeechProviderEntry = SpeechProviderPlugin & {
 
 export type MediaUnderstandingProviderPlugin = MediaUnderstandingProvider;
 export type ImageGenerationProviderPlugin = ImageGenerationProvider;
+export type VideoGenerationProviderPlugin = VideoGenerationProvider;
+export type MusicGenerationProviderPlugin = MusicGenerationProvider;
+export type MemoryEmbeddingProviderPlugin = MemoryEmbeddingProvider;
+export type AgentHarnessProviderPlugin = AgentHarness;
 
 export type OpenClawPluginGatewayMethod = {
   method: string;
@@ -1319,10 +1328,20 @@ export type OpenClawPluginApi = {
   registerMediaUnderstandingProvider: (provider: MediaUnderstandingProviderPlugin) => void;
   /** Register an image generation provider (image generation capability). */
   registerImageGenerationProvider: (provider: ImageGenerationProviderPlugin) => void;
+  /** Register a video generation provider (video generation capability). */
+  registerVideoGenerationProvider: (provider: VideoGenerationProviderPlugin) => void;
+  /** Register a music generation provider (music generation capability). */
+  registerMusicGenerationProvider: (provider: MusicGenerationProviderPlugin) => void;
+  /** Register a memory embedding provider (memory embeddings capability). */
+  registerMemoryEmbeddingProvider: (provider: MemoryEmbeddingProviderPlugin) => void;
+  /** Register a realtime transcription provider (realtime transcription capability). */
+  registerRealtimeTranscriptionProvider: (provider: RealtimeTranscriptionProviderPlugin) => void;
   /** Register a web search provider (web search capability). */
   registerWebSearchProvider: (provider: WebSearchProviderPlugin) => void;
   /** Register a CLI-backend agent runner (e.g. an external `claude`/`codex`-style CLI). */
   registerCliBackend: (provider: CliBackendPlugin) => void;
+  /** Register an agent harness provider (agent execution capability). */
+  registerAgentHarness: (provider: AgentHarnessProviderPlugin) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

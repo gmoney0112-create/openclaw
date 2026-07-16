@@ -512,6 +512,7 @@ function createPluginRecord(params: {
     mediaUnderstandingProviderIds: [],
     imageGenerationProviderIds: [],
     webSearchProviderIds: [],
+    cliBackendIds: [],
     gatewayMethods: [],
     cliCommands: [],
     services: [],

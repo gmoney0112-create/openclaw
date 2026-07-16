@@ -8,6 +8,7 @@ import type {
 } from "../gateway/server-methods/types.js";
 import { registerInternalHook } from "../hooks/internal-hooks.js";
 import type { HookEntry } from "../hooks/types.js";
+import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
 import { resolveUserPath } from "../utils.js";
 import { registerPluginCommand, validatePluginCommandDefinition } from "./commands.js";
 import { normalizePluginHttpPath } from "./http-path.js";
@@ -124,6 +125,7 @@ export type PluginImageGenerationProviderRegistration =
   PluginOwnedProviderRegistration<ImageGenerationProviderPlugin>;
 export type PluginWebSearchProviderRegistration =
   PluginOwnedProviderRegistration<WebSearchProviderPlugin>;
+export type PluginCliBackendRegistration = PluginOwnedProviderRegistration<CliBackendPlugin>;
 
 export type PluginHookRegistration = {
   pluginId: string;
@@ -182,6 +184,7 @@ export type PluginRecord = {
   mediaUnderstandingProviderIds: string[];
   imageGenerationProviderIds: string[];
   webSearchProviderIds: string[];
+  cliBackendIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
   services: string[];
@@ -205,6 +208,7 @@ export type PluginRegistry = {
   mediaUnderstandingProviders: PluginMediaUnderstandingProviderRegistration[];
   imageGenerationProviders: PluginImageGenerationProviderRegistration[];
   webSearchProviders: PluginWebSearchProviderRegistration[];
+  cliBackends: PluginCliBackendRegistration[];
   gatewayHandlers: GatewayRequestHandlers;
   httpRoutes: PluginHttpRouteRegistration[];
   cliRegistrars: PluginCliRegistration[];
@@ -653,6 +657,16 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerCliBackend = (record: PluginRecord, provider: CliBackendPlugin) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "CLI backend",
+      registrations: registry.cliBackends,
+      ownedIds: record.cliBackendIds,
+    });
+  };
+
   const registerCli = (
     record: PluginRecord,
     registrar: OpenClawPluginCliRegistrar,
@@ -921,6 +935,8 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerWebSearchProvider(record, provider)
           : () => {},
+      registerCliBackend:
+        registrationMode === "full" ? (provider) => registerCliBackend(record, provider) : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -998,6 +1014,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerMediaUnderstandingProvider,
     registerImageGenerationProvider,
     registerWebSearchProvider,
+    registerCliBackend,
     registerGatewayMethod,
     registerCli,
     registerService,

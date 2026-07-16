@@ -25,6 +25,7 @@ import type { HookEntry } from "../hooks/types.js";
 import type { ImageGenerationProvider } from "../image-generation/types.js";
 import type { ProviderUsageSnapshot } from "../infra/provider-usage.types.js";
 import type { MediaUnderstandingProvider } from "../media-understanding/types.js";
+import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { RuntimeWebSearchMetadata } from "../secrets/runtime-web-tools.types.js";
 import type {
@@ -1320,6 +1321,8 @@ export type OpenClawPluginApi = {
   registerImageGenerationProvider: (provider: ImageGenerationProviderPlugin) => void;
   /** Register a web search provider (web search capability). */
   registerWebSearchProvider: (provider: WebSearchProviderPlugin) => void;
+  /** Register a CLI-backend agent runner (e.g. an external `claude`/`codex`-style CLI). */
+  registerCliBackend: (provider: CliBackendPlugin) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

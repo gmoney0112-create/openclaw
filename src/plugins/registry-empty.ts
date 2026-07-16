@@ -13,6 +13,7 @@ export function createEmptyPluginRegistry(): PluginRegistry {
     mediaUnderstandingProviders: [],
     imageGenerationProviders: [],
     webSearchProviders: [],
+    cliBackends: [],
     gatewayHandlers: {},
     httpRoutes: [],
     cliRegistrars: [],

@@ -21,6 +21,7 @@ export function createMockPluginRegistry(
         mediaUnderstandingProviderIds: [],
         imageGenerationProviderIds: [],
         webSearchProviderIds: [],
+        cliBackendIds: [],
         gatewayMethods: [],
         cliCommands: [],
         services: [],

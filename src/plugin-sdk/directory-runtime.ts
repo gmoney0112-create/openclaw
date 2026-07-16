@@ -4,6 +4,7 @@ export type { ReadOnlyInspectedAccount } from "../channels/read-only-account-ins
 export {
   applyDirectoryQueryAndLimit,
   collectNormalizedDirectoryIds,
+  createChannelDirectoryAdapter,
   createInspectedDirectoryEntriesLister,
   createResolvedDirectoryEntriesLister,
   listDirectoryEntriesFromSources,

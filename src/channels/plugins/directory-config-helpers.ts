@@ -1,6 +1,14 @@
 import type { OpenClawConfig } from "../../config/types.js";
 import type { DirectoryConfigParams } from "./directory-types.js";
+import type { ChannelDirectoryAdapter } from "./types.adapters.js";
 import type { ChannelDirectoryEntry } from "./types.js";
+
+/** Build a channel's `directory` plugin adapter from its listPeers/listGroups/etc callbacks. */
+export function createChannelDirectoryAdapter(
+  adapter: ChannelDirectoryAdapter,
+): ChannelDirectoryAdapter {
+  return adapter;
+}
 
 function resolveDirectoryQuery(query?: string | null): string {
   return query?.trim().toLowerCase() || "";

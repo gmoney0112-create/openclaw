@@ -23,12 +23,14 @@ type XaiCatalogEntry = {
   cost: XaiCost;
 };
 
-const XAI_GROK_4_COST = {
+export const XAI_DEFAULT_COST = {
   input: 3,
   output: 15,
   cacheRead: 0.75,
   cacheWrite: 0,
 } satisfies XaiCost;
+
+const XAI_GROK_4_COST = XAI_DEFAULT_COST;
 
 const XAI_FAST_COST = {
   input: 0.2,

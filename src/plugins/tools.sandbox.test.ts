@@ -83,7 +83,7 @@ describe("resolvePluginTools sandbox wrapping", () => {
       env,
     });
 
-    const result = await tool!.execute("call-1", { amount: 497 });
+    const result = await tool.execute("call-1", { amount: 497 });
 
     expect(result).toEqual({
       content: [{ type: "text", text: "sandbox-ok" }],
@@ -114,7 +114,7 @@ describe("resolvePluginTools sandbox wrapping", () => {
         },
       }),
     );
-    expect(getPluginToolMeta(tool!)).toEqual({
+    expect(getPluginToolMeta(tool)).toEqual({
       pluginId: "revenue-executor",
       optional: false,
     });

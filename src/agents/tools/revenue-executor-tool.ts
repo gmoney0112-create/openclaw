@@ -64,7 +64,7 @@ export function createRevenueExecutorTool(): AnyAgentTool {
       _signal?: AbortSignal,
       _onUpdate?: (update: unknown) => void,
     ) => {
-      const params = args as Record<string, unknown>;
+      const params = args;
       const action = readStringParam(params, "action", { required: true });
       const timeoutMs = readNumberParam(params, "timeoutMs", { integer: true });
 

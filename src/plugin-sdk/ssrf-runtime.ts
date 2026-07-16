@@ -68,7 +68,7 @@ async function resolvesToPrivateNetworkHost(
 ): Promise<boolean> {
   try {
     const results = await (lookupFn ?? dnsLookup)(hostname, { all: true });
-    return (results as LookupAddress[]).some((entry) => isPrivateIpAddress(entry.address));
+    return (results).some((entry) => isPrivateIpAddress(entry.address));
   } catch {
     return false;
   }

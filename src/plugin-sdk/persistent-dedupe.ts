@@ -22,6 +22,7 @@ export type PersistentDedupeCheckOptions = {
 
 export type PersistentDedupe = {
   checkAndRecord: (key: string, options?: PersistentDedupeCheckOptions) => Promise<boolean>;
+  forget: (key: string, options?: PersistentDedupeCheckOptions) => Promise<void>;
   warmup: (namespace?: string, onError?: (error: unknown) => void) => Promise<number>;
   clearMemory: () => void;
   memorySize: () => number;
@@ -181,10 +182,141 @@ export function createPersistentDedupe(options: PersistentDedupeOptions): Persis
     }
   }
 
+  async function forget(key: string, dedupeOptions?: PersistentDedupeCheckOptions): Promise<void> {
+    const trimmed = key.trim();
+    if (!trimmed) {
+      return;
+    }
+    const namespace = dedupeOptions?.namespace?.trim() || "global";
+    const scopedKey = `${namespace}:${trimmed}`;
+    memory.delete(scopedKey);
+
+    const onDiskError = dedupeOptions?.onDiskError ?? options.onDiskError;
+    const path = options.resolveFilePath(namespace);
+    try {
+      await withFileLock(path, lockOptions, async () => {
+        const { value } = await readJsonFileWithFallback<PersistentDedupeData>(path, {});
+        const data = sanitizeData(value);
+        if (!(trimmed in data)) {
+          return;
+        }
+        delete data[trimmed];
+        await writeJsonFileAtomically(path, data);
+      });
+    } catch (error) {
+      onDiskError?.(error);
+    }
+  }
+
   return {
     checkAndRecord,
+    forget,
     warmup,
     clearMemory: () => memory.clear(),
     memorySize: () => memory.size(),
+  };
+}
+
+export type ClaimableDedupeOptions = {
+  ttlMs: number;
+  memoryMaxSize: number;
+  fileMaxEntries?: number;
+  resolveFilePath?: (namespace: string) => string;
+  lockOptions?: Partial<FileLockOptions>;
+  onDiskError?: (error: unknown) => void;
+};
+
+export type ClaimResult = { kind: "claimed" | "duplicate" | "inflight" | "invalid" };
+
+export type ClaimableDedupe = {
+  claim: (key: string, options?: { namespace?: string; now?: number }) => Promise<ClaimResult>;
+  commit: (key: string, options?: { namespace?: string }) => Promise<boolean>;
+  release: (key: string, options?: { namespace?: string; error?: unknown }) => void;
+  clearMemory: () => void;
+  memorySize: () => number;
+};
+
+/**
+ * Claim/commit/release wrapper over check-and-record dedup, so callers can
+ * gate side-effecting work on a durable "have I already claimed this key"
+ * check (surviving process restarts when `resolveFilePath` is set), then
+ * confirm success with `commit` or free the key for retry with `release` on
+ * failure.
+ */
+export function createClaimableDedupe(options: ClaimableDedupeOptions): ClaimableDedupe {
+  const ttlMs = Math.max(0, Math.floor(options.ttlMs));
+  const memoryMaxSize = Math.max(0, Math.floor(options.memoryMaxSize));
+  const pendingClaims = new Set<string>();
+
+  const persistent = options.resolveFilePath
+    ? createPersistentDedupe({
+        ttlMs,
+        memoryMaxSize,
+        fileMaxEntries: options.fileMaxEntries ?? memoryMaxSize,
+        resolveFilePath: options.resolveFilePath,
+        lockOptions: options.lockOptions,
+        onDiskError: options.onDiskError,
+      })
+    : null;
+  const memory = persistent ? null : createDedupeCache({ ttlMs, maxSize: memoryMaxSize });
+
+  function scopedKey(key: string, namespace?: string): string {
+    return `${namespace?.trim() || "global"}:${key}`;
+  }
+
+  async function claim(
+    key: string,
+    claimOptions?: { namespace?: string; now?: number },
+  ): Promise<ClaimResult> {
+    const trimmed = key.trim();
+    if (!trimmed) {
+      return { kind: "invalid" };
+    }
+    const scoped = scopedKey(trimmed, claimOptions?.namespace);
+    if (pendingClaims.has(scoped)) {
+      return { kind: "inflight" };
+    }
+    const isNew = persistent
+      ? await persistent.checkAndRecord(trimmed, {
+          namespace: claimOptions?.namespace,
+          now: claimOptions?.now,
+        })
+      : !memory!.check(scoped, claimOptions?.now);
+    if (!isNew) {
+      return { kind: "duplicate" };
+    }
+    pendingClaims.add(scoped);
+    return { kind: "claimed" };
+  }
+
+  async function commit(key: string, commitOptions?: { namespace?: string }): Promise<boolean> {
+    const trimmed = key.trim();
+    if (!trimmed) {
+      return true;
+    }
+    pendingClaims.delete(scopedKey(trimmed, commitOptions?.namespace));
+    return true;
+  }
+
+  function release(key: string, releaseOptions?: { namespace?: string; error?: unknown }): void {
+    const trimmed = key.trim();
+    if (!trimmed) {
+      return;
+    }
+    const scoped = scopedKey(trimmed, releaseOptions?.namespace);
+    pendingClaims.delete(scoped);
+    if (persistent) {
+      void persistent.forget(trimmed, { namespace: releaseOptions?.namespace });
+    } else {
+      memory!.delete(scoped);
+    }
+  }
+
+  return {
+    claim,
+    commit,
+    release,
+    clearMemory: () => (persistent ? persistent.clearMemory() : memory!.clear()),
+    memorySize: () => (persistent ? persistent.memorySize() : memory!.size()),
   };
 }

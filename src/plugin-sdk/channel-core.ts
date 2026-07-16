@@ -13,7 +13,7 @@ export {
   tryReadSecretFileSync,
 } from "../infra/secret-file.js";
 export type { SecretFileReadOptions, SecretFileReadResult } from "../infra/secret-file.js";
-export { defineSetupPluginEntry } from "./core.js";
+export { createChannelPluginBase, defineSetupPluginEntry } from "./core.js";
 export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
 
 type TextPairingConfig = Parameters<typeof createTextPairingAdapter>[0];

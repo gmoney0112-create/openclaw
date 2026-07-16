@@ -230,3 +230,41 @@ export function stripMentions(
   result = result.replace(/@[0-9+]{5,}/g, " ");
   return result.replace(/\s+/g, " ").trim();
 }
+
+export function resolveInboundMentionDecision(params: {
+  facts: {
+    canDetectMention: boolean;
+    wasMentioned: boolean;
+    hasAnyMention: boolean;
+    implicitMentionKinds: string[];
+  };
+  policy: {
+    isGroup: boolean;
+    requireMention: boolean;
+    allowTextCommands: boolean;
+    hasControlCommand: boolean;
+    commandAuthorized: boolean;
+  };
+}): { effectiveWasMentioned: boolean } {
+  const { facts, policy } = params;
+
+  // If explicit mention was detected, use it
+  if (facts.wasMentioned) {
+    return { effectiveWasMentioned: true };
+  }
+
+  // If no mention detection available, proceed
+  if (!facts.canDetectMention) {
+    return { effectiveWasMentioned: false };
+  }
+
+  // In groups with requireMention, check implicit mentions or commands
+  if (policy.isGroup && policy.requireMention) {
+    const hasImplicitMention = facts.implicitMentionKinds.length > 0;
+    const hasAuthorizedCommand = policy.commandAuthorized && policy.hasControlCommand;
+    return { effectiveWasMentioned: hasImplicitMention || hasAuthorizedCommand };
+  }
+
+  // In DMs or groups without requireMention
+  return { effectiveWasMentioned: false };
+}

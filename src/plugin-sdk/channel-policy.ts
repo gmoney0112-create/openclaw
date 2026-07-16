@@ -11,6 +11,7 @@ export {
   createAllowlistProviderOpenWarningCollector,
   createAllowlistProviderRestrictSendersWarningCollector,
   createAllowlistProviderRouteAllowlistWarningCollector,
+  createDangerousNameMatchingMutableAllowlistWarningCollector,
   createOpenGroupPolicyRestrictSendersWarningCollector,
   createOpenProviderGroupPolicyWarningCollector,
   createOpenProviderConfiguredRouteWarningCollector,

@@ -326,3 +326,27 @@ export function createOpenProviderConfiguredRouteWarningCollector<ResolvedAccoun
       }),
   });
 }
+
+/** Build a doctor-facing warning collector that flags allowlist entries matching a channel's "name-based" (as opposed to stable-id) shape. */
+export function createDangerousNameMatchingMutableAllowlistWarningCollector<Account>(params: {
+  channel: string;
+  detector: (entry: string) => boolean;
+  collectLists: (scope: {
+    prefix: string;
+    account: Account;
+  }) => Array<{ pathLabel: string; list?: Array<string | number> | null }>;
+}): (scope: { prefix: string; account: Account }) => string[] {
+  return (scope) => {
+    const warnings: string[] = [];
+    for (const { pathLabel, list } of params.collectLists(scope)) {
+      for (const entry of list ?? []) {
+        if (params.detector(String(entry))) {
+          warnings.push(
+            `- ${params.channel}: ${pathLabel} allows "${entry}" by name, which can match unintended senders if they change their display name. Prefer a stable ID where possible.`,
+          );
+        }
+      }
+    }
+    return warnings;
+  };
+}

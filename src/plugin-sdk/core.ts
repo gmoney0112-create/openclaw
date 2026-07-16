@@ -17,6 +17,7 @@ import type {
 } from "../plugins/types.js";
 
 export { createDedupeCache, resolveGlobalDedupeCache } from "../infra/dedupe.js";
+export { createSubsystemLogger } from "../logging/subsystem.js";
 export type {
   AnyAgentTool,
   MediaUnderstandingProviderPlugin,

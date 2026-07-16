@@ -3,6 +3,8 @@ import { mkdtemp, rm } from "node:fs/promises";
 import path from "node:path";
 import { resolvePreferredOpenClawTmpDir } from "../infra/tmp-openclaw-dir.js";
 
+export { resolvePreferredOpenClawTmpDir };
+
 function sanitizePrefix(prefix: string): string {
   const normalized = prefix.replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
   return normalized || "tmp";

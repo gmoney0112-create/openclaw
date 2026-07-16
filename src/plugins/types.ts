@@ -28,11 +28,16 @@ import type { MediaUnderstandingProvider } from "../media-understanding/types.js
 import type { AgentHarness } from "../plugin-sdk/agent-harness.js";
 import type { AutoCoderProvider } from "../plugin-sdk/auto-coder.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
+import type { DealSourcingProvider } from "../plugin-sdk/deal-sourcing.js";
+import type { GrowthHackingProvider } from "../plugin-sdk/growth-hacking.js";
+import type { LeadGenerationProvider } from "../plugin-sdk/lead-generation.js";
 import type { MemoryEmbeddingProvider } from "../plugin-sdk/memory-core-host-engine-embeddings.js";
 import type { MusicGenerationProvider } from "../plugin-sdk/music-generation.js";
 import type { OSAutomationProvider } from "../plugin-sdk/os-control.js";
 import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
 import type { ResearchProvider } from "../plugin-sdk/research.js";
+import type { SaaSBuilderProvider } from "../plugin-sdk/saas-builder.js";
+import type { SalesAutomationProvider } from "../plugin-sdk/sales-automation.js";
 import type { SkillProvider } from "../plugin-sdk/skills.js";
 import type { VideoGenerationProvider } from "../plugin-sdk/video-generation.js";
 import type { VoiceInterfaceProvider } from "../plugin-sdk/voice.js";
@@ -947,6 +952,12 @@ export type OSAutomationProviderPlugin = OSAutomationProvider;
 export type VoiceInterfaceProviderPlugin = VoiceInterfaceProvider;
 export type AutoCoderProviderPlugin = AutoCoderProvider;
 
+export type DealSourcingProviderPlugin = DealSourcingProvider;
+export type LeadGenerationProviderPlugin = LeadGenerationProvider;
+export type SalesAutomationProviderPlugin = SalesAutomationProvider;
+export type GrowthHackingProviderPlugin = GrowthHackingProvider;
+export type SaaSBuilderProviderPlugin = SaaSBuilderProvider;
+
 export type OpenClawPluginGatewayMethod = {
   method: string;
   handler: GatewayRequestHandler;
@@ -1363,6 +1374,16 @@ export type OpenClawPluginApi = {
   registerVoiceInterfaceProvider: (provider: VoiceInterfaceProviderPlugin) => void;
   /** Register an auto-coder provider (self-improving code capability). */
   registerAutoCoderProvider: (provider: AutoCoderProviderPlugin) => void;
+  /** Register a deal-sourcing provider (deal discovery capability). */
+  registerDealSourcingProvider: (provider: DealSourcingProviderPlugin) => void;
+  /** Register a lead-generation provider (lead discovery capability). */
+  registerLeadGenerationProvider: (provider: LeadGenerationProviderPlugin) => void;
+  /** Register a sales-automation provider (sales process automation capability). */
+  registerSalesAutomationProvider: (provider: SalesAutomationProviderPlugin) => void;
+  /** Register a growth-hacking provider (audience growth capability). */
+  registerGrowthHackingProvider: (provider: GrowthHackingProviderPlugin) => void;
+  /** Register a SaaS-builder provider (autonomous product creation capability). */
+  registerSaaSBuilderProvider: (provider: SaaSBuilderProviderPlugin) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

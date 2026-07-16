@@ -64,6 +64,11 @@ import type {
   OSAutomationProviderPlugin,
   VoiceInterfaceProviderPlugin,
   AutoCoderProviderPlugin,
+  DealSourcingProviderPlugin,
+  LeadGenerationProviderPlugin,
+  SalesAutomationProviderPlugin,
+  GrowthHackingProviderPlugin,
+  SaaSBuilderProviderPlugin,
 } from "./types.js";
 
 export type PluginToolRegistration = {
@@ -155,6 +160,16 @@ export type PluginVoiceInterfaceProviderRegistration =
   PluginOwnedProviderRegistration<VoiceInterfaceProviderPlugin>;
 export type PluginAutoCoderProviderRegistration =
   PluginOwnedProviderRegistration<AutoCoderProviderPlugin>;
+export type PluginDealSourcingProviderRegistration =
+  PluginOwnedProviderRegistration<DealSourcingProviderPlugin>;
+export type PluginLeadGenerationProviderRegistration =
+  PluginOwnedProviderRegistration<LeadGenerationProviderPlugin>;
+export type PluginSalesAutomationProviderRegistration =
+  PluginOwnedProviderRegistration<SalesAutomationProviderPlugin>;
+export type PluginGrowthHackingProviderRegistration =
+  PluginOwnedProviderRegistration<GrowthHackingProviderPlugin>;
+export type PluginSaaSBuilderProviderRegistration =
+  PluginOwnedProviderRegistration<SaaSBuilderProviderPlugin>;
 
 export type PluginHookRegistration = {
   pluginId: string;
@@ -224,6 +239,11 @@ export type PluginRecord = {
   osAutomationProviderIds: string[];
   voiceInterfaceProviderIds: string[];
   autoCoderProviderIds: string[];
+  dealSourcingProviderIds: string[];
+  leadGenerationProviderIds: string[];
+  salesAutomationProviderIds: string[];
+  growthHackingProviderIds: string[];
+  saasBuilderProviderIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
   services: string[];
@@ -258,6 +278,11 @@ export type PluginRegistry = {
   osAutomationProviders: PluginOSAutomationProviderRegistration[];
   voiceInterfaceProviders: PluginVoiceInterfaceProviderRegistration[];
   autoCoderProviders: PluginAutoCoderProviderRegistration[];
+  dealSourcingProviders: PluginDealSourcingProviderRegistration[];
+  leadGenerationProviders: PluginLeadGenerationProviderRegistration[];
+  salesAutomationProviders: PluginSalesAutomationProviderRegistration[];
+  growthHackingProviders: PluginGrowthHackingProviderRegistration[];
+  saasBuilderProviders: PluginSaaSBuilderProviderRegistration[];
   gatewayHandlers: GatewayRequestHandlers;
   httpRoutes: PluginHttpRouteRegistration[];
   cliRegistrars: PluginCliRegistration[];
@@ -834,6 +859,71 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerDealSourcingProvider = (
+    record: PluginRecord,
+    provider: DealSourcingProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "deal-sourcing provider",
+      registrations: registry.dealSourcingProviders,
+      ownedIds: record.dealSourcingProviderIds,
+    });
+  };
+
+  const registerLeadGenerationProvider = (
+    record: PluginRecord,
+    provider: LeadGenerationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "lead-generation provider",
+      registrations: registry.leadGenerationProviders,
+      ownedIds: record.leadGenerationProviderIds,
+    });
+  };
+
+  const registerSalesAutomationProvider = (
+    record: PluginRecord,
+    provider: SalesAutomationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "sales-automation provider",
+      registrations: registry.salesAutomationProviders,
+      ownedIds: record.salesAutomationProviderIds,
+    });
+  };
+
+  const registerGrowthHackingProvider = (
+    record: PluginRecord,
+    provider: GrowthHackingProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "growth-hacking provider",
+      registrations: registry.growthHackingProviders,
+      ownedIds: record.growthHackingProviderIds,
+    });
+  };
+
+  const registerSaaSBuilderProvider = (
+    record: PluginRecord,
+    provider: SaaSBuilderProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "SaaS-builder provider",
+      registrations: registry.saasBuilderProviders,
+      ownedIds: record.saasBuilderProviderIds,
+    });
+  };
+
   const registerCli = (
     record: PluginRecord,
     registrar: OpenClawPluginCliRegistrar,
@@ -1144,6 +1234,26 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerAutoCoderProvider(record, provider)
           : () => {},
+      registerDealSourcingProvider:
+        registrationMode === "full"
+          ? (provider) => registerDealSourcingProvider(record, provider)
+          : () => {},
+      registerLeadGenerationProvider:
+        registrationMode === "full"
+          ? (provider) => registerLeadGenerationProvider(record, provider)
+          : () => {},
+      registerSalesAutomationProvider:
+        registrationMode === "full"
+          ? (provider) => registerSalesAutomationProvider(record, provider)
+          : () => {},
+      registerGrowthHackingProvider:
+        registrationMode === "full"
+          ? (provider) => registerGrowthHackingProvider(record, provider)
+          : () => {},
+      registerSaaSBuilderProvider:
+        registrationMode === "full"
+          ? (provider) => registerSaaSBuilderProvider(record, provider)
+          : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -1232,6 +1342,11 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerOSAutomationProvider,
     registerVoiceInterfaceProvider,
     registerAutoCoderProvider,
+    registerDealSourcingProvider,
+    registerLeadGenerationProvider,
+    registerSalesAutomationProvider,
+    registerGrowthHackingProvider,
+    registerSaaSBuilderProvider,
     registerGatewayMethod,
     registerCli,
     registerService,

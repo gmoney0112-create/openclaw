@@ -95,7 +95,10 @@ RUN pnpm ui:build
 # Prune dev dependencies and strip build-only metadata before copying
 # runtime assets into the final image.
 FROM build AS runtime-assets
-RUN CI=false pnpm prune --prod && \
+# Set durably via ENV (not just an inline RUN prefix) so it can't be clobbered
+# by a platform-injected CI=false build variable overriding the pnpm process env.
+ENV CI=true
+RUN pnpm prune --prod && \
     find dist -type f \( -name '*.d.ts' -o -name '*.d.mts' -o -name '*.d.cts' -o -name '*.map' \) -delete
 
 # ── Runtime base images ─────────────────────────────────────────

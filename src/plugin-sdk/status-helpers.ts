@@ -222,6 +222,69 @@ export function createComputedAccountStatusAdapter<
   };
 }
 
+/** Async twin of createComputedAccountStatusAdapter for channels whose per-account snapshot requires awaiting I/O (e.g. checking auth state on disk). */
+export function createAsyncComputedAccountStatusAdapter<
+  ResolvedAccount,
+  Probe = unknown,
+  Audit = unknown,
+>(params: {
+  defaultRuntime?: ChannelAccountSnapshot;
+  resolveAccountSnapshot: (snapshotParams: {
+    account: ResolvedAccount;
+    runtime?: ChannelAccountSnapshot;
+    probe?: Probe;
+    audit?: Audit;
+  }) => Promise<{
+    accountId: string;
+    name?: string;
+    enabled?: boolean;
+    configured?: boolean;
+    extra?: Record<string, unknown>;
+  }>;
+  collectStatusIssues?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["collectStatusIssues"];
+  buildChannelSummary?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["buildChannelSummary"];
+  probeAccount?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["probeAccount"];
+  formatCapabilitiesProbe?: ChannelStatusAdapter<
+    ResolvedAccount,
+    Probe,
+    Audit
+  >["formatCapabilitiesProbe"];
+  auditAccount?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["auditAccount"];
+  buildCapabilitiesDiagnostics?: ChannelStatusAdapter<
+    ResolvedAccount,
+    Probe,
+    Audit
+  >["buildCapabilitiesDiagnostics"];
+  resolveAccountState?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["resolveAccountState"];
+  logSelfId?: ChannelStatusAdapter<ResolvedAccount, Probe, Audit>["logSelfId"];
+  skipStaleSocketHealthCheck?: boolean;
+}): ChannelStatusAdapter<ResolvedAccount, Probe, Audit> {
+  return {
+    defaultRuntime: params.defaultRuntime,
+    collectStatusIssues: params.collectStatusIssues,
+    buildChannelSummary: params.buildChannelSummary,
+    probeAccount: params.probeAccount,
+    formatCapabilitiesProbe: params.formatCapabilitiesProbe,
+    auditAccount: params.auditAccount,
+    buildCapabilitiesDiagnostics: params.buildCapabilitiesDiagnostics,
+    resolveAccountState: params.resolveAccountState,
+    logSelfId: params.logSelfId,
+    buildAccountSnapshot: async ({ account, runtime, probe, audit }) => {
+      const resolved = await params.resolveAccountSnapshot({ account, runtime, probe, audit });
+      return {
+        ...params.defaultRuntime,
+        ...runtime,
+        accountId: resolved.accountId,
+        name: resolved.name,
+        enabled: resolved.enabled,
+        configured: resolved.configured,
+        probe,
+        ...resolved.extra,
+      } as ChannelAccountSnapshot;
+    },
+  };
+}
+
 /** Convert account runtime errors into the generic channel status issue format. */
 export function collectStatusIssuesFromLastError(
   channel: string,

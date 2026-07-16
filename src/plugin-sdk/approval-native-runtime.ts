@@ -28,3 +28,13 @@ export function doesApprovalRequestMatchChannelAccount(params: {
   }
   return normalizeAccountId(boundAccountId) === normalizeAccountId(params.accountId);
 }
+
+/** Build a resolver that matches an exec/plugin approval request's origin target against the active session target. */
+export function createChannelNativeOriginTargetResolver<T>(params: T): T {
+  return params;
+}
+
+/** Build a resolver that maps a channel's configured approvers onto DM delivery targets. */
+export function createChannelApproverDmTargetResolver<T>(params: T): T {
+  return params;
+}

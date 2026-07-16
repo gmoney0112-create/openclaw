@@ -23,7 +23,10 @@ export {
   collectOpenProviderGroupPolicyWarnings,
   projectWarningCollector,
 } from "../channels/plugins/group-policy-warnings.js";
-export { buildAccountScopedDmSecurityPolicy } from "../channels/plugins/helpers.js";
+export {
+  buildAccountScopedDmSecurityPolicy,
+  createRestrictSendersChannelSecurity,
+} from "../channels/plugins/helpers.js";
 export {
   resolveChannelGroupRequireMention,
   resolveChannelGroupToolsPolicy,

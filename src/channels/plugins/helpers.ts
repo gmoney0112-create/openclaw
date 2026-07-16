@@ -1,6 +1,7 @@
 import { formatCliCommand } from "../../cli/command-format.js";
 import type { OpenClawConfig } from "../../config/config.js";
 import { DEFAULT_ACCOUNT_ID } from "../../routing/session-key.js";
+import type { ChannelSecurityAdapter, ChannelSecurityContext } from "./types.adapters.js";
 import type { ChannelSecurityDmPolicy } from "./types.core.js";
 import type { ChannelPlugin } from "./types.js";
 
@@ -65,5 +66,35 @@ export function buildAccountScopedDmSecurityPolicy(params: {
     approveHint:
       params.approveHint ?? formatPairingApproveHint(params.approveChannelId ?? params.channelKey),
     normalizeEntry: params.normalizeEntry,
+  };
+}
+
+export function createRestrictSendersChannelSecurity<
+  ResolvedAccount extends { accountId?: string | null },
+>(params: {
+  channelKey: string;
+  resolveDmPolicy: (account: ResolvedAccount) => string | null | undefined;
+  resolveDmAllowFrom: (account: ResolvedAccount) => Array<string | number> | null | undefined;
+  resolveGroupPolicy?: (account: ResolvedAccount) => string | null | undefined;
+  surface?: string;
+  openScope?: string;
+  groupPolicyPath?: string;
+  groupAllowFromPath?: string;
+  mentionGated?: boolean;
+  policyPathSuffix?: string;
+  normalizeDmEntry?: (raw: string) => string;
+}): ChannelSecurityAdapter<ResolvedAccount> {
+  return {
+    resolveDmPolicy: (ctx: ChannelSecurityContext<ResolvedAccount>) =>
+      buildAccountScopedDmSecurityPolicy({
+        cfg: ctx.cfg,
+        channelKey: params.channelKey,
+        accountId: ctx.accountId,
+        fallbackAccountId: ctx.account.accountId,
+        policy: params.resolveDmPolicy(ctx.account),
+        allowFrom: params.resolveDmAllowFrom(ctx.account),
+        policyPathSuffix: params.policyPathSuffix,
+        normalizeEntry: params.normalizeDmEntry,
+      }),
   };
 }

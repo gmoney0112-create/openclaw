@@ -54,3 +54,13 @@ export function stripUnsupportedSchemaKeywords(
 export function stripXaiUnsupportedKeywords(schema: unknown): unknown {
   return stripUnsupportedSchemaKeywords(schema, XAI_UNSUPPORTED_SCHEMA_KEYWORDS);
 }
+
+/**
+ * Shared provider-level tool-schema compatibility hooks, keyed by provider
+ * family (e.g. "openai", "gemini"). Returns an empty hook set for families
+ * with no known tool-schema quirks; extend the switch as compat needs are
+ * identified for a given family, mirroring buildProviderReplayFamilyHooks.
+ */
+export function buildProviderToolCompatFamilyHooks(_family: string): Record<string, unknown> {
+  return {};
+}

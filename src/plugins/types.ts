@@ -26,11 +26,16 @@ import type { ImageGenerationProvider } from "../image-generation/types.js";
 import type { ProviderUsageSnapshot } from "../infra/provider-usage.types.js";
 import type { MediaUnderstandingProvider } from "../media-understanding/types.js";
 import type { AgentHarness } from "../plugin-sdk/agent-harness.js";
+import type { AutoCoderProvider } from "../plugin-sdk/auto-coder.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
 import type { MemoryEmbeddingProvider } from "../plugin-sdk/memory-core-host-engine-embeddings.js";
 import type { MusicGenerationProvider } from "../plugin-sdk/music-generation.js";
+import type { OSAutomationProvider } from "../plugin-sdk/os-control.js";
 import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
+import type { ResearchProvider } from "../plugin-sdk/research.js";
+import type { SkillProvider } from "../plugin-sdk/skills.js";
 import type { VideoGenerationProvider } from "../plugin-sdk/video-generation.js";
+import type { VoiceInterfaceProvider } from "../plugin-sdk/voice.js";
 import type { RuntimeEnv } from "../runtime.js";
 import type { RuntimeWebSearchMetadata } from "../secrets/runtime-web-tools.types.js";
 import type {
@@ -936,6 +941,12 @@ export type MusicGenerationProviderPlugin = MusicGenerationProvider;
 export type MemoryEmbeddingProviderPlugin = MemoryEmbeddingProvider;
 export type AgentHarnessProviderPlugin = AgentHarness;
 
+export type SkillProviderPlugin = SkillProvider;
+export type ResearchProviderPlugin = ResearchProvider;
+export type OSAutomationProviderPlugin = OSAutomationProvider;
+export type VoiceInterfaceProviderPlugin = VoiceInterfaceProvider;
+export type AutoCoderProviderPlugin = AutoCoderProvider;
+
 export type OpenClawPluginGatewayMethod = {
   method: string;
   handler: GatewayRequestHandler;
@@ -1342,6 +1353,16 @@ export type OpenClawPluginApi = {
   registerCliBackend: (provider: CliBackendPlugin) => void;
   /** Register an agent harness provider (agent execution capability). */
   registerAgentHarness: (provider: AgentHarnessProviderPlugin) => void;
+  /** Register a skill provider (skill marketplace capability). */
+  registerSkillProvider: (provider: SkillProviderPlugin) => void;
+  /** Register a research provider (autonomous research capability). */
+  registerResearchProvider: (provider: ResearchProviderPlugin) => void;
+  /** Register an OS automation provider (OS-level automation capability). */
+  registerOSAutomationProvider: (provider: OSAutomationProviderPlugin) => void;
+  /** Register a voice interface provider (voice interaction capability). */
+  registerVoiceInterfaceProvider: (provider: VoiceInterfaceProviderPlugin) => void;
+  /** Register an auto-coder provider (self-improving code capability). */
+  registerAutoCoderProvider: (provider: AutoCoderProviderPlugin) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

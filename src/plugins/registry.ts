@@ -59,6 +59,11 @@ import type {
   MusicGenerationProviderPlugin,
   MemoryEmbeddingProviderPlugin,
   AgentHarnessProviderPlugin,
+  SkillProviderPlugin,
+  ResearchProviderPlugin,
+  OSAutomationProviderPlugin,
+  VoiceInterfaceProviderPlugin,
+  AutoCoderProviderPlugin,
 } from "./types.js";
 
 export type PluginToolRegistration = {
@@ -141,6 +146,15 @@ export type PluginWebSearchProviderRegistration =
 export type PluginCliBackendRegistration = PluginOwnedProviderRegistration<CliBackendPlugin>;
 export type PluginAgentHarnessRegistration =
   PluginOwnedProviderRegistration<AgentHarnessProviderPlugin>;
+export type PluginSkillProviderRegistration = PluginOwnedProviderRegistration<SkillProviderPlugin>;
+export type PluginResearchProviderRegistration =
+  PluginOwnedProviderRegistration<ResearchProviderPlugin>;
+export type PluginOSAutomationProviderRegistration =
+  PluginOwnedProviderRegistration<OSAutomationProviderPlugin>;
+export type PluginVoiceInterfaceProviderRegistration =
+  PluginOwnedProviderRegistration<VoiceInterfaceProviderPlugin>;
+export type PluginAutoCoderProviderRegistration =
+  PluginOwnedProviderRegistration<AutoCoderProviderPlugin>;
 
 export type PluginHookRegistration = {
   pluginId: string;
@@ -205,6 +219,11 @@ export type PluginRecord = {
   webSearchProviderIds: string[];
   cliBackendIds: string[];
   agentHarnessIds: string[];
+  skillProviderIds: string[];
+  researchProviderIds: string[];
+  osAutomationProviderIds: string[];
+  voiceInterfaceProviderIds: string[];
+  autoCoderProviderIds: string[];
   gatewayMethods: string[];
   cliCommands: string[];
   services: string[];
@@ -234,6 +253,11 @@ export type PluginRegistry = {
   webSearchProviders: PluginWebSearchProviderRegistration[];
   cliBackends: PluginCliBackendRegistration[];
   agentHarnesses: PluginAgentHarnessRegistration[];
+  skillProviders: PluginSkillProviderRegistration[];
+  researchProviders: PluginResearchProviderRegistration[];
+  osAutomationProviders: PluginOSAutomationProviderRegistration[];
+  voiceInterfaceProviders: PluginVoiceInterfaceProviderRegistration[];
+  autoCoderProviders: PluginAutoCoderProviderRegistration[];
   gatewayHandlers: GatewayRequestHandlers;
   httpRoutes: PluginHttpRouteRegistration[];
   cliRegistrars: PluginCliRegistration[];
@@ -754,6 +778,62 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerSkillProvider = (record: PluginRecord, provider: SkillProviderPlugin) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "skill provider",
+      registrations: registry.skillProviders,
+      ownedIds: record.skillProviderIds,
+    });
+  };
+
+  const registerResearchProvider = (record: PluginRecord, provider: ResearchProviderPlugin) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "research provider",
+      registrations: registry.researchProviders,
+      ownedIds: record.researchProviderIds,
+    });
+  };
+
+  const registerOSAutomationProvider = (
+    record: PluginRecord,
+    provider: OSAutomationProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "OS automation provider",
+      registrations: registry.osAutomationProviders,
+      ownedIds: record.osAutomationProviderIds,
+    });
+  };
+
+  const registerVoiceInterfaceProvider = (
+    record: PluginRecord,
+    provider: VoiceInterfaceProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "voice interface provider",
+      registrations: registry.voiceInterfaceProviders,
+      ownedIds: record.voiceInterfaceProviderIds,
+    });
+  };
+
+  const registerAutoCoderProvider = (record: PluginRecord, provider: AutoCoderProviderPlugin) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "auto-coder provider",
+      registrations: registry.autoCoderProviders,
+      ownedIds: record.autoCoderProviderIds,
+    });
+  };
+
   const registerCli = (
     record: PluginRecord,
     registrar: OpenClawPluginCliRegistrar,
@@ -1044,6 +1124,26 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerAgentHarness(record, provider)
           : () => {},
+      registerSkillProvider:
+        registrationMode === "full"
+          ? (provider) => registerSkillProvider(record, provider)
+          : () => {},
+      registerResearchProvider:
+        registrationMode === "full"
+          ? (provider) => registerResearchProvider(record, provider)
+          : () => {},
+      registerOSAutomationProvider:
+        registrationMode === "full"
+          ? (provider) => registerOSAutomationProvider(record, provider)
+          : () => {},
+      registerVoiceInterfaceProvider:
+        registrationMode === "full"
+          ? (provider) => registerVoiceInterfaceProvider(record, provider)
+          : () => {},
+      registerAutoCoderProvider:
+        registrationMode === "full"
+          ? (provider) => registerAutoCoderProvider(record, provider)
+          : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -1127,6 +1227,11 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerWebSearchProvider,
     registerCliBackend,
     registerAgentHarness,
+    registerSkillProvider,
+    registerResearchProvider,
+    registerOSAutomationProvider,
+    registerVoiceInterfaceProvider,
+    registerAutoCoderProvider,
     registerGatewayMethod,
     registerCli,
     registerService,

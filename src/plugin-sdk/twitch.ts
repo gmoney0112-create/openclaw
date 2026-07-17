@@ -7,7 +7,7 @@ import {
 } from "./optional-channel-setup.js";
 
 export type { ReplyPayload } from "../auto-reply/types.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export type {
   ChannelGatewayContext,
   ChannelOutboundAdapter,
@@ -26,7 +26,7 @@ export type {
   ChannelMeta,
   ChannelStatusIssue,
 } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export type { OpenClawConfig } from "../config/config.js";
 export { MarkdownConfigSchema } from "../config/zod-schema.core.js";

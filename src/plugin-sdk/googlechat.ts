@@ -24,7 +24,7 @@ export {
   listDirectoryUserEntriesFromAllowFrom,
 } from "../channels/plugins/directory-config-helpers.js";
 export { buildComputedAccountStatusSnapshot } from "./status-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export { createAccountStatusSink, runPassiveAccountLifecycle } from "./channel-lifecycle.js";
 export { formatPairingApproveHint } from "../channels/plugins/helpers.js";
 export { resolveChannelMediaMaxBytes } from "../channels/plugins/media-limits.js";
@@ -47,7 +47,7 @@ export type {
   ChannelMessageActionName,
   ChannelStatusIssue,
 } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { getChatChannelMeta } from "../channels/registry.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export type { OpenClawConfig } from "../config/config.js";
@@ -66,7 +66,7 @@ export { missingTargetError } from "../infra/outbound/target-errors.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
-export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "./channel-plugin-common.js";
 export { resolveDmGroupAccessWithLists } from "../security/dm-policy-shared.js";
 export { formatDocsLink } from "../terminal/links.js";
 export type { WizardPrompter } from "../wizard/prompts.js";

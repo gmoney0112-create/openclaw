@@ -6,10 +6,10 @@ import {
   createOptionalChannelSetupWizard,
 } from "./optional-channel-setup.js";
 
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export type { ChannelSetupAdapter } from "../channels/plugins/types.adapters.js";
 export { formatPairingApproveHint } from "../channels/plugins/helpers.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export type { OpenClawConfig } from "../config/config.js";
 export { MarkdownConfigSchema } from "../config/zod-schema.core.js";
 export { readJsonBodyWithLimit, requestBodyErrorToText } from "../infra/http-body.js";

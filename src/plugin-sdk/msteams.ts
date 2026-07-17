@@ -34,7 +34,7 @@ export {
   resolveChannelEntryMatchWithFallback,
   resolveNestedAllowlistDecision,
 } from "../channels/plugins/channel-config.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export { resolveChannelMediaMaxBytes } from "../channels/plugins/media-limits.js";
 export { buildMediaPayload } from "../channels/plugins/media-payload.js";
 export {
@@ -54,7 +54,7 @@ export type {
   ChannelMessageActionName,
   ChannelOutboundAdapter,
 } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export { createTypingCallbacks } from "../channels/typing.js";
 export type { OpenClawConfig } from "../config/config.js";

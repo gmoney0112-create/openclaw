@@ -25,7 +25,7 @@ export {
   deleteAccountFromConfigSection,
   setAccountEnabledInConfigSection,
 } from "../channels/plugins/config-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export { formatPairingApproveHint } from "../channels/plugins/helpers.js";
 export { resolveChannelMediaMaxBytes } from "../channels/plugins/media-limits.js";
 export {
@@ -49,7 +49,7 @@ export type {
   ChannelMessageActionName,
 } from "../channels/plugins/types.js";
 export type { ChannelDirectoryEntry } from "../channels/plugins/types.core.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export { createTypingCallbacks } from "../channels/typing.js";
 export type { OpenClawConfig } from "../config/config.js";

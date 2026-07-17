@@ -15,7 +15,7 @@ export {
   clearAccountEntryFields,
   setAccountEnabledInConfigSection,
 } from "../channels/plugins/config-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export { formatPairingApproveHint } from "../channels/plugins/helpers.js";
 export {
   buildSingleChannelSecretPromptState,
@@ -31,7 +31,7 @@ export {
 } from "../channels/plugins/setup-helpers.js";
 export { createAccountListHelpers } from "../channels/plugins/account-helpers.js";
 export type { ChannelGroupContext, ChannelSetupInput } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export type { OpenClawConfig } from "../config/config.js";
 export { mapAllowFromEntries } from "./channel-config-helpers.js";
@@ -76,7 +76,7 @@ export { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
-export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "./channel-plugin-common.js";
 export type { RuntimeEnv } from "../runtime.js";
 export {
   readStoreAllowFromForDmPolicy,

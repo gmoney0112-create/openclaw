@@ -2,7 +2,7 @@
 // Keep this list additive and scoped to symbols used under extensions/synology-chat.
 
 export { setAccountEnabledInConfigSection } from "../channels/plugins/config-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export type { ChannelSetupAdapter } from "../channels/plugins/types.adapters.js";
 export {
   isRequestBodyLimitError,

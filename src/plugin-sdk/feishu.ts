@@ -11,7 +11,7 @@ export {
 export type { ReplyPayload } from "../auto-reply/types.js";
 export { logTypingFailure } from "../channels/logging.js";
 export type { AllowlistMatch } from "../channels/plugins/allowlist-match.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export { createActionGate } from "../agents/tools/common.js";
 export {
   buildSingleChannelSecretPromptState,
@@ -36,7 +36,7 @@ export type {
   ChannelConfiguredBindingConversationRef,
   ChannelConfiguredBindingMatch,
 } from "../channels/plugins/types.adapters.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixContext } from "../channels/reply-prefix.js";
 export { createTypingCallbacks } from "../channels/typing.js";
 export type { OpenClawConfig as ClawdbotConfig, OpenClawConfig } from "../config/config.js";

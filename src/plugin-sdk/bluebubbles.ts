@@ -24,7 +24,7 @@ export {
   deleteAccountFromConfigSection,
   setAccountEnabledInConfigSection,
 } from "../channels/plugins/config-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export {
   resolveBlueBubblesGroupRequireMention,
   resolveBlueBubblesGroupToolPolicy,
@@ -50,7 +50,7 @@ export type {
   ChannelMessageActionAdapter,
   ChannelMessageActionName,
 } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export type { OpenClawConfig } from "../config/config.js";
 export type { DmPolicy, GroupPolicy } from "../config/types.js";
@@ -74,7 +74,7 @@ export { parseFiniteNumber } from "../infra/parse-finite-number.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
-export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "./channel-plugin-common.js";
 export {
   DM_GROUP_ACCESS_REASON,
   readStoreAllowFromForDmPolicy,

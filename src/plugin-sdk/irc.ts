@@ -8,7 +8,7 @@ export {
   setAccountEnabledInConfigSection,
 } from "../channels/plugins/config-helpers.js";
 export { createAccountListHelpers } from "../channels/plugins/account-helpers.js";
-export { buildChannelConfigSchema } from "../channels/plugins/config-schema.js";
+export { buildChannelConfigSchema } from "./channel-plugin-common.js";
 export {
   formatPairingApproveHint,
   parseOptionalDelimitedEntries,
@@ -21,7 +21,7 @@ export {
 export { PAIRING_APPROVED_MESSAGE } from "../channels/plugins/pairing-message.js";
 export { patchScopedAccountConfig } from "../channels/plugins/setup-helpers.js";
 export type { BaseProbeResult } from "../channels/plugins/types.js";
-export type { ChannelPlugin } from "../channels/plugins/types.plugin.js";
+export type { ChannelPlugin } from "./channel-plugin-common.js";
 export { getChatChannelMeta } from "../channels/registry.js";
 export { createReplyPrefixOptions } from "../channels/reply-prefix.js";
 export type { OpenClawConfig } from "../config/config.js";

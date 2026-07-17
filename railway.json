@@ -5,6 +5,6 @@
   "environmentId": "b5502065-da8a-4dc8-82d3-38a3a705e738",
   "serviceId": "bf357c38-655e-4da3-aad3-4c6fbd8e50aa",
   "deploy": {
-    "startCommand": "sh -lc 'mkdir -p /home/node/.openclaw && node openclaw.mjs config set gateway.controlUi.allowedOrigins \"[\\\"https://openclaw-production-56fa.up.railway.app\\\"]\" && node openclaw.mjs config set gateway.controlUi.dangerouslyDisableDeviceAuth true && { ( sleep 25; echo AGENT_SELFTEST_START; timeout 120 node openclaw.mjs agent --local --message \"Reply with exactly the single word PONG and nothing else\" 2>&1; echo AGENT_SELFTEST_EXIT=$?; echo AGENT_SELFTEST_END ) & } && exec node openclaw.mjs gateway --allow-unconfigured --bind lan --port 8080'"
+    "startCommand": "sh -lc 'mkdir -p /home/node/.openclaw && node openclaw.mjs config set gateway.controlUi.allowedOrigins \"[\\\"https://openclaw-production-56fa.up.railway.app\\\"]\" && node openclaw.mjs config set gateway.controlUi.dangerouslyDisableDeviceAuth true && node openclaw.mjs gateway --allow-unconfigured --bind lan --port 8080'"
   }
 }

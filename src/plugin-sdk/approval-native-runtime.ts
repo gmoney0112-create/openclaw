@@ -38,3 +38,11 @@ export function createChannelNativeOriginTargetResolver<T>(params: T): T {
 export function createChannelApproverDmTargetResolver<T>(params: T): T {
   return params;
 }
+
+/** Build a stable dedupe key for a channel approval delivery target (thread-aware). */
+export function buildChannelApprovalNativeTargetKey(target: {
+  to: string;
+  threadId?: number | string | null;
+}): string {
+  return target.threadId != null ? `${target.to}:${target.threadId}` : target.to;
+}

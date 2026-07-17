@@ -1,20 +1,17 @@
-import { defineBundledChannelEntry } from "openclaw/plugin-sdk/channel-entry-contract";
+import { defineChannelPluginEntry } from "openclaw/plugin-sdk/core";
+import { telegramPlugin } from "./channel-plugin-api.js";
+import { setTelegramRuntime } from "./runtime-api.js";
 
-export default defineBundledChannelEntry({
+// Use static imports + value-based entry so the bundler wires telegramPlugin and
+// setTelegramRuntime into the shared native ESM graph. The previous
+// defineBundledChannelEntry path loaded these via jiti at runtime, which (a)
+// resolved "./channel-plugin-api.js" against the hoisted chunk location instead of
+// this extension dir, and (b) re-instantiated the shared chunks in jiti's separate
+// registry (OOM). Passing the imported values avoids both.
+export default defineChannelPluginEntry({
   id: "telegram",
   name: "Telegram",
   description: "Telegram channel plugin",
-  importMetaUrl: import.meta.url,
-  plugin: {
-    specifier: "./channel-plugin-api.js",
-    exportName: "telegramPlugin",
-  },
-  secrets: {
-    specifier: "./secret-contract-api.js",
-    exportName: "channelSecrets",
-  },
-  runtime: {
-    specifier: "./runtime-api.js",
-    exportName: "setTelegramRuntime",
-  },
+  plugin: telegramPlugin,
+  setRuntime: setTelegramRuntime,
 });

@@ -1,18 +1,20 @@
 import {
-  createInteractiveConversationBindingHelpers,
   dispatchPluginInteractiveHandler,
-  type PluginConversationBinding,
-  type PluginConversationBindingRequestParams,
-  type PluginConversationBindingRequestResult,
-  type PluginInteractiveRegistration,
+  type PluginInteractiveTelegramHandlerContext,
+  type PluginInteractiveTelegramHandlerRegistration,
 } from "openclaw/plugin-sdk/plugin-runtime";
 
 export type TelegramInteractiveButtons = Array<
   Array<{ text: string; callback_data: string; style?: "danger" | "success" | "primary" }>
 >;
 
-export type TelegramInteractiveHandlerContext = {
-  channel: "telegram";
+/** Full context a plugin's registered handler receives (post-dispatch). */
+export type TelegramInteractiveHandlerContext = PluginInteractiveTelegramHandlerContext;
+
+/** Registration shape plugins pass to registerPluginInteractiveHandler for telegram. */
+export type TelegramInteractiveHandlerRegistration = PluginInteractiveTelegramHandlerRegistration;
+
+export type TelegramInteractiveDispatchContext = {
   accountId: string;
   callbackId: string;
   conversationId: string;
@@ -25,42 +27,6 @@ export type TelegramInteractiveHandlerContext = {
   auth: {
     isAuthorizedSender: boolean;
   };
-  callback: {
-    data: string;
-    namespace: string;
-    payload: string;
-    messageId: number;
-    chatId: string;
-    messageText?: string;
-  };
-  respond: {
-    reply: (params: { text: string; buttons?: TelegramInteractiveButtons }) => Promise<void>;
-    editMessage: (params: { text: string; buttons?: TelegramInteractiveButtons }) => Promise<void>;
-    editButtons: (params: { buttons: TelegramInteractiveButtons }) => Promise<void>;
-    clearButtons: () => Promise<void>;
-    deleteMessage: () => Promise<void>;
-  };
-  requestConversationBinding: (
-    params?: PluginConversationBindingRequestParams,
-  ) => Promise<PluginConversationBindingRequestResult>;
-  detachConversationBinding: () => Promise<{ removed: boolean }>;
-  getCurrentConversationBinding: () => Promise<PluginConversationBinding | null>;
-};
-
-export type TelegramInteractiveHandlerRegistration = PluginInteractiveRegistration<
-  TelegramInteractiveHandlerContext,
-  "telegram"
->;
-
-export type TelegramInteractiveDispatchContext = Omit<
-  TelegramInteractiveHandlerContext,
-  | "callback"
-  | "respond"
-  | "channel"
-  | "requestConversationBinding"
-  | "detachConversationBinding"
-  | "getCurrentConversationBinding"
-> & {
   callbackMessage: {
     messageId: number;
     chatId: string;
@@ -79,39 +45,12 @@ export async function dispatchTelegramPluginInteractiveHandler(params: {
     clearButtons: () => Promise<void>;
     deleteMessage: () => Promise<void>;
   };
-  onMatched?: () => Promise<void> | void;
 }) {
-  return await dispatchPluginInteractiveHandler<TelegramInteractiveHandlerRegistration>({
+  return dispatchPluginInteractiveHandler({
     channel: "telegram",
     data: params.data,
-    dedupeId: params.callbackId,
-    onMatched: params.onMatched,
-    invoke: ({ registration, namespace, payload }) => {
-      const { callbackMessage, ...handlerContext } = params.ctx;
-      return registration.handler({
-        ...handlerContext,
-        channel: "telegram",
-        callback: {
-          data: params.data,
-          namespace,
-          payload,
-          messageId: callbackMessage.messageId,
-          chatId: callbackMessage.chatId,
-          messageText: callbackMessage.messageText,
-        },
-        respond: params.respond,
-        ...createInteractiveConversationBindingHelpers({
-          registration,
-          senderId: handlerContext.senderId,
-          conversation: {
-            channel: "telegram",
-            accountId: handlerContext.accountId,
-            conversationId: handlerContext.conversationId,
-            parentConversationId: handlerContext.parentConversationId,
-            threadId: handlerContext.threadId,
-          },
-        }),
-      });
-    },
+    callbackId: params.callbackId,
+    ctx: params.ctx,
+    respond: params.respond,
   });
 }

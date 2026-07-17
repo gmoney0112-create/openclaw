@@ -1,5 +1,6 @@
 import type { ReplyPayload } from "../auto-reply/types.js";
-import type { ExecHost } from "./exec-approvals.js";
+import type { InteractiveReply } from "../interactive/payload.js";
+import type { ExecApprovalDecision, ExecHost } from "./exec-approvals.js";
 
 export type ExecApprovalReplyDecision = "allow-once" | "allow-always" | "deny";
 export type ExecApprovalUnavailableReason =
@@ -168,5 +169,101 @@ export function buildExecApprovalUnavailableReplyPayload(
 
   return {
     text: lines.join("\n\n"),
+  };
+}
+
+const EXEC_APPROVAL_CUSTOM_ID_PREFIX = "execappr";
+
+function encodeExecApprovalCustomIdValue(value: string): string {
+  return encodeURIComponent(value);
+}
+
+function decodeExecApprovalCustomIdValue(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function encodeExecApprovalDecision(decision: ExecApprovalDecision): string {
+  return decision === "allow-once" ? "o" : decision === "allow-always" ? "a" : "d";
+}
+
+function decodeExecApprovalDecision(code: string): ExecApprovalDecision | null {
+  if (code === "o") {
+    return "allow-once";
+  }
+  if (code === "a") {
+    return "allow-always";
+  }
+  if (code === "d") {
+    return "deny";
+  }
+  return null;
+}
+
+/** Builds a button callback value encoding an approval action's id + decision. */
+export function buildExecApprovalCommandCustomId(
+  approvalId: string,
+  decision: ExecApprovalDecision,
+): string {
+  return `${EXEC_APPROVAL_CUSTOM_ID_PREFIX}:${encodeExecApprovalCustomIdValue(approvalId)}:${encodeExecApprovalDecision(decision)}`;
+}
+
+/**
+ * Decodes a button callback value built by buildExecApprovalCommandCustomId
+ * back into the approval id + decision it encodes. Returns null for any
+ * value that isn't one of this module's own encoded callbacks (including
+ * plugin-conversation-binding approval callbacks, which use a different
+ * prefix and are decoded elsewhere).
+ */
+export function parseExecApprovalCommandText(
+  value: string,
+): { approvalId: string; decision: ExecApprovalDecision } | null {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith(`${EXEC_APPROVAL_CUSTOM_ID_PREFIX}:`)) {
+    return null;
+  }
+  const body = trimmed.slice(`${EXEC_APPROVAL_CUSTOM_ID_PREFIX}:`.length);
+  const separator = body.lastIndexOf(":");
+  if (separator <= 0 || separator === body.length - 1) {
+    return null;
+  }
+  const rawId = body.slice(0, separator).trim();
+  const rawDecisionCode = body.slice(separator + 1).trim();
+  if (!rawId) {
+    return null;
+  }
+  const decision = decodeExecApprovalDecision(rawDecisionCode);
+  if (!decision) {
+    return null;
+  }
+  return {
+    approvalId: decodeExecApprovalCustomIdValue(rawId),
+    decision,
+  };
+}
+
+/** Builds the interactive button block for a pending approval's available actions. */
+export function buildApprovalInteractiveReplyFromActionDescriptors(
+  actions: ReadonlyArray<{ id: string; label: string; decision: ExecApprovalDecision }>,
+): InteractiveReply {
+  return {
+    blocks: [
+      {
+        type: "buttons",
+        buttons: actions.map((action) => ({
+          label: action.label,
+          value: buildExecApprovalCommandCustomId(action.id, action.decision),
+          style:
+            action.decision === "allow-once"
+              ? "success"
+              : action.decision === "allow-always"
+                ? "primary"
+                : "danger",
+        })),
+      },
+    ],
   };
 }

@@ -4,7 +4,7 @@ import net from "node:net";
 import * as grammy from "grammy";
 import { safeEqualSecret } from "openclaw/plugin-sdk/browser-security-runtime";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
-import { isDiagnosticsEnabled } from "openclaw/plugin-sdk/diagnostic-runtime";
+import { isDiagnosticsEnabled, readJsonBodyWithLimit } from "openclaw/plugin-sdk/infra-runtime";
 import type { RuntimeEnv } from "openclaw/plugin-sdk/runtime-env";
 import { defaultRuntime } from "openclaw/plugin-sdk/runtime-env";
 import { formatErrorMessage } from "openclaw/plugin-sdk/ssrf-runtime";
@@ -17,11 +17,10 @@ import {
   stopDiagnosticHeartbeat,
 } from "openclaw/plugin-sdk/text-runtime";
 import {
-  applyBasicWebhookRequestGuards,
   createFixedWindowRateLimiter,
   WEBHOOK_RATE_LIMIT_DEFAULTS,
 } from "openclaw/plugin-sdk/webhook-ingress";
-import { readJsonBodyWithLimit } from "openclaw/plugin-sdk/webhook-request-guards";
+import { applyBasicWebhookRequestGuards } from "openclaw/plugin-sdk/webhook-request-guards";
 import { resolveTelegramAllowedUpdates } from "./allowed-updates.js";
 import { withTelegramApiErrorLogging } from "./api-logging.js";
 import { createTelegramBot } from "./bot.js";

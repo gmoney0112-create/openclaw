@@ -1,19 +1,10 @@
 import type { Bot, Context } from "grammy";
 import { resolveChannelStreamingBlockEnabled } from "openclaw/plugin-sdk/channel-streaming";
 import {
-  resolveCommandAuthorization,
-  resolveCommandAuthorizedFromAuthorizers,
   resolveNativeCommandSessionTargets,
-} from "openclaw/plugin-sdk/command-auth-native";
-import {
-  buildCommandTextFromArgs,
-  findCommandByNativeName,
-  listNativeCommandSpecs,
-  listNativeCommandSpecsForConfig,
-  parseCommandArgs,
-  resolveCommandArgMenu,
   type CommandArgs,
 } from "openclaw/plugin-sdk/command-auth-native";
+import { resolveCommandAuthorizedFromAuthorizers } from "openclaw/plugin-sdk/command-surface";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import type { ChannelGroupPolicy } from "openclaw/plugin-sdk/config-runtime";
 import type {
@@ -24,6 +15,15 @@ import type {
   TelegramTopicConfig,
 } from "openclaw/plugin-sdk/config-runtime";
 import { resolveMarkdownTableMode } from "openclaw/plugin-sdk/markdown-table-runtime";
+import {
+  buildCommandTextFromArgs,
+  findCommandByNativeName,
+  listNativeCommandSpecs,
+  listNativeCommandSpecsForConfig,
+  parseCommandArgs,
+  resolveCommandArgMenu,
+  resolveCommandAuthorization,
+} from "openclaw/plugin-sdk/reply-runtime";
 import { resolveAgentRoute } from "openclaw/plugin-sdk/routing";
 import { getRuntimeConfigSnapshot } from "openclaw/plugin-sdk/runtime-config-snapshot";
 import { danger, logVerbose } from "openclaw/plugin-sdk/runtime-env";

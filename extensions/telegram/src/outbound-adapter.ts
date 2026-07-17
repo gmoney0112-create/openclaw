@@ -1,3 +1,7 @@
+import {
+  resolvePayloadMediaUrls,
+  sendPayloadMediaSequenceOrFallback,
+} from "openclaw/plugin-sdk/channel-runtime";
 import type { ChannelOutboundAdapter } from "openclaw/plugin-sdk/channel-send-result";
 import {
   attachChannelToResult,
@@ -9,10 +13,6 @@ import {
   sanitizeForPlainText,
   type OutboundSendDeps,
 } from "openclaw/plugin-sdk/outbound-runtime";
-import {
-  resolvePayloadMediaUrls,
-  sendPayloadMediaSequenceOrFallback,
-} from "openclaw/plugin-sdk/reply-payload";
 import type { ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
 import type { TelegramInlineButtons } from "./button-types.js";
 import { resolveTelegramInlineButtons } from "./button-types.js";

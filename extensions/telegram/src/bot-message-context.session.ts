@@ -4,7 +4,6 @@ import {
   toLocationContext,
   type NormalizedLocation,
 } from "openclaw/plugin-sdk/channel-inbound";
-import { normalizeCommandBody } from "openclaw/plugin-sdk/command-surface";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import { resolveChannelContextVisibilityMode } from "openclaw/plugin-sdk/config-runtime";
 import type {
@@ -16,6 +15,7 @@ import {
   buildPendingHistoryContextFromMap,
   type HistoryEntry,
 } from "openclaw/plugin-sdk/reply-history";
+import { normalizeCommandBody } from "openclaw/plugin-sdk/reply-runtime";
 import type { ResolvedAgentRoute } from "openclaw/plugin-sdk/routing";
 import { logVerbose, shouldLogVerbose } from "openclaw/plugin-sdk/runtime-env";
 import { evaluateSupplementalContextVisibility } from "openclaw/plugin-sdk/security-runtime";

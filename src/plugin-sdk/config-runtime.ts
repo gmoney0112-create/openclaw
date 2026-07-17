@@ -7,6 +7,7 @@ export * from "../config/group-policy.js";
 export * from "../config/runtime-group-policy.js";
 export * from "../config/commands.js";
 export * from "../config/discord-preview-streaming.js";
+export * from "../config/context-visibility.js";
 export * from "../config/io.js";
 export * from "../config/telegram-custom-commands.js";
 export * from "../config/talk.js";

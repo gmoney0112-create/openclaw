@@ -3,6 +3,7 @@ import type {
   WebSearchProviderPlugin,
   WebSearchProviderToolDefinition,
 } from "openclaw/plugin-sdk/provider-web-search";
+import { mergeScopedSearchConfig } from "openclaw/plugin-sdk/provider-web-search";
 import { isRecord } from "openclaw/plugin-sdk/text-runtime";
 import {
   createBraveSchema,
@@ -66,32 +67,6 @@ function setTopLevelCredentialValue(
   value: unknown,
 ): void {
   searchConfigTarget.apiKey = value;
-}
-
-function mergeScopedSearchConfig(
-  searchConfig: Record<string, unknown> | undefined,
-  key: string,
-  pluginConfig: Record<string, unknown> | undefined,
-  options?: { mirrorApiKeyToTopLevel?: boolean },
-): Record<string, unknown> | undefined {
-  if (!pluginConfig) {
-    return searchConfig;
-  }
-
-  const currentScoped = isRecord(searchConfig?.[key]) ? searchConfig?.[key] : {};
-  const next: Record<string, unknown> = {
-    ...searchConfig,
-    [key]: {
-      ...currentScoped,
-      ...pluginConfig,
-    },
-  };
-
-  if (options?.mirrorApiKeyToTopLevel && pluginConfig.apiKey !== undefined) {
-    next.apiKey = pluginConfig.apiKey;
-  }
-
-  return next;
 }
 
 function createBraveToolDefinition(

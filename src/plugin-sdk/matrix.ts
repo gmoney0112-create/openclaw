@@ -88,7 +88,7 @@ export { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
 export { issuePairingChallenge } from "../pairing/pairing-challenge.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
 export type { PluginRuntime, RuntimeLogger } from "../plugins/runtime/types.js";
-export type { OpenClawPluginApi } from "../plugins/types.js";
+export type { OpenClawPluginApi } from "./core.js";
 export type { PollInput } from "../polls.js";
 export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 export type { RuntimeEnv } from "../runtime.js";

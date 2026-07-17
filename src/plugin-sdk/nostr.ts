@@ -15,8 +15,8 @@ export { MarkdownConfigSchema } from "../config/zod-schema.core.js";
 export { readJsonBodyWithLimit, requestBodyErrorToText } from "../infra/http-body.js";
 export { isBlockedHostnameOrIp } from "../infra/net/ssrf.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
-export type { PluginRuntime } from "../plugins/runtime/types.js";
-export type { OpenClawPluginApi } from "../plugins/types.js";
+export type { PluginRuntime } from "./core.js";
+export type { OpenClawPluginApi } from "./core.js";
 export { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
 export {
   collectStatusIssuesFromLastError,

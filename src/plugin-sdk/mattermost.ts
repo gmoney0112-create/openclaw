@@ -81,8 +81,8 @@ export { rawDataToString } from "../infra/ws.js";
 export { isLoopbackHost, isTrustedProxyAddress, resolveClientIp } from "../gateway/net.js";
 export { registerPluginHttpRoute } from "../plugins/http-registry.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
-export type { PluginRuntime } from "../plugins/runtime/types.js";
-export type { OpenClawPluginApi } from "../plugins/types.js";
+export type { PluginRuntime } from "./core.js";
+export type { OpenClawPluginApi } from "./core.js";
 export {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,

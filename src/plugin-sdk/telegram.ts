@@ -5,8 +5,8 @@ export type {
   ChannelPlugin,
 } from "../channels/plugins/types.js";
 export type { OpenClawConfig } from "../config/config.js";
-export type { PluginRuntime } from "../plugins/runtime/types.js";
-export type { OpenClawPluginApi } from "../plugins/types.js";
+export type { PluginRuntime } from "./core.js";
+export type { OpenClawPluginApi } from "./core.js";
 export type {
   TelegramAccountConfig,
   TelegramActionConfig,

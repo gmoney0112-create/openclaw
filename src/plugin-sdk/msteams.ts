@@ -87,8 +87,8 @@ export { isPrivateIpAddress } from "../infra/net/ssrf.js";
 export { detectMime, extensionForMime, getFileExtension } from "../media/mime.js";
 export { extractOriginalFilename } from "../media/store.js";
 export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
-export type { PluginRuntime } from "../plugins/runtime/types.js";
-export type { OpenClawPluginApi } from "../plugins/types.js";
+export type { PluginRuntime } from "./core.js";
+export type { OpenClawPluginApi } from "./core.js";
 export { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
 export type { RuntimeEnv } from "../runtime.js";
 export {

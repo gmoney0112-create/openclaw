@@ -1,3 +1,9 @@
+export {
+  firstDefined,
+  isSenderIdAllowed,
+  mergeDmAllowFromSources,
+} from "../channels/allow-from.js";
+
 /** Lowercase and optionally strip prefixes from allowlist entries before sender comparisons. */
 export function formatAllowFromLowercase(params: {
   allowFrom: Array<string | number>;

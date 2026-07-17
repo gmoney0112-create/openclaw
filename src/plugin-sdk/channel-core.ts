@@ -15,6 +15,7 @@ export {
 export type { SecretFileReadOptions, SecretFileReadResult } from "../infra/secret-file.js";
 export { createChannelPluginBase, defineSetupPluginEntry } from "./core.js";
 export type { ChannelPlugin } from "./channel-plugin-common.js";
+export { clearAccountEntryFields } from "../channels/plugins/config-helpers.js";
 
 type TextPairingConfig = Parameters<typeof createTextPairingAdapter>[0];
 type PairingInput = ChannelPairingAdapter | { text: TextPairingConfig };

@@ -1,6 +1,13 @@
 import type { ChannelStatusAdapter } from "../channels/plugins/types.adapters.js";
 import type { ChannelAccountSnapshot, ChannelStatusIssue } from "../channels/plugins/types.js";
 
+export {
+  appendMatchMetadata,
+  asString,
+  resolveEnabledConfiguredAccountId,
+} from "../channels/plugins/status-issues/shared.js";
+export { isRecord } from "../utils.js";
+
 type RuntimeLifecycleSnapshot = {
   running?: boolean | null;
   lastStartAt?: number | null;

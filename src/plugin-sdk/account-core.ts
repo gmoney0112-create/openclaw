@@ -15,6 +15,7 @@ export {
 } from "./account-resolution.js";
 export { resolveUserPath };
 export type { OpenClawConfig };
+export { createAccountActionGate } from "../channels/plugins/account-action-gate.js";
 
 export function resolveNormalizedAccountEntry<T>(
   entries: Record<string, T> | undefined,

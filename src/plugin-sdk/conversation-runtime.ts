@@ -82,3 +82,12 @@ export {
   resolvePluginConversationBindingApproval,
   toPluginConversationBinding,
 } from "../plugins/conversation-binding.js";
+export { resolveThreadBindingEffectiveExpiresAt } from "./thread-bindings-runtime.js";
+export { resolveThreadBindingConversationIdFromBindingId } from "../channels/thread-binding-id.js";
+export {
+  resolveThreadBindingIdleTimeoutMsForChannel,
+  resolveThreadBindingMaxAgeMsForChannel,
+  resolveThreadBindingSpawnPolicy,
+} from "../channels/thread-bindings-policy.js";
+export { recordInboundSession } from "../channels/session.js";
+export { recordInboundSessionMetaSafe } from "../channels/session-meta.js";

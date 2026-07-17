@@ -21,6 +21,18 @@ export type PairingChallengeParams = {
  * Shared pairing challenge issuance for DM pairing policy pathways.
  * Ensures every channel follows the same create-if-missing + reply flow.
  */
+/**
+ * Partially applies the per-channel identity (channel name + request store)
+ * so call sites only need to supply the per-message fields.
+ */
+export function createChannelPairingChallengeIssuer(base: {
+  channel: string;
+  upsertPairingRequest: PairingChallengeParams["upsertPairingRequest"];
+}) {
+  return (params: Omit<PairingChallengeParams, "channel" | "upsertPairingRequest">) =>
+    issuePairingChallenge({ ...base, ...params });
+}
+
 export async function issuePairingChallenge(
   params: PairingChallengeParams,
 ): Promise<{ created: boolean; code?: string }> {

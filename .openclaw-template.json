@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.7.1"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "groupPolicy": "allowlist",
+      "streaming": "partial",
+      "accounts": {
+        "default": {
+          "botToken": "YOUR_TELEGRAM_BOT_TOKEN"
+        }
+      }
+    }
+  },
+  "gateway": {
+    "controlUi": {
+      "allowedOrigins": ["https://openclaw-production-56fa.up.railway.app"],
+      "dangerouslyDisableDeviceAuth": true
+    }
+  }
+}

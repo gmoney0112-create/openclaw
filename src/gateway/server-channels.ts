@@ -239,11 +239,9 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
     accountId?: string,
     opts: StartChannelOptions = {},
   ) => {
-    console.log(`[DIAGNOSTIC] startChannelInternal called for channel: ${channelId}`);
     const plugin = getChannelPlugin(channelId);
     const startAccount = plugin?.gateway?.startAccount;
     if (!startAccount) {
-      console.log(`[DIAGNOSTIC] ${channelId}: startAccount hook missing on plugin`);
       return;
     }
     const { preserveRestartAttempts = false, preserveManualStop = false } = opts;
@@ -251,9 +249,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
     resetDirectoryCache({ channel: channelId, accountId });
     const store = getStore(channelId);
     const accountIds = accountId ? [accountId] : plugin.config.listAccountIds(cfg);
-    console.log(`[DIAGNOSTIC] ${channelId}: accountIds = ${JSON.stringify(accountIds)}`);
     if (accountIds.length === 0) {
-      console.log(`[DIAGNOSTIC] ${channelId}: no accounts to start`);
       return;
     }
 
@@ -285,9 +281,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
           const enabled = plugin.config.isEnabled
             ? plugin.config.isEnabled(account, cfg)
             : isAccountEnabled(account);
-          console.log(`[DIAGNOSTIC] ${channelId}/${id}: enabled = ${enabled}`);
           if (!enabled) {
-            console.log(`[DIAGNOSTIC] ${channelId}/${id}: account is disabled, skipping start`);
             setRuntime(channelId, id, {
               accountId: id,
               enabled: false,
@@ -303,11 +297,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
           if (plugin.config.isConfigured) {
             configured = await plugin.config.isConfigured(account, cfg);
           }
-          console.log(`[DIAGNOSTIC] ${channelId}/${id}: configured = ${configured}`);
           if (!configured) {
-            console.log(
-              `[DIAGNOSTIC] ${channelId}/${id}: account is not configured, skipping start`,
-            );
             setRuntime(channelId, id, {
               accountId: id,
               enabled: true,
@@ -350,7 +340,6 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
 
           const log = channelLogs[channelId];
           const resolvedChannelRuntime = getChannelRuntime();
-          console.log(`[DIAGNOSTIC] ${channelId}/${id}: calling startAccount hook now`);
           const task = startAccount({
             cfg,
             accountId: id,

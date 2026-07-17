@@ -135,4 +135,64 @@ describe("runProviderCatalog", () => {
       },
     });
   });
+
+  it("adapts legacy buildProvider() catalog hooks (deepseek/xai/mistral/etc. shape)", async () => {
+    const result = await runProviderCatalog({
+      provider: {
+        id: "legacy-build-provider",
+        label: "Legacy BuildProvider",
+        auth: [],
+        catalog: {
+          order: "simple",
+          buildProvider: () => makeModelProviderConfig({ baseUrl: "http://legacy.example/v1" }),
+        } as unknown as ProviderPlugin["catalog"],
+      },
+      config: {},
+      env: {},
+      resolveProviderApiKey: () => ({ apiKey: undefined }),
+      resolveProviderAuth: () => ({
+        apiKey: undefined,
+        discoveryApiKey: undefined,
+        mode: "none",
+        source: "none",
+      }),
+    });
+
+    expect(result).toEqual({
+      provider: {
+        baseUrl: "http://legacy.example/v1",
+        models: [],
+      },
+    });
+  });
+
+  it("adapts an async legacy buildProvider() (kilocode/sglang/vllm shape)", async () => {
+    const result = await runProviderCatalog({
+      provider: {
+        id: "legacy-async-build-provider",
+        label: "Legacy Async BuildProvider",
+        auth: [],
+        catalog: {
+          buildProvider: async () =>
+            makeModelProviderConfig({ baseUrl: "http://legacy-async.example/v1" }),
+        } as unknown as ProviderPlugin["catalog"],
+      },
+      config: {},
+      env: {},
+      resolveProviderApiKey: () => ({ apiKey: undefined }),
+      resolveProviderAuth: () => ({
+        apiKey: undefined,
+        discoveryApiKey: undefined,
+        mode: "none",
+        source: "none",
+      }),
+    });
+
+    expect(result).toEqual({
+      provider: {
+        baseUrl: "http://legacy-async.example/v1",
+        models: [],
+      },
+    });
+  });
 });

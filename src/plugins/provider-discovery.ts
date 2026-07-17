@@ -2,12 +2,47 @@ import { normalizeProviderId } from "../agents/model-selection.js";
 import type { OpenClawConfig } from "../config/config.js";
 import type { ModelProviderConfig } from "../config/types.js";
 import { resolvePluginProviders } from "./providers.js";
-import type { ProviderDiscoveryOrder, ProviderPlugin } from "./types.js";
+import type {
+  ProviderCatalogOrder,
+  ProviderDiscoveryOrder,
+  ProviderPlugin,
+  ProviderPluginCatalog,
+} from "./types.js";
 
 const DISCOVERY_ORDER: readonly ProviderDiscoveryOrder[] = ["simple", "profile", "paired", "late"];
 
-function resolveProviderCatalogHook(provider: ProviderPlugin) {
-  return provider.catalog ?? provider.discovery;
+/**
+ * Some bundled provider plugins predate the current `catalog.run` contract and
+ * still ship a `buildProvider()` factory instead (zero/optional-arg, returns
+ * ModelProviderConfig directly or via Promise). Recognize that legacy shape and
+ * adapt it to `run` here rather than requiring every such plugin to be rewritten.
+ */
+type LegacyProviderCatalogHook = {
+  order?: ProviderCatalogOrder;
+  buildProvider: () => ModelProviderConfig | Promise<ModelProviderConfig>;
+};
+
+function isLegacyProviderCatalogHook(
+  hook: ProviderPluginCatalog | LegacyProviderCatalogHook,
+): hook is LegacyProviderCatalogHook {
+  return (
+    typeof (hook as LegacyProviderCatalogHook).buildProvider === "function" &&
+    typeof (hook as ProviderPluginCatalog).run !== "function"
+  );
+}
+
+function resolveProviderCatalogHook(provider: ProviderPlugin): ProviderPluginCatalog | undefined {
+  const hook = provider.catalog ?? provider.discovery;
+  if (!hook) {
+    return undefined;
+  }
+  if (isLegacyProviderCatalogHook(hook)) {
+    return {
+      order: hook.order,
+      run: async () => ({ provider: await hook.buildProvider() }),
+    };
+  }
+  return hook;
 }
 
 export function resolvePluginDiscoveryProviders(params: {

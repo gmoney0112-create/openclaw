@@ -16,6 +16,7 @@ export function createEmptyPluginRegistry(): PluginRegistry {
     musicGenerationProviders: [],
     memoryEmbeddingProviders: [],
     realtimeTranscriptionProviders: [],
+    realtimeVoiceProviders: [],
     webSearchProviders: [],
     cliBackends: [],
     agentHarnesses: [],
@@ -40,6 +41,7 @@ export function createEmptyPluginRegistry(): PluginRegistry {
     services: [],
     commands: [],
     conversationBindingResolvedHandlers: [],
+    memoryCapabilities: [],
     diagnostics: [],
   };
 }

@@ -39,6 +39,7 @@ import type { MusicGenerationProvider } from "../plugin-sdk/music-generation.js"
 import type { OSAutomationProvider } from "../plugin-sdk/os-control.js";
 import type { ProjectManagerProvider } from "../plugin-sdk/project-manager.js";
 import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
+import type { RealtimeVoiceProviderPlugin } from "../plugin-sdk/realtime-voice.js";
 import type { ResearchProvider } from "../plugin-sdk/research.js";
 import type { RevenueOptimizationProvider } from "../plugin-sdk/revenue-optimization.js";
 import type { SaaSBuilderProvider } from "../plugin-sdk/saas-builder.js";
@@ -1405,6 +1406,20 @@ export type OpenClawPluginApi = {
   registerDecisionEngineProvider: (provider: DecisionEngineProviderPlugin) => void;
   /** Register a business-loop provider (autonomous business operations capability). */
   registerBusinessLoopProvider: (provider: BusinessLoopProviderPlugin) => void;
+  /** Register a realtime voice provider (realtime bidirectional voice capability). */
+  registerRealtimeVoiceProvider: (provider: RealtimeVoiceProviderPlugin) => void;
+  /** Register a memory capability (memory system extension capability). */
+  registerMemoryCapability: (capability: {
+    promptBuilder: unknown;
+    flushPlanResolver: unknown;
+    runtime: unknown;
+    publicArtifacts?: unknown;
+    [key: string]: unknown;
+  }) => void;
+  /** Register a memory prompt supplement (adds to memory prompt section). */
+  registerMemoryPromptSupplement: (builder: unknown) => void;
+  /** Register a memory corpus supplement (adds to memory corpus). */
+  registerMemoryCorpusSupplement: (builder: unknown) => void;
   registerInteractiveHandler: (registration: PluginInteractiveHandlerRegistration) => void;
   onConversationBindingResolved: (
     handler: (event: PluginConversationBindingResolvedEvent) => void | Promise<void>,

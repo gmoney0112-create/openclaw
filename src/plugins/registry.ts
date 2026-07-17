@@ -10,6 +10,7 @@ import { registerInternalHook } from "../hooks/internal-hooks.js";
 import type { HookEntry } from "../hooks/types.js";
 import type { CliBackendPlugin } from "../plugin-sdk/cli-backend.js";
 import type { RealtimeTranscriptionProviderPlugin } from "../plugin-sdk/realtime-transcription.js";
+import type { RealtimeVoiceProviderPlugin } from "../plugin-sdk/realtime-voice.js";
 import { resolveUserPath } from "../utils.js";
 import { registerPluginCommand, validatePluginCommandDefinition } from "./commands.js";
 import { normalizePluginHttpPath } from "./http-path.js";
@@ -151,6 +152,8 @@ export type PluginMemoryEmbeddingProviderRegistration =
   PluginOwnedProviderRegistration<MemoryEmbeddingProviderPlugin>;
 export type PluginRealtimeTranscriptionProviderRegistration =
   PluginOwnedProviderRegistration<RealtimeTranscriptionProviderPlugin>;
+export type PluginRealtimeVoiceProviderRegistration =
+  PluginOwnedProviderRegistration<RealtimeVoiceProviderPlugin>;
 export type PluginWebSearchProviderRegistration =
   PluginOwnedProviderRegistration<WebSearchProviderPlugin>;
 export type PluginCliBackendRegistration = PluginOwnedProviderRegistration<CliBackendPlugin>;
@@ -246,6 +249,7 @@ export type PluginRecord = {
   musicGenerationProviderIds: string[];
   memoryEmbeddingProviderIds: string[];
   realtimeTranscriptionProviderIds: string[];
+  realtimeVoiceProviderIds: string[];
   webSearchProviderIds: string[];
   cliBackendIds: string[];
   agentHarnessIds: string[];
@@ -290,6 +294,7 @@ export type PluginRegistry = {
   musicGenerationProviders: PluginMusicGenerationProviderRegistration[];
   memoryEmbeddingProviders: PluginMemoryEmbeddingProviderRegistration[];
   realtimeTranscriptionProviders: PluginRealtimeTranscriptionProviderRegistration[];
+  realtimeVoiceProviders: PluginRealtimeVoiceProviderRegistration[];
   webSearchProviders: PluginWebSearchProviderRegistration[];
   cliBackends: PluginCliBackendRegistration[];
   agentHarnesses: PluginAgentHarnessRegistration[];
@@ -314,6 +319,7 @@ export type PluginRegistry = {
   services: PluginServiceRegistration[];
   commands: PluginCommandRegistration[];
   conversationBindingResolvedHandlers: PluginConversationBindingResolvedHandlerRegistration[];
+  memoryCapabilities: Array<{ pluginId: string; capability: unknown }>;
   diagnostics: PluginDiagnostic[];
 };
 
@@ -818,6 +824,19 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     });
   };
 
+  const registerRealtimeVoiceProvider = (
+    record: PluginRecord,
+    provider: RealtimeVoiceProviderPlugin,
+  ) => {
+    registerUniqueProviderLike({
+      record,
+      provider,
+      kindLabel: "realtime-voice provider",
+      registrations: registry.realtimeVoiceProviders,
+      ownedIds: record.realtimeVoiceProviderIds,
+    });
+  };
+
   const registerAgentHarness = (record: PluginRecord, provider: AgentHarnessProviderPlugin) => {
     registerUniqueProviderLike({
       record,
@@ -1300,6 +1319,10 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerRealtimeTranscriptionProvider(record, provider)
           : () => {},
+      registerRealtimeVoiceProvider:
+        registrationMode === "full"
+          ? (provider) => registerRealtimeVoiceProvider(record, provider)
+          : () => {},
       registerAgentHarness:
         registrationMode === "full"
           ? (provider) => registerAgentHarness(record, provider)
@@ -1364,6 +1387,17 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
         registrationMode === "full"
           ? (provider) => registerBusinessLoopProvider(record, provider)
           : () => {},
+      registerMemoryCapability:
+        registrationMode === "full"
+          ? (capability) => {
+              registry.memoryCapabilities.push({
+                pluginId: record.id,
+                capability,
+              });
+            }
+          : () => {},
+      registerMemoryPromptSupplement: registrationMode === "full" ? () => {} : () => {},
+      registerMemoryCorpusSupplement: registrationMode === "full" ? () => {} : () => {},
       registerGatewayMethod:
         registrationMode === "full"
           ? (method, handler) => registerGatewayMethod(record, method, handler)
@@ -1444,6 +1478,7 @@ export function createPluginRegistry(registryParams: PluginRegistryParams) {
     registerMusicGenerationProvider,
     registerMemoryEmbeddingProvider,
     registerRealtimeTranscriptionProvider,
+    registerRealtimeVoiceProvider,
     registerWebSearchProvider,
     registerCliBackend,
     registerAgentHarness,

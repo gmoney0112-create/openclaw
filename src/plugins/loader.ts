@@ -517,6 +517,7 @@ function createPluginRecord(params: {
     musicGenerationProviderIds: [],
     memoryEmbeddingProviderIds: [],
     realtimeTranscriptionProviderIds: [],
+    realtimeVoiceProviderIds: [],
     agentHarnessIds: [],
     skillProviderIds: [],
     researchProviderIds: [],

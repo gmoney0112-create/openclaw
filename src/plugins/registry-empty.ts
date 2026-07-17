@@ -18,6 +18,7 @@ export function createEmptyPluginRegistry(): PluginRegistry {
     realtimeTranscriptionProviders: [],
     webSearchProviders: [],
     cliBackends: [],
+    agentHarnesses: [],
     skillProviders: [],
     researchProviders: [],
     osAutomationProviders: [],

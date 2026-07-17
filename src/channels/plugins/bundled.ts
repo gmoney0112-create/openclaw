@@ -1,24 +1,25 @@
-import { bluebubblesPlugin } from "../../../extensions/bluebubbles/index.js";
-import { discordPlugin, setDiscordRuntime } from "../../../extensions/discord/index.js";
-import { discordSetupPlugin } from "../../../extensions/discord/setup-entry.js";
-import { feishuPlugin } from "../../../extensions/feishu/index.js";
-import { imessagePlugin } from "../../../extensions/imessage/index.js";
-import { imessageSetupPlugin } from "../../../extensions/imessage/setup-entry.js";
-import { ircPlugin } from "../../../extensions/irc/index.js";
-import { linePlugin, setLineRuntime } from "../../../extensions/line/index.js";
-import { lineSetupPlugin } from "../../../extensions/line/setup-entry.js";
-import { mattermostPlugin } from "../../../extensions/mattermost/index.js";
-import { nextcloudTalkPlugin } from "../../../extensions/nextcloud-talk/index.js";
-import { signalPlugin } from "../../../extensions/signal/index.js";
-import { signalSetupPlugin } from "../../../extensions/signal/setup-entry.js";
-import { slackPlugin } from "../../../extensions/slack/index.js";
-import { slackSetupPlugin } from "../../../extensions/slack/setup-entry.js";
-import { synologyChatPlugin } from "../../../extensions/synology-chat/index.js";
-import { telegramPlugin, setTelegramRuntime } from "../../../extensions/telegram/index.js";
-import { telegramSetupPlugin } from "../../../extensions/telegram/setup-entry.js";
-import { whatsappPlugin } from "../../../extensions/whatsapp/index.js";
-import { whatsappSetupPlugin } from "../../../extensions/whatsapp/setup-entry.js";
-import { zaloPlugin } from "../../../extensions/zalo/index.js";
+// Import from each extension's public api.js/runtime-api.js barrels, not index.js:
+// index.js's default export is the wrapped plugin-loader entry (defineBundledChannelEntry
+// result), not the raw named ChannelPlugin/setRuntime symbols this module needs. See
+// extensions/CLAUDE.md: "If core or core tests need a bundled plugin helper, export it
+// from api.ts first instead of letting them deep-import extension internals."
+import { bluebubblesPlugin } from "../../../extensions/bluebubbles/api.js";
+import { discordPlugin, discordSetupPlugin } from "../../../extensions/discord/api.js";
+import { setDiscordRuntime } from "../../../extensions/discord/runtime-api.js";
+import { feishuPlugin } from "../../../extensions/feishu/api.js";
+import { imessagePlugin, imessageSetupPlugin } from "../../../extensions/imessage/api.js";
+import { ircPlugin } from "../../../extensions/irc/api.js";
+import { linePlugin, lineSetupPlugin } from "../../../extensions/line/api.js";
+import { setLineRuntime } from "../../../extensions/line/runtime-api.js";
+import { mattermostPlugin } from "../../../extensions/mattermost/channel-plugin-api.js";
+import { nextcloudTalkPlugin } from "../../../extensions/nextcloud-talk/api.js";
+import { signalPlugin, signalSetupPlugin } from "../../../extensions/signal/api.js";
+import { slackPlugin, slackSetupPlugin } from "../../../extensions/slack/api.js";
+import { synologyChatPlugin } from "../../../extensions/synology-chat/api.js";
+import { telegramPlugin, telegramSetupPlugin } from "../../../extensions/telegram/api.js";
+import { setTelegramRuntime } from "../../../extensions/telegram/runtime-api.js";
+import { whatsappPlugin, whatsappSetupPlugin } from "../../../extensions/whatsapp/api.js";
+import { zaloPlugin } from "../../../extensions/zalo/api.js";
 import type { ChannelId, ChannelPlugin } from "./types.js";
 
 export const bundledChannelPlugins = [

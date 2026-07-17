@@ -1,5 +1,6 @@
 // Shared setup wizard/types/helpers for extension setup surfaces and adapters.
 
+import type { OpenClawConfig } from "../config/config.js";
 export type { OpenClawConfig } from "../config/config.js";
 export type { DmPolicy, GroupPolicy } from "../config/types.js";
 export type { SecretInput } from "../config/types.secrets.js";
@@ -13,7 +14,8 @@ export type {
   ChannelSetupWizardTextInput,
 } from "../channels/plugins/setup-wizard.js";
 
-export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
+export { DEFAULT_ACCOUNT_ID, normalizeAccountId };
 export { formatCliCommand } from "../cli/command-format.js";
 export { detectBinary } from "../plugins/setup-binary.js";
 export { installSignalCli } from "../plugins/signal-cli-install.js";

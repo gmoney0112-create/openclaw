@@ -33,15 +33,19 @@ export {
   filterToolResultMediaUrls,
 } from "../agents/pi-embedded-subscribe.tools.js";
 export type { AnyAgentTool } from "../plugins/types.js";
+import type { EmbeddedPiCompactResult as EmbeddedRunAttemptResult } from "../agents/pi-embedded-runner/types.js";
 export type {
   EmbeddedPiCompactResult as EmbeddedRunAttemptResult,
   EmbeddedPiCompactResult,
 } from "../agents/pi-embedded-runner/types.js";
+import type { EmbeddedRunAttemptParams } from "../agents/pi-embedded-runner/run/types.js";
 export type {
   EmbeddedRunAttemptParams,
   EmbeddedRunAttemptResult as EmbeddedPiAttemptResult,
 } from "../agents/pi-embedded-runner/run/types.js";
+import type { CompactEmbeddedPiSessionParams } from "../agents/pi-embedded-runner/compact.js";
 export type { CompactEmbeddedPiSessionParams } from "../agents/pi-embedded-runner/compact.js";
+import type { EmbeddedPiCompactResult } from "../agents/pi-embedded-runner/types.js";
 export type { ExecApprovalDecision } from "../infra/exec-approvals.js";
 export { VERSION as OPENCLAW_VERSION } from "../version.js";
 export { formatErrorMessage } from "./error-runtime.js";

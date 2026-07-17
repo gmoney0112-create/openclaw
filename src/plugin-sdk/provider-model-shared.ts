@@ -7,7 +7,7 @@ import type {
 import type { ProviderPlugin } from "../plugins/types.js";
 
 export * from "./provider-models.js";
-export type { ModelApi, ModelDefinitionConfig, ModelProviderConfig, ProviderPlugin };
+export type { ProviderPlugin };
 export type { KilocodeModelCatalogEntry } from "../providers/kilocode-shared.js";
 
 type ReplayHooks = Pick<

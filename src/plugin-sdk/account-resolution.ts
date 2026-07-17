@@ -4,11 +4,12 @@ export { createAccountActionGate } from "../channels/plugins/account-action-gate
 export { createAccountListHelpers } from "../channels/plugins/account-helpers.js";
 export { normalizeChatType } from "../channels/chat-type.js";
 export { resolveAccountEntry } from "../routing/account-lookup.js";
-export {
+import {
   DEFAULT_ACCOUNT_ID,
   normalizeAccountId,
   normalizeOptionalAccountId,
 } from "../routing/session-key.js";
+export { DEFAULT_ACCOUNT_ID, normalizeAccountId, normalizeOptionalAccountId };
 export { normalizeE164, pathExists, resolveUserPath } from "../utils.js";
 export {
   resolveDiscordAccount,

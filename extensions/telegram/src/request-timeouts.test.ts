@@ -12,8 +12,19 @@ describe("resolveTelegramRequestTimeoutMs", () => {
     expect(resolveTelegramRequestTimeoutMs("getupdates")).toBe(45_000);
   });
 
-  it("does not assign hard timeouts to unrelated Telegram methods", () => {
-    expect(resolveTelegramRequestTimeoutMs("sendmessage")).toBeUndefined();
+  it("bounds media upload methods with a longer timeout", () => {
+    expect(resolveTelegramRequestTimeoutMs("sendphoto")).toBe(60_000);
+    expect(resolveTelegramRequestTimeoutMs("sendvideo")).toBe(60_000);
+    expect(resolveTelegramRequestTimeoutMs("senddocument")).toBe(60_000);
+  });
+
+  it("falls back to a default timeout for every other known method so nothing can hang forever", () => {
+    expect(resolveTelegramRequestTimeoutMs("sendmessage")).toBe(30_000);
+    expect(resolveTelegramRequestTimeoutMs("editmessagetext")).toBe(30_000);
+    expect(resolveTelegramRequestTimeoutMs("some-future-method")).toBe(30_000);
+  });
+
+  it("only skips timeouts when the method could not be determined", () => {
     expect(resolveTelegramRequestTimeoutMs(null)).toBeUndefined();
   });
 });

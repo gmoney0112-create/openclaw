@@ -52,7 +52,7 @@ export {
   ReplyRuntimeConfigSchemaShape,
   requireOpenAllowFrom,
 } from "../config/zod-schema.core.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
 export { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
@@ -67,7 +67,7 @@ export {
   readStoreAllowFromForDmPolicy,
   resolveEffectiveAllowFromLists,
 } from "../security/dm-policy-shared.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export type { WizardPrompter } from "../wizard/prompts.js";
 export { createScopedPairingAccess } from "./pairing-access.js";
 export { issuePairingChallenge } from "../pairing/pairing-challenge.js";

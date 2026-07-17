@@ -22,7 +22,7 @@ export {
   setAccountEnabledInConfigSection,
 } from "./channel-plugin-common.js";
 export { formatCliCommand } from "../cli/command-format.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 
 export {
   looksLikeSignalTargetId,

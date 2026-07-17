@@ -20,7 +20,7 @@ export {
   setAccountEnabledInConfigSection,
 } from "./channel-plugin-common.js";
 export { detectBinary } from "../plugins/setup-binary.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export {
   formatTrimmedAllowFromEntries,
   resolveIMessageConfigAllowFrom,

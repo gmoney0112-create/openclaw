@@ -9,7 +9,7 @@ export {
   readRequestBodyWithLimit,
   requestBodyErrorToText,
 } from "../infra/http-body.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export { registerPluginHttpRoute } from "../plugins/http-registry.js";
 export type { OpenClawConfig } from "../config/config.js";
 export type { PluginRuntime } from "./core.js";

@@ -14,7 +14,7 @@ export type { AnyAgentTool } from "../plugins/types.js";
 export { formatCliCommand } from "../cli/command-format.js";
 export { formatHelpExamples } from "../cli/help-format.js";
 export { inheritOptionFromParent } from "../cli/command-options.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export { note } from "../terminal/note.js";
 export { theme } from "../terminal/theme.js";
 export { danger, info } from "../globals.js";

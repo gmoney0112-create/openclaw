@@ -73,7 +73,7 @@ export {
 } from "../infra/http-body.js";
 export { waitForAbortSignal } from "../infra/abort-signal.js";
 export { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
 export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "./channel-plugin-common.js";
@@ -82,7 +82,7 @@ export {
   readStoreAllowFromForDmPolicy,
   resolveDmGroupAccessWithCommandGate,
 } from "../security/dm-policy-shared.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export type { WizardPrompter } from "../wizard/prompts.js";
 export {
   listConfiguredAccountIds,

@@ -5,7 +5,7 @@ export { withManager } from "../cli/cli-utils.js";
 export { withProgress, withProgressTotals } from "../cli/progress.js";
 export { resolveCommandSecretRefsViaGateway } from "../cli/command-secret-gateway.js";
 export { formatHelpExamples } from "../cli/help-format.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export { colorize, isRich, theme } from "../terminal/theme.js";
 export { setVerbose } from "../globals.js";
 export { shortenHomeInString, shortenHomePath } from "../utils.js";

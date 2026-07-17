@@ -86,7 +86,7 @@ export type { SsrFPolicy } from "../infra/net/ssrf.js";
 export { isPrivateIpAddress } from "../infra/net/ssrf.js";
 export { detectMime, extensionForMime, getFileExtension } from "../media/mime.js";
 export { extractOriginalFilename } from "../media/store.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export type { PluginRuntime } from "./core.js";
 export type { OpenClawPluginApi } from "./core.js";
 export { DEFAULT_ACCOUNT_ID } from "../routing/session-key.js";
@@ -100,7 +100,7 @@ export {
   evaluateSenderGroupAccessForPolicy,
   resolveSenderScopedGroupPolicy,
 } from "./group-access.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export { sleep } from "../utils.js";
 export { loadWebMedia } from "./web-media.js";
 export type { WizardPrompter } from "../wizard/prompts.js";

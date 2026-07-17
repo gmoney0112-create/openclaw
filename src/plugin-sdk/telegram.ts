@@ -23,7 +23,7 @@ export type { TelegramProbe } from "../../extensions/telegram/runtime-api.js";
 export type { TelegramButtonStyle, TelegramInlineButtons } from "../../extensions/telegram/api.js";
 export type { StickerMetadata } from "../../extensions/telegram/api.js";
 
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 export { parseTelegramTopicConversation } from "../acp/conversation-id.js";
 export { clearAccountEntryFields } from "../channels/plugins/config-helpers.js";

@@ -86,7 +86,7 @@ export { ToolPolicySchema } from "../config/zod-schema.agent-runtime.js";
 export { MarkdownConfigSchema } from "../config/zod-schema.core.js";
 export { fetchWithSsrFGuard } from "../infra/net/fetch-guard.js";
 export { issuePairingChallenge } from "../pairing/pairing-challenge.js";
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 export type { PluginRuntime, RuntimeLogger } from "../plugins/runtime/types.js";
 export type { OpenClawPluginApi } from "./core.js";
 export type { PollInput } from "../polls.js";
@@ -96,7 +96,7 @@ export {
   readStoreAllowFromForDmPolicy,
   resolveDmGroupAccessWithLists,
 } from "../security/dm-policy-shared.js";
-export { formatDocsLink } from "../terminal/links.js";
+export { formatDocsLink } from "./setup.js";
 export { normalizeStringEntries } from "../shared/string-normalization.js";
 export type { WizardPrompter } from "../wizard/prompts.js";
 export {

@@ -49,7 +49,7 @@ export type {
 } from "../plugins/types.js";
 export type { OpenClawConfig } from "../config/config.js";
 
-export { emptyPluginConfigSchema } from "../plugins/config-schema.js";
+export { emptyPluginConfigSchema } from "./index.js";
 
 type DefinePluginEntryOptions = {
   id: string;

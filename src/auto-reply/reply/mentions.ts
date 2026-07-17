@@ -231,6 +231,11 @@ export function stripMentions(
   return result.replace(/\s+/g, " ").trim();
 }
 
+/** Contributes `kind` to the implicit-mention-kinds list when `enabled` is true. */
+export function implicitMentionKindWhen(kind: string, enabled: boolean): string[] {
+  return enabled ? [kind] : [];
+}
+
 export function resolveInboundMentionDecision(params: {
   facts: {
     canDetectMention: boolean;

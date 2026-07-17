@@ -1,6 +1,7 @@
 export * from "./channel-runtime.js";
 export {
   buildMentionRegexes,
+  implicitMentionKindWhen,
   matchesMentionWithExplicit,
   normalizeMentionText,
   resolveInboundMentionDecision,

@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { stripStructuralPrefixes } from "./mentions.js";
+import { implicitMentionKindWhen, stripStructuralPrefixes } from "./mentions.js";
+
+describe("implicitMentionKindWhen", () => {
+  it("contributes the kind when enabled", () => {
+    expect(implicitMentionKindWhen("reply_to_bot", true)).toEqual(["reply_to_bot"]);
+  });
+
+  it("contributes nothing when disabled", () => {
+    expect(implicitMentionKindWhen("reply_to_bot", false)).toEqual([]);
+  });
+});
 
 describe("stripStructuralPrefixes", () => {
   it("returns empty string for undefined input at runtime", () => {

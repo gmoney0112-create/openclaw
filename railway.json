@@ -1,5 +1,9 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
+  "projectId": "afb50a72-9930-4c51-b292-36e44cc6e953",
+  "projectName": "successful-wholeness",
+  "environmentId": "b5502065-da8a-4dc8-82d3-38a3a705e738",
+  "serviceId": "bf357c38-655e-4da3-aad3-4c6fbd8e50aa",
   "deploy": {
     "startCommand": "sh -lc 'mkdir -p /home/node/.openclaw && node openclaw.mjs config set gateway.controlUi.allowedOrigins \"[\\\"https://openclaw-production-56fa.up.railway.app\\\"]\" && node openclaw.mjs gateway --allow-unconfigured --bind lan --port 8080'"
   }

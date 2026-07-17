@@ -62,6 +62,37 @@ export function mapStreamingModeToSlackLegacyDraftStreamMode(mode: StreamingMode
   return "replace" as const;
 }
 
+/** Generalized preview-stream-mode resolution shared across channels; each channel picks its own default. */
+export function resolveChannelPreviewStreamMode(
+  params: {
+    streamMode?: unknown;
+    streaming?: unknown;
+  } = {},
+  defaultMode: DiscordPreviewStreamMode = "partial",
+): DiscordPreviewStreamMode {
+  const parsedStreaming = parseDiscordPreviewStreamMode(params.streaming);
+  if (parsedStreaming) {
+    return parsedStreaming;
+  }
+  const legacy = parseDiscordPreviewStreamMode(params.streamMode);
+  if (legacy) {
+    return legacy;
+  }
+  if (typeof params.streaming === "boolean") {
+    return params.streaming ? "partial" : "off";
+  }
+  return defaultMode;
+}
+
+/** Resolves a channel's explicit blockStreaming override, if configured. */
+export function resolveChannelStreamingBlockEnabled(channelConfig?: {
+  blockStreaming?: boolean;
+}): boolean | undefined {
+  return typeof channelConfig?.blockStreaming === "boolean"
+    ? channelConfig.blockStreaming
+    : undefined;
+}
+
 export function resolveTelegramPreviewStreamMode(
   params: {
     streamMode?: unknown;

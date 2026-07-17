@@ -136,6 +136,14 @@ export function hasOwnProperty(record: Record<string, unknown>, key: string): bo
   return Object.prototype.hasOwnProperty.call(record, key);
 }
 
+/** True when a config field already holds a non-empty secret string or a resolvable secret ref. */
+export function hasConfiguredSecretInputValue(value: unknown, defaults?: SecretDefaults): boolean {
+  return (
+    (typeof value === "string" && value.trim().length > 0) ||
+    Boolean(coerceSecretRef(value, defaults))
+  );
+}
+
 export function isEnabledFlag(value: unknown): boolean {
   if (!isRecord(value)) {
     return true;

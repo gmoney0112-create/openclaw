@@ -1,12 +1,10 @@
-import {
-  asNullableRecord,
-  hasNonEmptyString as sharedHasNonEmptyString,
-  isRecord,
-} from "openclaw/plugin-sdk/text-runtime";
+import { asNullableRecord, isRecord } from "openclaw/plugin-sdk/text-runtime";
 
 export { asNullableRecord as asRecord, isRecord };
 
-export const hasNonEmptyString = sharedHasNonEmptyString;
+export function hasNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
 
 export function normalizeString(value: unknown): string | undefined {
   if (typeof value === "string") {

@@ -38,8 +38,7 @@ function buildOpenAiCompatibleReplayPolicy(
     sanitizeMode: "images-only",
     sanitizeToolCallIds,
     ...(sanitizeToolCallIds ? { toolCallIdMode: "strict" as const } : {}),
-    applyAssistantFirstOrderingFix:
-      options?.applyAssistantFirstOrderingFix ?? (isResponsesApi ? false : true),
+    applyAssistantFirstOrderingFix: options?.applyAssistantFirstOrderingFix ?? !isResponsesApi,
     validateGeminiTurns: options?.validateGeminiTurns ?? !isResponsesApi,
     validateAnthropicTurns: options?.validateAnthropicTurns ?? !isResponsesApi,
     ...(options?.anthropicModelDropThinkingBlocks
@@ -161,6 +160,9 @@ export const OPENAI_COMPATIBLE_REPLAY_HOOKS = buildProviderReplayFamilyHooks({
 export const NATIVE_ANTHROPIC_REPLAY_HOOKS = buildProviderReplayFamilyHooks({
   family: "native-anthropic",
 });
+
+// Alias for bedrock/anthropic model-specific replay hooks
+export const ANTHROPIC_BY_MODEL_REPLAY_HOOKS = NATIVE_ANTHROPIC_REPLAY_HOOKS;
 
 export const PASSTHROUGH_GEMINI_REPLAY_HOOKS = buildProviderReplayFamilyHooks({
   family: "passthrough-gemini",

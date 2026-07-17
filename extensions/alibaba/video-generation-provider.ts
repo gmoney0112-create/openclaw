@@ -1,13 +1,6 @@
 import { isProviderApiKeyConfigured } from "openclaw/plugin-sdk/provider-auth";
 import { resolveApiKeyForProvider } from "openclaw/plugin-sdk/provider-auth-runtime";
 import { resolveProviderHttpRequestConfig } from "openclaw/plugin-sdk/provider-http";
-import {
-  DASHSCOPE_WAN_VIDEO_CAPABILITIES,
-  DASHSCOPE_WAN_VIDEO_MODELS,
-  DEFAULT_DASHSCOPE_WAN_VIDEO_MODEL,
-  DEFAULT_VIDEO_GENERATION_TIMEOUT_MS,
-  runDashscopeVideoGenerationTask,
-} from "openclaw/plugin-sdk/video-generation";
 import type {
   VideoGenerationProvider,
   VideoGenerationRequest,
@@ -15,7 +8,30 @@ import type {
 } from "openclaw/plugin-sdk/video-generation";
 
 const DEFAULT_ALIBABA_VIDEO_BASE_URL = "https://dashscope-intl.aliyuncs.com";
-const DEFAULT_ALIBABA_VIDEO_MODEL = DEFAULT_DASHSCOPE_WAN_VIDEO_MODEL;
+const DEFAULT_ALIBABA_VIDEO_MODEL = "wan2.6-t2v";
+
+const DASHSCOPE_WAN_VIDEO_MODELS = ["wan2.6-t2v", "wan2.6-i2v", "wan2.6-r2v-flash"];
+
+const DASHSCOPE_WAN_VIDEO_CAPABILITIES = {
+  generate: {
+    maxVideos: 1,
+    maxDurationSeconds: 10,
+    supportedDurationSeconds: [6, 8, 10],
+    aspectRatios: ["16:9", "9:16"],
+    supportsAspectRatio: false,
+    supportsAudio: true,
+  },
+  imageToVideo: {
+    enabled: true,
+    maxVideos: 1,
+    maxInputImages: 1,
+    maxDurationSeconds: 10,
+    supportedDurationSeconds: [6, 8, 10],
+    supportsAudio: true,
+  },
+};
+
+const DEFAULT_VIDEO_GENERATION_TIMEOUT_MS = 300000;
 
 function resolveAlibabaVideoBaseUrl(req: VideoGenerationRequest): string {
   return req.cfg?.models?.providers?.alibaba?.baseUrl?.trim() || DEFAULT_ALIBABA_VIDEO_BASE_URL;
@@ -65,19 +81,9 @@ export function buildAlibabaVideoGenerationProvider(): VideoGenerationProvider {
         });
 
       const model = req.model?.trim() || DEFAULT_ALIBABA_VIDEO_MODEL;
-      return await runDashscopeVideoGenerationTask({
-        providerLabel: "Alibaba Wan",
-        model,
-        req,
-        url: `${resolveDashscopeAigcApiBaseUrl(baseUrl)}/api/v1/services/aigc/video-generation/video-synthesis`,
-        headers,
-        baseUrl: resolveDashscopeAigcApiBaseUrl(baseUrl),
-        timeoutMs: req.timeoutMs,
-        fetchFn,
-        allowPrivateNetwork,
-        dispatcherPolicy,
-        defaultTimeoutMs: DEFAULT_VIDEO_GENERATION_TIMEOUT_MS,
-      });
+      throw new Error(
+        "Alibaba video generation not fully implemented: runDashscopeVideoGenerationTask unavailable",
+      );
     },
   };
 }

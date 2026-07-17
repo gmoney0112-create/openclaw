@@ -79,6 +79,8 @@ export const MOONSHOT_THINKING_STREAM_HOOKS = {
     ),
 };
 
+export const MINIMAX_FAST_MODE_STREAM_HOOKS = {};
+
 export function buildProviderStreamFamilyHooks(params: {
   family: "openai-responses" | "google-thinking" | "kilocode-thinking" | "openrouter-thinking";
 }) {

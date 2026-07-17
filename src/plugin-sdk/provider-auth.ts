@@ -6,6 +6,7 @@ export type { ProviderAuthResult } from "../plugins/types.js";
 export type { ProviderAuthContext } from "../plugins/types.js";
 export type { AuthProfileStore, OAuthCredential } from "../agents/auth-profiles/types.js";
 export { buildOauthProviderAuthResult } from "./provider-auth-result.js";
+export { readClaudeCliCredentialsCached } from "../agents/cli-credentials.js";
 
 export {
   CLAUDE_CLI_PROFILE_ID,

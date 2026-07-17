@@ -971,3 +971,46 @@ export function chunkMarkdownIR(ir: MarkdownIR, limit: number): MarkdownIR[] {
 
   return results;
 }
+
+/**
+ * Chunks a MarkdownIR by raw text length, then re-splits any chunk whose
+ * *rendered* form (e.g. after HTML-escaping or link markup expansion) still
+ * exceeds `limit`, since raw-text length alone can understate rendered size.
+ */
+export function renderMarkdownIRChunksWithinLimit(params: {
+  ir: MarkdownIR;
+  limit: number;
+  renderChunk: (ir: MarkdownIR) => string;
+  measureRendered: (rendered: string) => number;
+}): Array<{ source: MarkdownIR; rendered: string }> {
+  const { ir, limit, renderChunk, measureRendered } = params;
+  const results: Array<{ source: MarkdownIR; rendered: string }> = [];
+
+  const process = (subIr: MarkdownIR, textLimit: number): void => {
+    const rendered = renderChunk(subIr);
+    const size = measureRendered(rendered);
+    if (size <= limit || subIr.text.length <= 1) {
+      results.push({ source: subIr, rendered });
+      return;
+    }
+    const shrunkLimit = Math.min(
+      textLimit - 1,
+      Math.max(1, Math.floor(textLimit * (limit / size))),
+    );
+    const subChunks = chunkMarkdownIR(subIr, Math.max(1, shrunkLimit));
+    if (subChunks.length <= 1) {
+      // Can't shrink further meaningfully (e.g. a single oversized link) —
+      // accept as-is rather than looping forever.
+      results.push({ source: subIr, rendered });
+      return;
+    }
+    for (const chunk of subChunks) {
+      process(chunk, Math.max(1, shrunkLimit));
+    }
+  };
+
+  for (const chunk of chunkMarkdownIR(ir, limit)) {
+    process(chunk, limit);
+  }
+  return results;
+}

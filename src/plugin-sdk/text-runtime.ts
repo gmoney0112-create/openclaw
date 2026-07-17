@@ -5,6 +5,7 @@ export * from "../logging/diagnostic.js";
 export * from "../logging/logger.js";
 export * from "../logging/redact.js";
 export * from "../logging/redact-identifier.js";
+export * from "../markdown/file-refs.js";
 export * from "../markdown/ir.js";
 export * from "../markdown/render.js";
 export * from "../markdown/tables.js";

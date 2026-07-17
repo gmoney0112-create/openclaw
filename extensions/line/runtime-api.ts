@@ -12,7 +12,7 @@ export type {
   ChannelGatewayContext,
   ChannelStatusIssue,
 } from "openclaw/plugin-sdk/channel-contract";
-export { clearAccountEntryFields } from "openclaw/plugin-sdk/core";
+export { clearAccountEntryFields } from "openclaw/plugin-sdk/line";
 export { buildChannelConfigSchema } from "openclaw/plugin-sdk/channel-config-schema";
 export type { ReplyPayload } from "openclaw/plugin-sdk/reply-runtime";
 export type { ChannelSetupDmPolicy, ChannelSetupWizard } from "openclaw/plugin-sdk/setup";

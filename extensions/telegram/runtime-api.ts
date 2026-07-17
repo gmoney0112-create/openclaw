@@ -27,15 +27,17 @@ export {
   formatPairingApproveHint,
   getChatChannelMeta,
 } from "openclaw/plugin-sdk/channel-plugin-common";
-export { clearAccountEntryFields } from "openclaw/plugin-sdk/channel-core";
+export { clearAccountEntryFields } from "openclaw/plugin-sdk/telegram";
 export { buildChannelConfigSchema, TelegramConfigSchema } from "./config-api.js";
 export { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk/account-id";
 export {
   PAIRING_APPROVED_MESSAGE,
   buildTokenChannelStatusSummary,
+} from "openclaw/plugin-sdk/channel-status";
+export {
   projectCredentialSnapshotFields,
   resolveConfiguredFromCredentialStatuses,
-} from "openclaw/plugin-sdk/channel-status";
+} from "openclaw/plugin-sdk/telegram";
 export {
   jsonResult,
   readNumberParam,
@@ -44,7 +46,7 @@ export {
   readStringOrNumberParam,
   readStringParam,
   resolvePollMaxSelections,
-} from "openclaw/plugin-sdk/channel-actions";
+} from "openclaw/plugin-sdk/telegram-core";
 export type { TelegramProbe } from "./src/probe.js";
 export { auditTelegramGroupMembership, collectTelegramUnmentionedGroupIds } from "./src/audit.js";
 export { resolveTelegramRuntimeGroupPolicy } from "./src/group-access.js";

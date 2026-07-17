@@ -104,7 +104,7 @@ export const createMvpProjectManagerProvider = (): ProjectManagerProvider => {
         id: projectId,
         name: spec.name,
         onTrack: true,
-        completionPercent: (tasksDone / tasksTotal) * 100,
+        completionPercent: tasksTotal > 0 ? (tasksDone / tasksTotal) * 100 : 0,
         tasksTotal,
         tasksDone,
         tasksBlocked,

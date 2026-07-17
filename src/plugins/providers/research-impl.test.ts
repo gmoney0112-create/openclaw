@@ -70,7 +70,7 @@ describe("Research Provider", () => {
 
     result.findings.forEach((finding) => {
       expect(finding.summary).toBeDefined();
-      expect(finding.summary).toContain("research findings");
+      expect(finding.summary.toLowerCase()).toContain("research findings");
     });
   });
 

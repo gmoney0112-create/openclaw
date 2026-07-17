@@ -13,7 +13,7 @@ export const createMvpVoiceInterfaceProvider = (): VoiceInterfaceProvider => {
     capabilities: ["speech-recognition", "text-to-speech"],
 
     startListening: async (sessionId?: string) => {
-      const id = sessionId || `voice-${Date.now()}`;
+      const id = sessionId || `voice-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
       sessions.set(id, { isListening: true, isSpeaking: false, transcript: "" });
       return id;
     },

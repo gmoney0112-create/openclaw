@@ -4,23 +4,20 @@ import type { MemoryEmbeddingProvider } from "../plugin-sdk/memory-core-host-eng
 export const createMvpMemoryEmbeddingProvider = (): MemoryEmbeddingProvider => {
   return {
     id: "memory-embedding-mvp-ref",
-    label: "MVP Memory Embedding (Reference)",
-    capabilities: ["text-embedding", "semantic-search"],
+    model: "text-embedding-3-small",
 
-    embedText: async (text: string) => {
+    embedQuery: async (text: string) => {
       await new Promise((resolve) => setTimeout(resolve, 300));
       const hash = text.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
       return Array.from({ length: 384 }, (_, i) => Math.sin((hash + i) * 0.001));
     },
 
-    searchSimilar: async (embedding: number[], topK?: number) => {
+    embedBatch: async (texts: string[]) => {
       await new Promise((resolve) => setTimeout(resolve, 200));
-      const limit = topK || 5;
-      return Array.from({ length: limit }, (_, i) => ({
-        id: `mem-${i}`,
-        score: 0.95 - i * 0.1,
-        text: `Memory item ${i}`,
-      }));
+      return texts.map((text) => {
+        const hash = text.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+        return Array.from({ length: 384 }, (_, i) => Math.sin((hash + i) * 0.001));
+      });
     },
   };
 };

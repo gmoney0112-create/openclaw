@@ -8,111 +8,99 @@ describe("Memory Embedding Provider", () => {
     expect(provider.id).toBe("memory-embedding-mvp-ref");
   });
 
-  it("should have correct label", () => {
-    expect(provider.label).toBe("MVP Memory Embedding (Reference)");
+  it("should have correct model", () => {
+    expect(provider.model).toBe("text-embedding-3-small");
   });
 
-  it("should have required capabilities", () => {
-    expect(provider.capabilities).toContain("text-embedding");
-    expect(provider.capabilities).toContain("semantic-search");
-  });
+  it("should embed single query text", async () => {
+    const result = await provider.embedQuery("Machine learning is fascinating");
 
-  it("should embed text into vector", async () => {
-    const result = await provider.embedText("Machine learning is fascinating");
-
-    expect(result.embedding).toBeDefined();
-    expect(Array.isArray(result.embedding)).toBe(true);
+    expect(result).toBeDefined();
+    expect(Array.isArray(result)).toBe(true);
   });
 
   it("should produce 384-dimensional embeddings", async () => {
-    const result = await provider.embedText("Test embedding");
+    const result = await provider.embedQuery("Test embedding");
 
-    expect(result.embedding.length).toBe(384);
+    expect(result.length).toBe(384);
   });
 
   it("should produce numeric embeddings", async () => {
-    const result = await provider.embedText("Numeric test");
+    const result = await provider.embedQuery("Numeric test");
 
-    result.embedding.forEach((value) => {
+    result.forEach((value) => {
       expect(typeof value).toBe("number");
     });
   });
 
-  it("should perform semantic similarity search", async () => {
-    const results = await provider.semanticSearch("AI and machine learning", 5);
+  it("should embed batch of texts", async () => {
+    const texts = ["First text", "Second text", "Third text"];
+    const results = await provider.embedBatch(texts);
 
-    expect(results.results).toBeDefined();
-    expect(Array.isArray(results.results)).toBe(true);
+    expect(Array.isArray(results)).toBe(true);
+    expect(results.length).toBe(3);
   });
 
-  it("should return requested number of results", async () => {
-    const k = 3;
-    const results = await provider.semanticSearch("technology", k);
+  it("should return correct number of embeddings in batch", async () => {
+    const texts = ["Text 1", "Text 2"];
+    const results = await provider.embedBatch(texts);
 
-    expect(results.results.length).toBeLessThanOrEqual(k);
+    expect(results.length).toBe(texts.length);
   });
 
-  it("should include similarity scores in results", async () => {
-    const results = await provider.semanticSearch("business", 5);
+  it("should produce embeddings for each batch item", async () => {
+    const texts = ["A", "B", "C"];
+    const results = await provider.embedBatch(texts);
 
-    results.results.forEach((result) => {
-      expect(result.similarity).toBeGreaterThanOrEqual(0);
-      expect(result.similarity).toBeLessThanOrEqual(1);
+    results.forEach((embedding) => {
+      expect(Array.isArray(embedding)).toBe(true);
+      expect(embedding.length).toBe(384);
     });
-  });
-
-  it("should include text in search results", async () => {
-    const results = await provider.semanticSearch("innovation", 3);
-
-    results.results.forEach((result) => {
-      expect(result.text).toBeDefined();
-      expect(typeof result.text).toBe("string");
-    });
-  });
-
-  it("should include metadata in search results", async () => {
-    const results = await provider.semanticSearch("strategy", 2);
-
-    results.results.forEach((result) => {
-      expect(result.metadata).toBeDefined();
-    });
-  });
-
-  it("should store embeddings in memory", async () => {
-    const embedding1 = await provider.embedText("First text");
-
-    expect(embedding1.embedding).toBeDefined();
   });
 
   it("should produce different embeddings for different texts", async () => {
-    const emb1 = await provider.embedText("The sun is bright");
-    const emb2 = await provider.embedText("The moon is dark");
+    const emb1 = await provider.embedQuery("The sun is bright");
+    const emb2 = await provider.embedQuery("The moon is dark");
 
-    expect(emb1.embedding).not.toEqual(emb2.embedding);
+    expect(emb1).not.toEqual(emb2);
   });
 
-  it("should rank results by similarity", async () => {
-    const results = await provider.semanticSearch("search query", 5);
+  it("should handle empty batch", async () => {
+    const results = await provider.embedBatch([]);
 
-    if (results.results.length > 1) {
-      for (let i = 0; i < results.results.length - 1; i++) {
-        expect(results.results[i].similarity).toBeGreaterThanOrEqual(
-          results.results[i + 1].similarity,
-        );
-      }
-    }
+    expect(Array.isArray(results)).toBe(true);
+    expect(results.length).toBe(0);
   });
 
-  it("should handle empty search queries", async () => {
-    const results = await provider.semanticSearch("", 1);
+  it("should handle large batch", async () => {
+    const texts = Array.from({ length: 100 }, (_, i) => `Text ${i}`);
+    const results = await provider.embedBatch(texts);
 
-    expect(results.results).toBeDefined();
-    expect(Array.isArray(results.results)).toBe(true);
+    expect(results.length).toBe(100);
   });
 
-  it("should handle large k values", async () => {
-    const results = await provider.semanticSearch("test", 1000);
+  it("should produce consistent embeddings for same input", async () => {
+    const text = "Consistent text";
+    const emb1 = await provider.embedQuery(text);
+    const emb2 = await provider.embedQuery(text);
 
-    expect(results.results).toBeDefined();
+    expect(emb1).toEqual(emb2);
+  });
+
+  it("should work with special characters", async () => {
+    const result = await provider.embedQuery("Special chars: !@#$%^&*()");
+
+    expect(result.length).toBe(384);
+  });
+
+  it("should batch embed produce numeric values", async () => {
+    const texts = ["Text 1", "Text 2"];
+    const results = await provider.embedBatch(texts);
+
+    results.forEach((embedding) => {
+      embedding.forEach((value) => {
+        expect(typeof value).toBe("number");
+      });
+    });
   });
 });

@@ -19,7 +19,7 @@ export const createMvpTranscriptionProvider = (): RealtimeTranscriptionProviderP
 
     startLiveTranscription: async () => {
       return {
-        sessionId: `session-${Date.now()}`,
+        sessionId: `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         status: "active",
       };
     },

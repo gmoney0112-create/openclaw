@@ -171,7 +171,7 @@ export function resolveMemoryDeepDreamingConfig(params: {
   const dreaming = resolveDreamingPluginConfig(params.pluginConfig);
   const deep = resolvePhaseConfig(dreaming, "deep");
   return {
-    enabled:  (parseBoolean(deep.enabled) ?? parseBoolean(dreaming.enabled) ?? false),
+    enabled: parseBoolean(deep.enabled) ?? parseBoolean(dreaming.enabled) ?? false,
     frequency: trimToUndefined(dreaming.frequency) ?? DEFAULT_MEMORY_DREAMING_FREQUENCY,
     timezone: resolveTimezone(dreaming, params.cfg),
     limit: parseNonNegativeNumber(deep.limit) ?? DEFAULT_MEMORY_DEEP_DREAMING_LIMIT,
@@ -198,7 +198,7 @@ export function resolveMemoryLightDreamingConfig(params: {
   const dreaming = resolveDreamingPluginConfig(params.pluginConfig);
   const light = resolvePhaseConfig(dreaming, "light");
   return {
-    enabled:  (parseBoolean(light.enabled) ?? parseBoolean(dreaming.enabled) ?? false),
+    enabled: parseBoolean(light.enabled) ?? parseBoolean(dreaming.enabled) ?? false,
     timezone: resolveTimezone(dreaming, params.cfg),
     lookbackDays:
       parseNonNegativeNumber(light.lookbackDays) ?? DEFAULT_MEMORY_LIGHT_DREAMING_LOOKBACK_DAYS,
@@ -216,7 +216,7 @@ export function resolveMemoryRemDreamingConfig(params: {
   const dreaming = resolveDreamingPluginConfig(params.pluginConfig);
   const rem = resolvePhaseConfig(dreaming, "rem");
   return {
-    enabled:  (parseBoolean(rem.enabled) ?? parseBoolean(dreaming.enabled) ?? false),
+    enabled: parseBoolean(rem.enabled) ?? parseBoolean(dreaming.enabled) ?? false,
     timezone: resolveTimezone(dreaming, params.cfg),
     lookbackDays:
       parseNonNegativeNumber(rem.lookbackDays) ?? DEFAULT_MEMORY_REM_DREAMING_LOOKBACK_DAYS,

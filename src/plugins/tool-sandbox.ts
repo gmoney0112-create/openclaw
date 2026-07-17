@@ -199,7 +199,7 @@ function resolveHttpRequestUrl(defaultProtocol: "http:" | "https:", args: unknow
           : {};
       const protocol =
         typeof options.protocol === "string" && options.protocol.trim()
-          ? (options.protocol)
+          ? options.protocol
           : defaultProtocol;
       const hostSource =
         typeof options.hostname === "string" && options.hostname.trim()
@@ -223,7 +223,7 @@ function resolveHttpRequestUrl(defaultProtocol: "http:" | "https:", args: unknow
     const options = first as Record<string, unknown>;
     const protocol =
       typeof options.protocol === "string" && options.protocol.trim()
-        ? (options.protocol)
+        ? options.protocol
         : defaultProtocol;
     const hostSource =
       typeof options.hostname === "string" && options.hostname.trim()

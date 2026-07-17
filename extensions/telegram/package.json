@@ -14,7 +14,10 @@
   },
   "openclaw": {
     "extensions": [
-      "./index.ts"
+      "./index.ts",
+      "./channel-plugin-api.ts",
+      "./secret-contract-api.ts",
+      "./runtime-api.ts"
     ],
     "setupEntry": "./setup-entry.ts",
     "channel": {

@@ -1,7 +1,4 @@
-import {
-  normalizeOptionalString,
-  normalizeOptionalTrimmedStringList,
-} from "openclaw/plugin-sdk/text-runtime";
+import { normalizeOptionalString } from "openclaw/plugin-sdk/text-runtime";
 import {
   type BrowserConfig,
   type BrowserProfileConfig,
@@ -122,6 +119,16 @@ function resolveCdpPortRangeStart(
     );
   }
   return start;
+}
+
+function normalizeOptionalTrimmedStringList(value: unknown): string[] | undefined {
+  if (!value) return undefined;
+  if (typeof value === "string") return [value.trim()].filter(Boolean);
+  if (Array.isArray(value)) {
+    const trimmed = value.map((v) => (typeof v === "string" ? v.trim() : "")).filter(Boolean);
+    return trimmed.length > 0 ? trimmed : undefined;
+  }
+  return undefined;
 }
 
 const normalizeStringList = normalizeOptionalTrimmedStringList;

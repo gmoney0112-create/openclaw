@@ -93,7 +93,11 @@ describe("OS Control Provider", () => {
 
   it("should handle unknown command types", async () => {
     const result = await provider.execute({
-      type: "unknown" as unknown as typeof provider extends { execute: (cmd: infer C) => unknown } ? C extends { type: infer T } ? T : never : never,
+      type: "unknown" as unknown as typeof provider extends { execute: (cmd: infer C) => unknown }
+        ? C extends { type: infer T }
+          ? T
+          : never
+        : never,
       command: "test",
     });
 

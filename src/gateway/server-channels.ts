@@ -494,7 +494,15 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
 
   const startChannels = async () => {
     for (const plugin of listChannelPlugins()) {
-      await startChannel(plugin.id);
+      try {
+        await startChannel(plugin.id);
+      } catch (err) {
+        const message = formatErrorMessage(err);
+        channelLogs[plugin.id]?.error?.(`[${plugin.id}] channel startup failed: ${message}`);
+        console.log(
+          `[DIAGNOSTIC] ${plugin.id} startup failure stack: ${err instanceof Error ? err.stack : String(err)}`,
+        );
+      }
     }
   };
 

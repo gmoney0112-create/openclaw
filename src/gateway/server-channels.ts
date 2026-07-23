@@ -296,7 +296,7 @@ export function createChannelManager(opts: ChannelManagerOptions): ChannelManage
           let configured = true;
           if (plugin.config.isConfigured) {
             console.log(
-              `[DIAGNOSTIC] ${channelId}/${id} pre-isConfigured: account=${JSON.stringify(account)} cfgIsUndefined=${cfg === undefined}`,
+              `[DIAGNOSTIC] ${channelId}/${id} pre-isConfigured: account=${JSON.stringify(account)} cfgIsUndefined=${cfg === undefined} id=${JSON.stringify(id)} resolveAccountSrc=${String(plugin.config.resolveAccount).slice(0, 300)}`,
             );
             configured = await plugin.config.isConfigured(account, cfg);
           }

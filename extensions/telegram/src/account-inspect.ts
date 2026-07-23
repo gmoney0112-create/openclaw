@@ -1,4 +1,4 @@
-import { resolveAccountWithDefaultFallback } from "openclaw/plugin-sdk/account-core";
+import { resolveAccountWithDefaultFallback } from "openclaw/plugin-sdk/account-resolution";
 import { tryReadSecretFileSync } from "openclaw/plugin-sdk/channel-core";
 import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import { coerceSecretRef } from "openclaw/plugin-sdk/config-runtime";

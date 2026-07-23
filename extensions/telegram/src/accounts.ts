@@ -9,7 +9,7 @@ import {
   resolveListedDefaultAccountId,
   resolveAccountWithDefaultFallback,
   type OpenClawConfig,
-} from "openclaw/plugin-sdk/account-core";
+} from "openclaw/plugin-sdk/account-resolution";
 import type {
   TelegramAccountConfig,
   TelegramActionConfig,

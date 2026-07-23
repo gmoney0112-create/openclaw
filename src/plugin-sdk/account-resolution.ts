@@ -70,10 +70,20 @@ export function listConfiguredAccountIds(params: {
 export function listCombinedAccountIds(params: {
   configuredAccountIds: string[];
   implicitAccountId?: string;
+  additionalAccountIds?: string[];
+  fallbackAccountIdWhenEmpty?: string;
 }): string[] {
   const ids = new Set(params.configuredAccountIds);
   if (params.implicitAccountId && !ids.has(params.implicitAccountId)) {
     ids.add(params.implicitAccountId);
+  }
+  for (const id of params.additionalAccountIds ?? []) {
+    if (id) {
+      ids.add(id);
+    }
+  }
+  if (ids.size === 0 && params.fallbackAccountIdWhenEmpty) {
+    ids.add(params.fallbackAccountIdWhenEmpty);
   }
   return [...ids];
 }

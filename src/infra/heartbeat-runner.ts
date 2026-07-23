@@ -939,6 +939,9 @@ export async function runHeartbeatOnce(opts: {
       indicatorType: visibility.useIndicator ? resolveIndicatorType("failed") : undefined,
     });
     log.error(`heartbeat failed: ${reason}`, { error: reason });
+    console.log(
+      `[DIAGNOSTIC] heartbeat failure stack: ${err instanceof Error ? err.stack : String(err)}`,
+    );
     return { status: "failed", reason };
   }
 }

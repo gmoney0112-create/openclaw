@@ -17,11 +17,13 @@ import type { OpenClawConfig } from "../config/config.js";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "../routing/session-key.js";
 import { normalizeStringEntries } from "../shared/string-normalization.js";
 
-/** Adapt an account resolver function to work with scoped account config accessors. */
+/** Adapt an object-param account resolver (`({ cfg, accountId }) => Account`) to the
+ * positional-arg shape `(cfg, accountId) => Account` that ChannelConfigAdapter's
+ * resolveAccount/inspectAccount slots are actually invoked with. */
 export function adaptScopedAccountAccessor<ResolvedAccount>(
   resolveAccount: (params: { cfg: OpenClawConfig; accountId?: string | null }) => ResolvedAccount,
-): (params: { cfg: OpenClawConfig; accountId?: string | null }) => ResolvedAccount {
-  return resolveAccount;
+): (cfg: OpenClawConfig, accountId?: string | null) => ResolvedAccount {
+  return (cfg, accountId) => resolveAccount({ cfg, accountId });
 }
 
 /** Coerce mixed allowlist config values into plain strings without trimming or deduping. */

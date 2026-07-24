@@ -5,10 +5,7 @@ import type { OpenClawConfig } from "openclaw/plugin-sdk/config-runtime";
 import type { TelegramAccountConfig } from "openclaw/plugin-sdk/config-runtime";
 import { resolveDefaultSecretProviderAlias } from "openclaw/plugin-sdk/provider-auth";
 import { DEFAULT_ACCOUNT_ID, normalizeAccountId } from "openclaw/plugin-sdk/routing";
-import {
-  normalizeSecretInputString,
-  resolveSecretInputString,
-} from "openclaw/plugin-sdk/secret-input";
+import { coerceSecretRef, normalizeSecretInputString } from "openclaw/plugin-sdk/secret-input";
 
 export type TelegramTokenSource = "env" | "tokenFile" | "config" | "none";
 
@@ -52,28 +49,20 @@ function resolveEnvSecretRefValue(params: {
 function resolveRuntimeTokenValue(params: {
   cfg?: Pick<OpenClawConfig, "secrets">;
   value: unknown;
-  path: string;
 }): RuntimeTokenValueResolution {
-  const resolved = resolveSecretInputString({
-    value: params.value,
-    path: params.path,
-    defaults: params.cfg?.secrets?.defaults,
-    mode: "inspect",
-  });
-  if (resolved.status === "available") {
-    return {
-      status: "available",
-      value: resolved.value,
-    };
+  const plain = normalizeSecretInputString(params.value);
+  if (plain) {
+    return { status: "available", value: plain };
   }
-  if (resolved.status === "missing") {
+  const ref = coerceSecretRef(params.value, params.cfg?.secrets?.defaults);
+  if (!ref) {
     return { status: "missing" };
   }
-  if (resolved.ref.source === "env") {
+  if (ref.source === "env") {
     const envValue = resolveEnvSecretRefValue({
       cfg: params.cfg,
-      provider: resolved.ref.provider,
-      id: resolved.ref.id,
+      provider: ref.provider,
+      id: ref.id,
     });
     if (envValue) {
       return {
@@ -83,13 +72,8 @@ function resolveRuntimeTokenValue(params: {
     }
     return { status: "configured_unavailable" };
   }
-  // Runtime resolution stays strict for non-env SecretRefs.
-  resolveSecretInputString({
-    value: params.value,
-    path: params.path,
-    defaults: params.cfg?.secrets?.defaults,
-    mode: "strict",
-  });
+  // file/exec SecretRefs can't be resolved synchronously on this runtime
+  // token-check path; treat as configured but not available here.
   return { status: "configured_unavailable" };
 }
 
@@ -163,7 +147,6 @@ export function resolveTelegramToken(
   const accountToken = resolveRuntimeTokenValue({
     cfg,
     value: accountCfg?.botToken,
-    path: `channels.telegram.accounts.${accountId}.botToken`,
   });
   if (accountToken.status === "available") {
     return { token: accountToken.value, source: "config" };
@@ -188,7 +171,6 @@ export function resolveTelegramToken(
   const configToken = resolveRuntimeTokenValue({
     cfg,
     value: telegramCfg?.botToken,
-    path: "channels.telegram.botToken",
   });
   if (configToken.status === "available") {
     return { token: configToken.value, source: "config" };

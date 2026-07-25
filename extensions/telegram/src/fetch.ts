@@ -568,10 +568,10 @@ export function resolveTelegramTransport(
           method: init?.method ?? "GET",
           requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
           requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+          response,
+          flowId: randomUUID(),
+          meta: { subsystem: "telegram-fetch" },
         }),
-        response,
-        flowId: randomUUID(),
-        meta: { subsystem: "telegram-fetch" },
       });
       return response;
     } catch (caught) {
@@ -601,10 +601,10 @@ export function resolveTelegramTransport(
             method: init?.method ?? "GET",
             requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
             requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+            response,
+            flowId: randomUUID(),
+            meta: { subsystem: "telegram-fetch", fallbackAttempt: nextIndex },
           }),
-          response,
-          flowId: randomUUID(),
-          meta: { subsystem: "telegram-fetch", fallbackAttempt: nextIndex },
         });
         stickyAttemptIndex = nextIndex;
         return response;

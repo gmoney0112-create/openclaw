@@ -563,10 +563,12 @@ export function resolveTelegramTransport(
         withDispatcherIfMissing(init, transportAttempts[startIndex].createDispatcher()),
       );
       captureHttpExchange({
-        url: resolveRequestUrl(input),
-        method: init?.method ?? "GET",
-        requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
-        requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+        request: async () => ({
+          url: resolveRequestUrl(input),
+          method: init?.method ?? "GET",
+          requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
+          requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+        }),
         response,
         flowId: randomUUID(),
         meta: { subsystem: "telegram-fetch" },
@@ -594,10 +596,12 @@ export function resolveTelegramTransport(
           withDispatcherIfMissing(init, nextAttempt.createDispatcher()),
         );
         captureHttpExchange({
-          url: resolveRequestUrl(input),
-          method: init?.method ?? "GET",
-          requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
-          requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+          request: async () => ({
+            url: resolveRequestUrl(input),
+            method: init?.method ?? "GET",
+            requestHeaders: init?.headers as Headers | Record<string, string> | undefined,
+            requestBody: (init as RequestInit & { body?: BodyInit | null })?.body ?? null,
+          }),
           response,
           flowId: randomUUID(),
           meta: { subsystem: "telegram-fetch", fallbackAttempt: nextIndex },

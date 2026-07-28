@@ -11,12 +11,13 @@
   "channels": {
     "telegram": {
       "enabled": true,
-      "dmPolicy": "pairing",
       "groupPolicy": "allowlist",
       "streaming": "partial",
       "accounts": {
         "default": {
-          "botToken": "YOUR_TELEGRAM_BOT_TOKEN"
+          "botToken": "YOUR_TELEGRAM_BOT_TOKEN",
+          "dmPolicy": "open",
+          "allowFrom": ["*"]
         }
       }
     }
@@ -28,3 +29,4 @@
     }
   }
 }
+

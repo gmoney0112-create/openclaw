@@ -1,0 +1,101 @@
+{
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "hooks": {
+        "SessionStart": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "CLAUDE_PLUGIN_ROOT=~/.claude/plugins/superpowers ~/.claude/plugins/superpowers/hooks/run-hook.cmd session-start"
+                    }
+                ]
+            },
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node \"$HOME/.claude/plugins/claude-subconscious/hooks/silent-npx.cjs\" tsx \"$HOME/.claude/plugins/claude-subconscious/scripts/session_start.ts\"",
+                        "timeout": 5
+                    },
+                    {
+                        "type": "command",
+                        "command": "node \"$HOME/.claude/plugins/claude-subconscious/hooks/silent-npx.cjs\" tsx \"$HOME/.claude/plugins/claude-subconscious/scripts/sync_letta_memory.ts\"",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Write|Edit|MultiEdit|TodoWrite",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "npx tdd-guard@latest"
+                    }
+                ]
+            },
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node \"$HOME/.claude/plugins/claude-subconscious/hooks/silent-npx.cjs\" tsx \"$HOME/.claude/plugins/claude-subconscious/scripts/pretool_sync.ts\"",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "npx tdd-guard@latest"
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node \"$HOME/.claude/plugins/claude-subconscious/hooks/silent-npx.cjs\" tsx \"$HOME/.claude/plugins/claude-subconscious/scripts/sync_letta_memory.ts\"",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "~/.claude/stop-hook-git-check.sh"
+                    }
+                ]
+            },
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node \"$HOME/.claude/plugins/claude-subconscious/hooks/silent-npx.cjs\" tsx \"$HOME/.claude/plugins/claude-subconscious/scripts/send_messages_to_letta.ts\"",
+                        "timeout": 120,
+                        "async": true
+                    }
+                ]
+            }
+        ]
+    },
+    "env": {
+        "LETTA_API_KEY": "YOUR_LETTA_API_KEY"
+    },
+    "permissions": {
+        "allow": [
+            "Skill"
+        ]
+    }
+}

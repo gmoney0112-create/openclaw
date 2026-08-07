@@ -9,6 +9,10 @@ describe("nvidia provider catalog", () => {
     expect(provider.api).toBe("openai-completions");
     expect(provider.models.map((model) => model.id)).toEqual([
       "nvidia/nemotron-3-super-120b-a12b",
+      "nvidia/llama-3.1-nemotron-70b-instruct",
+      "meta/llama-3.3-70b-instruct",
+      "nvidia/mistral-nemo-minitron-8b-8k-instruct",
+      "deepseek-ai/deepseek-v4-pro",
       "moonshotai/kimi-k2.5",
       "minimaxai/minimax-m2.5",
       "z-ai/glm5",
